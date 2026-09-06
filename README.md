@@ -7,12 +7,18 @@ The core of the app is simple. A student pastes in their iCal link once, the bac
 
 The feature that makes this more than a glorified to-do list is the time tracking. After a student checks off an assignment, the app asks how long it actually took. Once enough students have logged their time on a given assignment, anyone viewing that assignment can see a distribution of how long it took other people, not just a title and a due date. That is the real value here. Instead of guessing whether a problem set will take thirty minutes or three hours, a student can see what it actually took everyone else.
 
-On top of the individual tracking, there is a social layer. Students can see how many assignments their friends have completed, compare progress by class, and see which assignments they have in common. Combined with the time data, that turns the app into something people actually want to open, not just another tool they forget about a week into the semester.
+*Optional Layer for added complexity*: On top of the individual tracking, there is a social layer. Students can see how many assignments their friends have completed, compare progress by class, and see which assignments they have in common. Combined with the time data, that turns the app into something people actually want to open, not just another tool they forget about a week into the semester.
 
-## Skills required (from assignment)
-1. Use the fundamental web languages of HTML, CSS, and JavaScript to create a responsive web application that works well on a variety of screen sizes.
-2. Use the React webframework to provide an application that reacts to user interactions.
-3. Provide a backend service with endpoints for authentication and application specific functionality.
-4. Persist data in a Mongo database.
-5. Use Websocket to push data from your service to the browser. This can be data that the service initiates such as notification, or data that is relayed from another user.
-6. Have sufficient complexity for a demonstration of mastery of full stack development at the university introductory web programming level.
+### Plan to use each skill / technology:
+- **HTML** - Uses correct HTML structure for application. Pages/views for dashboard, class detail/assignment detail, and login/register. Semantic elements for assignment lists, the iCal-link setup form, and the time-logging modal.
+- **CSS** - Application styling that looks good on different screen sizes. Color-coded classes, due-soon highlighting on the dashboard, and animated transitions for checking off assignments and the time-distribution chart rendering.
+- **React** - Provides login, dashboard display, checking off assignments, time-logging prompts, and backend endpoint calls. Componentized into pieces like AssignmentCard, ClassFilter, and TimeDistributionChart, with routing between the Dashboard and Assignment Detail views. Reactive to user actions — checking off an assignment instantly triggers the time-logging prompt without a page reload.
+- **Service** - Backend service with endpoints for:
+  - storing and parsing a student's Canvas iCal link into assignment records
+  - retrieving assignments, sorted by date or grouped by class
+  - marking an assignment complete and logging how long it took
+  - retrieving aggregated time-distribution stats for a given assignment
+  - sending deadline reminder emails using the [SendGrid API](https://docs.sendgrid.com/api-reference/mail-send/mail-send)
+  - Register, login, and logout users. Credentials securely stored in database. Can't view a dashboard unless authenticated.
+- **DB** - Store user accounts and credentials, each user's iCal source, parsed assignments, and completion status/logged times in the database.
+- **WebSocket** - As other students log how long an assignment took them, anyone currently viewing that assignment's detail page sees the time-distribution chart update live, without refreshing. Deadline reminder alerts are also pushed to the dashboard in real time as they approach.
