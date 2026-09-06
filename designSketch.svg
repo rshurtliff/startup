@@ -1,0 +1,234 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1540" viewBox="0 0 1400 1540" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c026d3"/>
+    </marker>
+    <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7e22ce"/>
+    </marker>
+    <filter id="sh" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="3" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="1540" fill="#ffffff"/>
+
+  <text x="700" y="46" text-anchor="middle" font-size="30" font-weight="bold" fill="#0f172a">Assignment Tracker &#8212; Design Sketch</text>
+  <text x="700" y="76" text-anchor="middle" font-size="15" fill="#475569">Canvas assignments in one dashboard, with crowd-sourced &#8220;how long did this actually take?&#8221; data</text>
+
+  <!-- ============ SECTION 1: UI ============ -->
+  <text x="60" y="122" font-size="20" font-weight="bold" fill="#0f172a">1 &#183; What it looks like</text>
+
+  <!-- Card 1: Login -->
+  <rect x="60" y="140" width="400" height="420" rx="10" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+  <path d="M60,168 h400 v-18 a10,10 0 0 0 -10,-10 h-380 a10,10 0 0 0 -10,10 z" fill="#e2e8f0"/>
+  <line x1="60" y1="168" x2="460" y2="168" stroke="#334155" stroke-width="2"/>
+  <circle cx="78" cy="154" r="4" fill="#94a3b8"/><circle cx="92" cy="154" r="4" fill="#94a3b8"/><circle cx="106" cy="154" r="4" fill="#94a3b8"/>
+  <text x="126" y="159" font-size="13" fill="#334155">Login / Register</text>
+
+  <text x="260" y="230" text-anchor="middle" font-size="21" font-weight="bold" fill="#0f172a">AssignmentTracker</text>
+  <rect x="130" y="256" width="260" height="36" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="144" y="279" font-size="13" fill="#94a3b8">email</text>
+  <rect x="130" y="302" width="260" height="36" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="144" y="325" font-size="13" fill="#94a3b8">password</text>
+  <rect x="130" y="356" width="260" height="40" rx="6" fill="#1d4ed8"/>
+  <text x="260" y="382" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">Log in</text>
+  <text x="260" y="422" text-anchor="middle" font-size="13" fill="#1d4ed8">create an account</text>
+  <line x1="100" y1="452" x2="420" y2="452" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="260" y="480" text-anchor="middle" font-size="12" fill="#64748b">no dashboard until authenticated</text>
+  <text x="260" y="502" text-anchor="middle" font-size="12" fill="#64748b">credentials hashed + stored in the DB</text>
+
+  <!-- Card 2: Dashboard -->
+  <rect x="500" y="140" width="400" height="420" rx="10" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+  <path d="M500,168 h400 v-18 a10,10 0 0 0 -10,-10 h-380 a10,10 0 0 0 -10,10 z" fill="#e2e8f0"/>
+  <line x1="500" y1="168" x2="900" y2="168" stroke="#334155" stroke-width="2"/>
+  <circle cx="518" cy="154" r="4" fill="#94a3b8"/><circle cx="532" cy="154" r="4" fill="#94a3b8"/><circle cx="546" cy="154" r="4" fill="#94a3b8"/>
+  <text x="566" y="159" font-size="13" fill="#334155">Dashboard</text>
+
+  <text x="520" y="196" font-size="14" font-weight="bold" fill="#0f172a">Due soon</text>
+  <rect x="640" y="182" width="52" height="22" rx="11" fill="#1d4ed8"/>
+  <text x="666" y="197" text-anchor="middle" font-size="11" fill="#ffffff">All</text>
+  <rect x="698" y="182" width="72" height="22" rx="11" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="734" y="197" text-anchor="middle" font-size="11" fill="#475569">By class</text>
+  <rect x="776" y="182" width="66" height="22" rx="11" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="809" y="197" text-anchor="middle" font-size="11" fill="#475569">By date</text>
+  <rect x="848" y="182" width="34" height="22" rx="11" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="865" y="198" text-anchor="middle" font-size="13" fill="#475569">+</text>
+
+  <g font-size="13">
+    <rect x="520" y="216" width="360" height="52" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <rect x="520" y="216" width="6" height="52" rx="3" fill="#ef4444"/>
+    <rect x="540" y="234" width="16" height="16" rx="3" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+    <text x="568" y="238" font-weight="bold" fill="#0f172a">CS 260 &#183; Startup Specification</text>
+    <text x="568" y="256" font-size="11" fill="#dc2626">due today 11:59 pm</text>
+    <text x="868" y="248" font-size="11" text-anchor="end" fill="#64748b">~2.5 h</text>
+
+    <rect x="520" y="276" width="360" height="52" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <rect x="520" y="276" width="6" height="52" rx="3" fill="#3b82f6"/>
+    <rect x="540" y="294" width="16" height="16" rx="3" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+    <text x="568" y="298" font-weight="bold" fill="#0f172a">MATH 313 &#183; Homework 4</text>
+    <text x="568" y="316" font-size="11" fill="#64748b">due Fri 5:00 pm</text>
+    <text x="868" y="308" font-size="11" text-anchor="end" fill="#64748b">~1.75 h</text>
+
+    <rect x="520" y="336" width="360" height="52" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <rect x="520" y="336" width="6" height="52" rx="3" fill="#22c55e"/>
+    <rect x="540" y="354" width="16" height="16" rx="3" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+    <text x="568" y="358" font-weight="bold" fill="#0f172a">WRTG 316 &#183; Peer Review</text>
+    <text x="568" y="376" font-size="11" fill="#64748b">due Mon 11:59 pm</text>
+    <text x="868" y="368" font-size="11" text-anchor="end" fill="#64748b">~40 m</text>
+
+    <rect x="520" y="396" width="360" height="52" rx="6" fill="#f1f5f9" stroke="#e2e8f0"/>
+    <rect x="520" y="396" width="6" height="52" rx="3" fill="#a855f7"/>
+    <rect x="540" y="414" width="16" height="16" rx="3" fill="#22c55e"/>
+    <path d="M543,422 l4,4 l7,-8" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <text x="568" y="418" font-weight="bold" fill="#94a3b8" text-decoration="line-through">CS 260 &#183; Simon HTML</text>
+    <text x="568" y="436" font-size="11" fill="#94a3b8">done &#183; you logged 3 h</text>
+  </g>
+
+  <!-- time log modal overlay -->
+  <g filter="url(#sh)">
+    <rect x="556" y="440" width="288" height="104" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="2"/>
+  </g>
+  <text x="700" y="466" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f172a">Nice! How long did that take?</text>
+  <rect x="580" y="482" width="120" height="32" rx="5" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="592" y="503" font-size="13" fill="#0f172a">2.5</text>
+  <text x="708" y="503" font-size="12" fill="#64748b">hours</text>
+  <rect x="752" y="482" width="68" height="32" rx="5" fill="#1d4ed8"/>
+  <text x="786" y="503" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">Save</text>
+  <text x="700" y="534" text-anchor="middle" font-size="11" fill="#64748b">fires the moment the box is checked &#8212; no page reload</text>
+
+  <!-- Card 3: Assignment detail -->
+  <rect x="940" y="140" width="400" height="420" rx="10" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+  <path d="M940,168 h400 v-18 a10,10 0 0 0 -10,-10 h-380 a10,10 0 0 0 -10,10 z" fill="#e2e8f0"/>
+  <line x1="940" y1="168" x2="1340" y2="168" stroke="#334155" stroke-width="2"/>
+  <circle cx="958" cy="154" r="4" fill="#94a3b8"/><circle cx="972" cy="154" r="4" fill="#94a3b8"/><circle cx="986" cy="154" r="4" fill="#94a3b8"/>
+  <text x="1006" y="159" font-size="13" fill="#334155">Assignment Detail</text>
+
+  <text x="960" y="200" font-size="15" font-weight="bold" fill="#0f172a">CS 260 &#183; Startup Specification</text>
+  <text x="960" y="220" font-size="12" fill="#64748b">due today 11:59 pm &#183; 47 students logged time</text>
+  <circle cx="1252" cy="196" r="5" fill="#22c55e"/>
+  <text x="1264" y="201" font-size="12" font-weight="bold" fill="#16a34a">LIVE</text>
+
+  <text x="960" y="252" font-size="13" font-weight="bold" fill="#0f172a">How long it took everyone else</text>
+  <g fill="#3b82f6">
+    <rect x="972" y="390" width="42" height="30" rx="3"/>
+    <rect x="1020" y="350" width="42" height="70" rx="3"/>
+    <rect x="1068" y="306" width="42" height="114" rx="3" fill="#1d4ed8"/>
+    <rect x="1116" y="332" width="42" height="88" rx="3"/>
+    <rect x="1164" y="374" width="42" height="46" rx="3"/>
+    <rect x="1212" y="400" width="42" height="20" rx="3"/>
+  </g>
+  <line x1="960" y1="420" x2="1290" y2="420" stroke="#334155" stroke-width="2"/>
+  <line x1="960" y1="270" x2="960" y2="420" stroke="#334155" stroke-width="2"/>
+  <g font-size="11" fill="#64748b" text-anchor="middle">
+    <text x="993" y="438">&lt;1h</text><text x="1041" y="438">1h</text><text x="1089" y="438">2h</text>
+    <text x="1137" y="438">3h</text><text x="1185" y="438">4h</text><text x="1233" y="438">5h+</text>
+  </g>
+  <line x1="1089" y1="276" x2="1089" y2="306" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="1097" y="284" font-size="11" font-weight="bold" fill="#dc2626">you: 2.5 h</text>
+  <text x="960" y="474" font-size="12" fill="#64748b">Bars grow in real time as classmates finish &#8212;</text>
+  <text x="960" y="492" font-size="12" fill="#64748b">pushed over a WebSocket, no refresh needed.</text>
+  <text x="960" y="522" font-size="12" fill="#64748b">Reminder banners for due-soon work arrive the</text>
+  <text x="960" y="540" font-size="12" fill="#64748b">same way.</text>
+
+  <!-- ============ SECTION 2: ARCHITECTURE ============ -->
+  <line x1="60" y1="590" x2="1340" y2="590" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="60" y="630" font-size="20" font-weight="bold" fill="#0f172a">2 &#183; How the technology connects</text>
+
+  <!-- Client -->
+  <rect x="60" y="656" width="560" height="212" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2.5"/>
+  <text x="80" y="684" font-size="16" font-weight="bold" fill="#1e3a8a">Browser &#8212; React single-page app</text>
+  <text x="80" y="704" font-size="12" fill="#1e40af">HTML structure &#183; CSS (responsive, color-coded classes, animations)</text>
+  <g font-size="12" fill="#1e3a8a">
+    <rect x="80" y="716" width="120" height="26" rx="13" fill="#ffffff" stroke="#93c5fd"/><text x="140" y="733" text-anchor="middle">Login / Register</text>
+    <rect x="208" y="716" width="100" height="26" rx="13" fill="#ffffff" stroke="#93c5fd"/><text x="258" y="733" text-anchor="middle">Dashboard</text>
+    <rect x="316" y="716" width="130" height="26" rx="13" fill="#ffffff" stroke="#93c5fd"/><text x="381" y="733" text-anchor="middle">AssignmentDetail</text>
+    <rect x="454" y="716" width="110" height="26" rx="13" fill="#ffffff" stroke="#93c5fd"/><text x="509" y="733" text-anchor="middle">AssignmentCard</text>
+    <rect x="80" y="750" width="100" height="26" rx="13" fill="#ffffff" stroke="#93c5fd"/><text x="130" y="767" text-anchor="middle">ClassFilter</text>
+    <rect x="188" y="750" width="170" height="26" rx="13" fill="#ffffff" stroke="#93c5fd"/><text x="273" y="767" text-anchor="middle">TimeDistributionChart</text>
+    <rect x="366" y="750" width="120" height="26" rx="13" fill="#ffffff" stroke="#93c5fd"/><text x="426" y="767" text-anchor="middle">TimeLogModal</text>
+  </g>
+  <text x="80" y="806" font-size="12" fill="#1e40af">React Router moves between views &#183; state updates re-render instantly</text>
+  <text x="80" y="826" font-size="12" fill="#1e40af">fetch() calls the service &#183; a WebSocket stays open on the detail view</text>
+  <text x="80" y="852" font-size="11" fill="#1d4ed8" font-style="italic">Bundle (HTML/CSS/JS) is built by Vite and served as static files by Caddy</text>
+
+  <!-- arrows client <-> server -->
+  <line x1="200" y1="872" x2="200" y2="984" stroke="#334155" stroke-width="2.5" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="212" y="916" font-size="12" font-weight="bold" fill="#334155">HTTPS &#183; JSON</text>
+  <text x="212" y="934" font-size="11" fill="#475569">fetch /api/&#8230;</text>
+  <line x1="470" y1="872" x2="470" y2="984" stroke="#c026d3" stroke-width="2.5" stroke-dasharray="7 4" marker-start="url(#am)" marker-end="url(#am)"/>
+  <text x="482" y="916" font-size="12" font-weight="bold" fill="#a21caf">WebSocket (wss)</text>
+  <text x="482" y="934" font-size="11" fill="#a21caf">live stats + reminders</text>
+
+  <!-- Data flow panel -->
+  <rect x="680" y="656" width="660" height="300" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="700" y="684" font-size="16" font-weight="bold" fill="#0f172a">The trip a piece of data takes</text>
+  <g font-size="13" fill="#334155">
+    <text x="700" y="712"><tspan font-weight="bold">1.</tspan> Register / log in &#8594; password hashed, stored in MongoDB, auth cookie set.</text>
+    <text x="700" y="746"><tspan font-weight="bold">2.</tspan> Student pastes their Canvas iCal URL &#8594; service fetches the .ics feed,</text>
+    <text x="722" y="764">parses it, and saves one assignment record per event under that user.</text>
+    <text x="700" y="798"><tspan font-weight="bold">3.</tspan> Dashboard requests the assignment list; service returns it sorted by due</text>
+    <text x="722" y="816">date or grouped by class. Custom assignments are POSTed the same way.</text>
+    <text x="700" y="850"><tspan font-weight="bold">4.</tspan> Checking a box sends the completion + minutes spent to the service.</text>
+    <text x="700" y="884"><tspan font-weight="bold">5.</tspan> Service recomputes that assignment&#8217;s time distribution and broadcasts it</text>
+    <text x="722" y="902">to every client currently watching that assignment.</text>
+    <text x="700" y="936"><tspan font-weight="bold">6.</tspan> A timer checks for approaching deadlines &#8594; SendGrid email + live alert.</text>
+  </g>
+
+  <!-- Caddy / EC2 -->
+  <rect x="60" y="984" width="580" height="342" rx="10" fill="#f0fdf4" stroke="#15803d" stroke-width="2.5" stroke-dasharray="8 5"/>
+  <text x="80" y="1010" font-size="15" font-weight="bold" fill="#14532d">AWS EC2 &#183; Caddy web server (HTTPS, static files, reverse proxy)</text>
+
+  <rect x="80" y="1026" width="540" height="282" rx="8" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+  <text x="100" y="1054" font-size="16" font-weight="bold" fill="#14532d">Node.js + Express service</text>
+  <g font-size="12.5" fill="#166534" font-family="Menlo, Consolas, monospace">
+    <text y="1082"><tspan x="100" font-weight="bold">POST</tspan><tspan x="142">/api/auth/register &#183; /login &#183; /logout</tspan></text>
+    <text y="1108"><tspan x="100" font-weight="bold">POST</tspan><tspan x="142">/api/ical</tspan><tspan x="380" fill="#3f8a52">store + parse Canvas feed</tspan></text>
+    <text y="1134"><tspan x="100" font-weight="bold">GET</tspan><tspan x="142">/api/assignments</tspan><tspan x="380" fill="#3f8a52">sorted / grouped list</tspan></text>
+    <text y="1160"><tspan x="100" font-weight="bold">POST</tspan><tspan x="142">/api/assignments</tspan><tspan x="380" fill="#3f8a52">custom assignment</tspan></text>
+    <text y="1186"><tspan x="100" font-weight="bold">PUT</tspan><tspan x="142">/api/assignments/:id/complete</tspan><tspan x="380" fill="#3f8a52">+ minutes spent</tspan></text>
+    <text y="1212"><tspan x="100" font-weight="bold">GET</tspan><tspan x="142">/api/assignments/:id/stats</tspan><tspan x="380" fill="#3f8a52">time distribution</tspan></text>
+    <text y="1238"><tspan x="100" font-weight="bold">WS</tspan><tspan x="142">/ws</tspan><tspan x="380" fill="#3f8a52">broadcast stats + reminders</tspan></text>
+  </g>
+  <line x1="100" y1="1254" x2="600" y2="1254" stroke="#86efac" stroke-width="2"/>
+  <text x="100" y="1276" font-size="12" fill="#166534">Auth middleware guards every /api/assignments route.</text>
+  <text x="100" y="1296" font-size="12" fill="#166534">Scheduled job scans for due-soon assignments each hour.</text>
+
+  <!-- externals -->
+  <rect x="760" y="1026" width="300" height="86" rx="8" fill="#f3e8ff" stroke="#7e22ce" stroke-width="2"/>
+  <text x="780" y="1054" font-size="15" font-weight="bold" fill="#581c87">Canvas iCal feed</text>
+  <text x="780" y="1076" font-size="12" fill="#6b21a8">third party &#183; .ics calendar export</text>
+  <text x="780" y="1096" font-size="12" fill="#6b21a8">read on link setup and on refresh</text>
+  <line x1="646" y1="1069" x2="754" y2="1069" stroke="#7e22ce" stroke-width="2.5" marker-start="url(#ap)" marker-end="url(#ap)"/>
+  <text x="650" y="1060" font-size="11" fill="#7e22ce">GET .ics</text>
+
+  <rect x="760" y="1150" width="300" height="86" rx="8" fill="#f3e8ff" stroke="#7e22ce" stroke-width="2"/>
+  <text x="780" y="1178" font-size="15" font-weight="bold" fill="#581c87">SendGrid API</text>
+  <text x="780" y="1200" font-size="12" fill="#6b21a8">third party &#183; mail/send</text>
+  <text x="780" y="1220" font-size="12" fill="#6b21a8">deadline reminder emails</text>
+  <line x1="646" y1="1193" x2="754" y2="1193" stroke="#7e22ce" stroke-width="2.5" marker-end="url(#ap)"/>
+  <text x="650" y="1184" font-size="11" fill="#7e22ce">POST mail</text>
+
+  <!-- DB -->
+  <line x1="350" y1="1332" x2="350" y2="1376" stroke="#334155" stroke-width="2.5" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="362" y="1362" font-size="12" fill="#334155">Mongo driver</text>
+
+  <rect x="80" y="1380" width="560" height="136" rx="10" fill="#fef3c7" stroke="#b45309" stroke-width="2.5"/>
+  <text x="100" y="1408" font-size="16" font-weight="bold" fill="#78350f">MongoDB Atlas</text>
+  <g font-size="12.5" fill="#92400e">
+    <text y="1432"><tspan x="100" font-weight="bold">users</tspan><tspan x="196">email, hashed password, auth token</tspan></text>
+    <text y="1454"><tspan x="100" font-weight="bold">icalSources</tspan><tspan x="196">each user&#8217;s Canvas feed URL + last sync</tspan></text>
+    <text y="1476"><tspan x="100" font-weight="bold">assignments</tspan><tspan x="196">title, class, due date, owner, completed flag</tspan></text>
+    <text y="1498"><tspan x="100" font-weight="bold">completions</tspan><tspan x="196">assignment, user, minutes spent &#8212; feeds the distribution</tspan></text>
+  </g>
+
+  <text x="700" y="1290" font-size="13" font-weight="bold" fill="#0f172a">Legend</text>
+  <rect x="700" y="1302" width="16" height="16" rx="3" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/><text x="724" y="1315" font-size="12" fill="#334155">client</text>
+  <rect x="790" y="1302" width="16" height="16" rx="3" fill="#dcfce7" stroke="#15803d" stroke-width="2"/><text x="814" y="1315" font-size="12" fill="#334155">service</text>
+  <rect x="886" y="1302" width="16" height="16" rx="3" fill="#fef3c7" stroke="#b45309" stroke-width="2"/><text x="910" y="1315" font-size="12" fill="#334155">database</text>
+  <rect x="994" y="1302" width="16" height="16" rx="3" fill="#f3e8ff" stroke="#7e22ce" stroke-width="2"/><text x="1018" y="1315" font-size="12" fill="#334155">third party</text>
+  <line x1="1110" y1="1310" x2="1150" y2="1310" stroke="#c026d3" stroke-width="2.5" stroke-dasharray="7 4"/><text x="1158" y="1315" font-size="12" fill="#334155">WebSocket</text>
+</svg>

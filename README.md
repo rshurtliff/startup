@@ -24,3 +24,12 @@ Every BYU student needs a way to track everything due across their classes, and 
   - Register, login, and logout users. Credentials securely stored in database. Can't view a dashboard unless authenticated.
 - **DB** - Store user accounts and credentials, each user's iCal source, parsed assignments, and completion status/logged times in the database.
 - **WebSocket** - As other students log how long an assignment took them, anyone currently viewing that assignment's detail page sees the time-distribution chart update live, without refreshing. Deadline reminder alerts are also pushed to the dashboard in real time as they approach.
+
+## Design Sketch
+
+![Design sketch of the assignment tracker: login, dashboard, and assignment detail views, plus the architecture connecting the React client, Express service, MongoDB, the Canvas iCal feed, and SendGrid](designSketch.png)
+
+The top row sketches the three main views: **login/register**, the **dashboard** (assignments pulled from Canvas, color-coded by class and sorted by due date, with the time-logging prompt that fires the instant a box is checked), and the **assignment detail** view with its live time-distribution chart.
+
+The bottom half shows how the pieces connect. The React client talks to the Express service two ways: ordinary HTTPS calls for reading and writing assignments, and an open WebSocket that pushes new time data and deadline alerts down to anyone currently viewing an assignment. The service is the only thing that touches MongoDB, the student's Canvas iCal feed, and the SendGrid API.
+
