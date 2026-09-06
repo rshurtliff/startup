@@ -9,7 +9,7 @@ The feature that makes this more than a glorified to-do list is the time trackin
 
 *Optional Layer for added complexity*: On top of the individual tracking, there is a social layer. Students can see how many assignments their friends have completed, compare progress by class, and see which assignments they have in common. Combined with the time data, that turns the app into something people actually want to open, not just another tool they forget about a week into the semester.
 
-### Plan to use each skill / technology:
+## Plan to use each skill / technology:
 - **HTML** - Uses correct HTML structure for application. Pages/views for dashboard, class detail/assignment detail, and login/register. Semantic elements for assignment lists, the iCal-link setup form, and the time-logging modal.
 - **CSS** - Application styling that looks good on different screen sizes. Color-coded classes, due-soon highlighting on the dashboard, and animated transitions for checking off assignments and the time-distribution chart rendering.
 - **React** - Provides login, dashboard display, checking off assignments, time-logging prompts, and backend endpoint calls. Componentized into pieces like AssignmentCard, ClassFilter, and TimeDistributionChart, with routing between the Dashboard and Assignment Detail views. Reactive to user actions — checking off an assignment instantly triggers the time-logging prompt without a page reload.
