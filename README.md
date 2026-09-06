@@ -1,4 +1,4 @@
-# Startup Specification
+# Startup Specification: BYU Student Homework Tracker
 
 ## Elevator Pitch
 Every BYU student needs a way to track everything due across their classes, and the tools already out there don't cut it — Canvas buries assignments in course-by-course lists, and Learning Suite is being phased out entirely. My idea pulls a student's assignments straight from their Canvas iCal feed into one clean dashboard, where they can check things off and get reminders as deadlines close in. What sets it apart from a glorified to-do list is time tracking: once a student marks an assignment done, the app asks how long it actually took, and that data builds into a live distribution anyone can see before they start. Instead of guessing whether a problem set takes thirty minutes or three hours, a student can see what it actually took everyone else.
