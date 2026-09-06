@@ -9,6 +9,14 @@ The feature that makes this more than a glorified to-do list is the time trackin
 
 *Optional Layer for added complexity*: On top of the individual tracking, there is a social layer. Students can see how many assignments their friends have completed, compare progress by class, and see which assignments they have in common. Combined with the time data, that turns the app into something people actually want to open, not just another tool they forget about a week into the semester.
 
+## List of Key Features
+1. Ability to load all assignments from Canvas
+2. Ability to add custom assignments
+3. Ability to sort assignments by class, due date, etc.
+4. Be able to check off assignments
+5. Upon completion, user is prompted to enter the time spent
+6. Ability to view a summary of time spent by others on each assignment
+
 ## Plan to use each skill / technology:
 - **HTML** - Uses correct HTML structure for application. Pages/views for dashboard, class detail/assignment detail, and login/register. Semantic elements for assignment lists, the iCal-link setup form, and the time-logging modal.
 - **CSS** - Application styling that looks good on different screen sizes. Color-coded classes, due-soon highlighting on the dashboard, and animated transitions for checking off assignments and the time-distribution chart rendering.
