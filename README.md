@@ -1,13 +1,7 @@
 # Startup Specification
 
-## Initial Idea (from the application page)
-Every BYU student needs a way to track everything due across their classes, and the tools already out there do not cut it. Canvas buries assignments in course by course lists, and Learning Suite is being phased out entirely. My idea is a web app that pulls a student's assignments directly from their Canvas iCal feed, stores everything in one place, and lets them check things off as they go.
-
-The core of the app is simple. A student pastes in their iCal link once, the backend parses it and stores every assignment in a MongoDB database, and the student sees a clean dashboard of what is due and when. They can check assignments off as they finish them, and the app sends reminders as deadlines get close.
-
-The feature that makes this more than a glorified to-do list is the time tracking. After a student checks off an assignment, the app asks how long it actually took. Once enough students have logged their time on a given assignment, anyone viewing that assignment can see a distribution of how long it took other people, not just a title and a due date. That is the real value here. Instead of guessing whether a problem set will take thirty minutes or three hours, a student can see what it actually took everyone else.
-
-*Optional Layer for added complexity*: On top of the individual tracking, there is a social layer. Students can see how many assignments their friends have completed, compare progress by class, and see which assignments they have in common. Combined with the time data, that turns the app into something people actually want to open, not just another tool they forget about a week into the semester.
+## Elevaytor Pitch
+Every BYU student needs a way to track everything due across their classes, and the tools already out there don't cut it — Canvas buries assignments in course-by-course lists, and Learning Suite is being phased out entirely. My idea pulls a student's assignments straight from their Canvas iCal feed into one clean dashboard, where they can check things off and get reminders as deadlines close in. What sets it apart from a glorified to-do list is time tracking: once a student marks an assignment done, the app asks how long it actually took, and that data builds into a live distribution anyone can see before they start. Instead of guessing whether a problem set takes thirty minutes or three hours, a student can see what it actually took everyone else.
 
 ## List of Key Features
 1. Ability to load all assignments from Canvas
