@@ -8,4 +8,7 @@ To get into the server run this:
 My elastic IP address:
 100.57.209.154
 
+Working directory:
+cd Desktop/Fall\ 2026/CS\ 260/startup/
+
 The key is located in ~/.ssh locally for future reference.
