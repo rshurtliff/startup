@@ -3,7 +3,9 @@
 Elastic IP addrss and terminate the server after the class. For now, the cost to leave it running is the same as keeping the IP address.
 
 To get into the server run this:
-```➜  ssh -i [key pair file] ubuntu@[ip address]```
+```ssh -i ~/.ssh/production.pem ubuntu@100.57.209.154```
 
 My elastic IP address:
 100.57.209.154
+
+The key is located in ~/.ssh locally for future reference.
