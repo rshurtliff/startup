@@ -1,1 +1,9 @@
-I love web programming
+**Setting up AWS EC2 Server**
+- I set up the server and assigned an elastic IP address. For now it's the cheapest server, a t3.nano. Remember to cancel the 
+Elastic IP addrss and terminate the server after the class. For now, the cost to leave it running is the same as keeping the IP address.
+
+To get into the server run this:
+```➜  ssh -i [key pair file] ubuntu@[ip address]```
+
+My elastic IP address:
+100.57.209.154
