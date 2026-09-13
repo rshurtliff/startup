@@ -8,6 +8,9 @@ To get into the server run this:
 My elastic IP address:
 100.57.209.154
 
+My DNS Domain:
+cs260hwtrackr.click
+
 Working directory:
 cd Desktop/Fall\ 2026/CS\ 260/startup/
 
