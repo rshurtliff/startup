@@ -19,8 +19,10 @@ cd Desktop/Fall\ 2026/CS\ 260/startup/
 
 
 
-HTML Notes:
-# HTML Notes
+
+9/18/26
+# HTML Notes 9/18/26
+
 
 ## What HTML Is
 
