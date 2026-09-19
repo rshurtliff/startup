@@ -1,6 +1,25 @@
-# Specification Deliverable
-## What's New (for the TA's)
+# What's New (for the TA's)
 - Deployed Files for Simon, per assignments in the Simon HTML module in MasteryLS
+- Added Startup HTL Deliverable
+
+
+# Startup HTML Deliverable
+## Rubric
+- 20% HTML pages for each component of your application
+- 10% Proper use of HTML tags including BODY, NAV, MAIN, HEADER, FOOTER
+- 10% Links between pages as necessary
+- 10% Application textual content
+- 10% Placeholder for 3rd party service calls
+- 10% Application images
+- 10% Login placeholder, including user name display
+- 10% Database data placeholder showing content stored in the database
+- 10% WebSocket data placeholder showing where realtime communication will go
+
+
+
+
+
+# Specification Deliverable
 
 ## Elevator Pitch: BYU Student Homework Tracker
 Every BYU student needs a way to track everything due across their classes, and the tools already out there don't cut it. Canvas buries assignments in course-by-course lists, and Learning Suite is being phased out entirely. My idea pulls a student's assignments straight from their Canvas iCal feed into one clean dashboard, where they can check things off and get reminders as deadlines close in. What sets it apart from a glorified to-do list is time tracking: once a student marks an assignment done, the app asks how long it actually took, and that data builds into a live distribution anyone can see before they start. Instead of guessing whether a problem set takes thirty minutes or three hours, a student can see what it actually took everyone else.
