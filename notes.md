@@ -14,7 +14,10 @@ https://cs260hwtrackr.click/index.html
 Working directory:
 cd Desktop/Fall\ 2026/CS\ 260/startup/
 
-The key is located in ~/.ssh locally for future reference.
+## PEM Key Local Filepath:
+- /Users/ryanshurtliff/.ssh/production.pem
+
+
 
 HTML Notes:
 # HTML Notes
