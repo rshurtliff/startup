@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trackr - Assignment Detail</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>Trackr for Students</h1>
+
+      <!-- Login placeholder. The name comes from the authenticated user once
+           the service and database are wired up. -->
+      <p>Signed in as <span>ryan.shurtliff</span> | <a href="index.html">Logout</a></p>
+
+      <nav>
+        <menu>
+          <li><a href="index.html">Login</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="assignment.html">Assignment Detail</a></li>
+          <li><a href="settings.html">Settings</a></li>
+        </menu>
+      </nav>
+    </header>
+
+    <main>
+      <p><a href="dashboard.html">Back to dashboard</a></p>
+
+      <!-- Database placeholder. This assignment record was parsed out of the
+           Canvas iCal feed and stored in MongoDB. -->
+      <section>
+        <h2>Startup HTML Deliverable</h2>
+        <p>CS 260, Web Programming</p>
+
+        <dl>
+          <dt>Due</dt>
+          <dd>Sep 22, 2026 at 11:59 PM</dd>
+
+          <dt>Status</dt>
+          <dd>Not started</dd>
+
+          <dt>Source</dt>
+          <dd>Pulled from Canvas</dd>
+
+          <dt>Points</dt>
+          <dd>100</dd>
+        </dl>
+
+        <p>
+          Build the HTML for your startup application. Every page your final app
+          needs, with placeholders for the technology you have not written yet.
+        </p>
+        <p><a href="https://byu.instructure.com">Open in Canvas</a></p>
+      </section>
+
+      <!-- WebSocket placeholder. The chart below redraws on its own as other
+           students finish this assignment and log their times. Anyone with
+           this page open sees the update without refreshing. -->
+      <section>
+        <h2>How Long It Takes</h2>
+
+        <figure>
+          <img
+            src="chartPlaceholder.jpg"
+            alt="Histogram of how many hours students spent on this assignment"
+            width="400"
+          />
+          <figcaption>
+            Time spent by the 34 students who have finished this assignment.
+          </figcaption>
+        </figure>
+
+        <!-- Database placeholder. The service adds up every logged time for
+             this assignment and returns these buckets. -->
+        <table>
+          <thead>
+            <tr>
+              <th>Hours Spent</th>
+              <th>Students</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Under 1</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>1 to 2</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>2 to 3</td>
+              <td>12</td>
+            </tr>
+            <tr>
+              <td>3 to 4</td>
+              <td>9</td>
+            </tr>
+            <tr>
+              <td>Over 4</td>
+              <td>4</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ul>
+          <li>Average: 3.2 hours</li>
+          <li>Median: 2.9 hours</li>
+          <li>Longest: 6.5 hours</li>
+        </ul>
+
+        <p>
+          Updating live. Tyler M. logged 2.75 hours about a minute ago.
+        </p>
+      </section>
+
+      <!-- Time logging placeholder. Checking the box writes the completion and
+           the hours to the database, then pushes the new number out over the
+           WebSocket to everyone viewing this page. -->
+      <section>
+        <h2>Mark It Done</h2>
+
+        <form method="get" action="dashboard.html">
+          <div>
+            <input type="checkbox" id="complete" name="complete" />
+            <label for="complete">I finished this assignment</label>
+          </div>
+          <div>
+            <label for="hours">How long did it take you?</label>
+            <input type="number" id="hours" name="hours" min="0" step="0.25" placeholder="3" />
+            <span>hours</span>
+          </div>
+          <div>
+            <label for="note">Anything worth telling the next person?</label>
+            <textarea id="note" name="note" rows="3" cols="50" placeholder="Start early, the deployment script took me longer than the HTML."></textarea>
+          </div>
+          <button type="submit">Save</button>
+        </form>
+      </section>
+
+      <!-- Database placeholder. Notes other students left when they logged
+           their time. -->
+      <section>
+        <h2>Notes From Other Students</h2>
+
+        <ul>
+          <li>
+            Kate D. spent 2.5 hours.
+            Write the page plan first, it makes the nav bar trivial.
+          </li>
+          <li>
+            Tyler M. spent 2.75 hours.
+            The placeholders are the whole point, do not try to make it pretty.
+          </li>
+          <li>
+            Sam R. spent 4 hours.
+            Most of my time went to getting it deployed, not writing HTML.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <hr />
+      <p>Ryan Shurtliff</p>
+      <p>
+        <a href="https://github.com/rshurtliff/startup">GitHub Repository</a>
+      </p>
+    </footer>
+  </body>
+</html>
