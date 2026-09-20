@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trackr - Login</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>Trackr for Students </h1>
+      <p>Every assignment from every class, in one place.</p>
+
+      <nav>
+        <menu>
+          <li><a href="index.html">Login</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="assignment.html">Assignment Detail</a></li>
+          <li><a href="settings.html">Settings</a></li>
+        </menu>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <h2>Sign in</h2>
+
+        <!-- Login placeholder. React will replace this with a real form that
+             calls the service, and the service will check the credentials
+             against the database. -->
+        <form method="get" action="dashboard.html">
+          <div>
+            <label for="netid">BYU Net ID</label>
+            <input type="text" id="netid" name="netid" placeholder="your-netid" required />
+          </div>
+          <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="password" required />
+          </div>
+          <div>
+            <button type="submit">Login</button>
+            <button type="submit">Create Account</button>
+          </div>
+        </form>
+
+        <p>
+          Once you are signed in, your assignments load automatically from your
+          Canvas calendar feed. You can also add your own assignments for things
+          Canvas does not track.
+        </p>
+      </section>
+
+      <section>
+        <h2>What you get</h2>
+        <ul>
+          <li>All of your assignments pulled from Canvas into one list</li>
+          <li>Sort by class, due date, or how much is left to do</li>
+          <li>Check an assignment off and log how long it actually took</li>
+          <li>See how long the assignment took everyone else before you start</li>
+          <li>Email reminders as a deadline gets close</li>
+        </ul>
+
+        <figure>
+          <img
+            src="designSketch.png"
+            alt="Design sketch showing the login, dashboard, and assignment detail views"
+            width="300"
+          />
+          <figcaption>The three main views of HW Trackr.</figcaption>
+        </figure>
+      </section>
+    </main>
+
+    <footer>
+      <hr />
+      <p>Ryan Shurtliff</p>
+      <p>
+        <a href="https://github.com/rshurtliff/startup">GitHub Repository</a>
+      </p>
+    </footer>
+  </body>
+</html>
