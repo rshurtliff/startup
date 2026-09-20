@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trackr - Dashboard</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>Trackr for Students</h1>
+
+      <!-- Login placeholder. The name comes from the authenticated user once
+           the service and database are wired up. -->
+      <p>Signed in as <span>ryan.shurtliff</span> | <a href="index.html">Logout</a></p>
+
+      <nav>
+        <menu>
+          <li><a href="index.html">Login</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="assignment.html">Assignment Detail</a></li>
+          <li><a href="settings.html">Settings</a></li>
+        </menu>
+      </nav>
+    </header>
+
+    <main>
+      <!-- WebSocket placeholder. Deadline alerts and other students' logged
+           times get pushed here in real time. No refresh. -->
+      <section>
+        <h2>Live Alerts</h2>
+        <ul>
+          <li>Due in 4 hours: CS 260 Startup HTML</li>
+          <li>Kate D. just logged 2.5 hours on FIN 401 Problem Set 4</li>
+          <li>3 classmates are working on MCOM 320 Memo right now</li>
+        </ul>
+        <p>WebSocket connected. Alerts appear as they happen.</p>
+      </section>
+
+      <section>
+        <h2>My Assignments</h2>
+
+        <form method="get" action="dashboard.html">
+          <label for="class-filter">Class</label>
+          <select id="class-filter" name="class">
+            <option value="all">All classes</option>
+            <option value="cs260">CS 260</option>
+            <option value="fin401">FIN 401</option>
+            <option value="mcom320">MCOM 320</option>
+            <option value="rela275">REL A 275</option>
+          </select>
+
+          <label for="sort">Sort by</label>
+          <select id="sort" name="sort">
+            <option value="due">Due date</option>
+            <option value="class">Class</option>
+            <option value="time">Estimated time</option>
+          </select>
+
+          <button type="submit">Apply</button>
+        </form>
+
+        <!-- Database placeholder. Every row below comes out of MongoDB. The
+             checkbox state and the logged time are written back to it. -->
+        <table>
+          <thead>
+            <tr>
+              <th>Done</th>
+              <th>Class</th>
+              <th>Assignment</th>
+              <th>Due</th>
+              <th>Class Average</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td>CS 260</td>
+              <td><a href="assignment.html">Startup HTML Deliverable</a></td>
+              <td>Sep 22, 11:59 PM</td>
+              <td>3.2 hrs</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td>FIN 401</td>
+              <td><a href="assignment.html">Problem Set 4</a></td>
+              <td>Sep 23, 11:59 PM</td>
+              <td>2.8 hrs</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td>MCOM 320</td>
+              <td><a href="assignment.html">Persuasive Memo Draft</a></td>
+              <td>Sep 24, 5:00 PM</td>
+              <td>1.5 hrs</td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" checked /></td>
+              <td>REL A 275</td>
+              <td><a href="assignment.html">Reading Journal Week 4</a></td>
+              <td>Sep 19, 11:59 PM</td>
+              <td>0.7 hrs</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Time logging prompt. React opens this the instant a box gets
+           checked, and the answer is saved to the database. Shown open here
+           so the placeholder is visible without JavaScript. -->
+      <dialog open>
+        <h2>Nice work</h2>
+        <p>How long did <strong>Reading Journal Week 4</strong> actually take you?</p>
+        <form method="get" action="dashboard.html">
+          <label for="hours">Time spent</label>
+          <input type="number" id="hours" name="hours" min="0" step="0.25" value="1" />
+          <span>hours</span>
+          <button type="submit">Save</button>
+          <button type="submit">Skip</button>
+        </form>
+      </dialog>
+
+      <section>
+        <h2>Add Your Own Assignment</h2>
+        <p>For anything your professor never put in Canvas.</p>
+
+        <form method="get" action="dashboard.html">
+          <div>
+            <label for="title">Assignment</label>
+            <input type="text" id="title" name="title" placeholder="Group project check-in" required />
+          </div>
+          <div>
+            <label for="course">Class</label>
+            <input type="text" id="course" name="course" placeholder="CS 260" required />
+          </div>
+          <div>
+            <label for="due">Due</label>
+            <input type="datetime-local" id="due" name="due" required />
+          </div>
+          <button type="submit">Add Assignment</button>
+        </form>
+      </section>
+
+      <!-- Third party service placeholders. Canvas supplies the iCal feed the
+           service parses, and SendGrid sends the reminder emails. -->
+      <section>
+        <h2>Connected Services</h2>
+        <ul>
+          <li>Canvas iCal feed: last synced 12 minutes ago, 47 assignments loaded</li>
+          <li>SendGrid email reminders: on, sent 24 hours before each deadline</li>
+        </ul>
+        <p><a href="settings.html">Manage your Canvas link and reminders</a></p>
+      </section>
+    </main>
+
+    <footer>
+      <hr />
+      <p>Ryan Shurtliff</p>
+      <p>
+        <a href="https://github.com/rshurtliff/startup">GitHub Repository</a>
+      </p>
+    </footer>
+  </body>
+</html>

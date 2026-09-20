@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trackr - Settings</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>Trackr for Students</h1>
+
+      <!-- Login placeholder. The name comes from the authenticated user once
+           the service and database are wired up. -->
+      <p>Signed in as <span>ryan.shurtliff</span> | <a href="index.html">Logout</a></p>
+
+      <nav>
+        <menu>
+          <li><a href="index.html">Login</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="assignment.html">Assignment Detail</a></li>
+          <li><a href="settings.html">Settings</a></li>
+        </menu>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Third party service placeholder. The service fetches this URL from
+           Canvas, parses the iCal feed, and writes the assignments it finds
+           into the database. -->
+      <section>
+        <h2>Canvas Calendar Link</h2>
+
+        <p>
+          This is what fills your dashboard. Paste your Canvas calendar feed
+          below and Trackr pulls in every assignment from every class you are
+          enrolled in.
+        </p>
+
+        <form method="get" action="dashboard.html">
+          <div>
+            <label for="ical">Canvas iCal feed URL</label>
+            <input
+              type="url"
+              id="ical"
+              name="ical"
+              placeholder="https://byu.instructure.com/feeds/calendars/user_xxxxxxxx.ics"
+              value="https://byu.instructure.com/feeds/calendars/user_a1b2c3d4e5.ics"
+              size="60"
+              required
+            />
+          </div>
+          <div>
+            <button type="submit">Save and Sync</button>
+            <button type="submit">Remove Link</button>
+          </div>
+        </form>
+
+        <h3>Where to find it</h3>
+        <ol>
+          <li>Open Canvas and click <strong>Calendar</strong> in the left sidebar.</li>
+          <li>Click <strong>Calendar Feed</strong> in the bottom right.</li>
+          <li>Copy the whole URL it gives you and paste it above.</li>
+        </ol>
+        <p>
+          The link is read only. Trackr can see your due dates and nothing else,
+          and it cannot make changes to your Canvas account.
+        </p>
+      </section>
+
+      <!-- Database placeholder. Sync history and the class list both come out
+           of MongoDB, written there by the service after it parses the feed. -->
+      <section>
+        <h2>Sync Status</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th>Assignments Found</th>
+              <th>Last Synced</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CS 260</td>
+              <td>14</td>
+              <td>12 minutes ago</td>
+            </tr>
+            <tr>
+              <td>FIN 401</td>
+              <td>11</td>
+              <td>12 minutes ago</td>
+            </tr>
+            <tr>
+              <td>MCOM 320</td>
+              <td>9</td>
+              <td>12 minutes ago</td>
+            </tr>
+            <tr>
+              <td>REL A 275</td>
+              <td>13</td>
+              <td>12 minutes ago</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>47 assignments loaded across 4 classes.</p>
+        <button type="button">Sync Now</button>
+      </section>
+
+      <!-- Third party service placeholder. These options control the reminder
+           emails the service sends through the SendGrid API. -->
+      <section>
+        <h2>Email Reminders</h2>
+
+        <form method="get" action="settings.html">
+          <div>
+            <label for="email">Send reminders to</label>
+            <input type="email" id="email" name="email" value="ryan.shurtliff@byu.edu" required />
+          </div>
+          <div>
+            <label for="lead-time">Remind me</label>
+            <select id="lead-time" name="lead-time">
+              <option value="24">24 hours before it is due</option>
+              <option value="48">2 days before it is due</option>
+              <option value="72">3 days before it is due</option>
+            </select>
+          </div>
+          <div>
+            <input type="checkbox" id="digest" name="digest" checked />
+            <label for="digest">Also send me a summary every Sunday night</label>
+          </div>
+          <button type="submit">Save Reminder Settings</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Account</h2>
+        <ul>
+          <li>Net ID: ryan.shurtliff</li>
+          <li>Account created: September 2026</li>
+          <li>Assignments completed: 23</li>
+          <li>Total time logged: 61.5 hours</li>
+        </ul>
+        <button type="button">Change Password</button>
+        <button type="button">Delete Account</button>
+      </section>
+    </main>
+
+    <footer>
+      <hr />
+      <p>Ryan Shurtliff</p>
+      <p>
+        <a href="https://github.com/rshurtliff/startup">GitHub Repository</a>
+      </p>
+    </footer>
+  </body>
+</html>
