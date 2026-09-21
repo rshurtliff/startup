@@ -6,16 +6,51 @@
 
 
 # Startup HTML Deliverable
-## Rubric
-- 20% HTML pages for each component of your application
-- 10% Proper use of HTML tags including BODY, NAV, MAIN, HEADER, FOOTER
-- 10% Links between pages as necessary
-- 10% Application textual content
-- 10% Placeholder for 3rd party service calls
-- 10% Application images
-- 10% Login placeholder, including user name display
-- 10% Database data placeholder showing content stored in the database
-- 10% WebSocket data placeholder showing where realtime communication will go
+
+Live site: [cs260hwtrackr.click](https://cs260hwtrackr.click)
+
+## What I Did For Each Rubric Item
+
+**20% HTML pages for each component of your application**
+
+Four pages, one for each part of the app.
+
+- `index.html` is the login and register page. It loads by default.
+- `dashboard.html` is the main view with the assignment list.
+- `assignment.html` is the detail view for a single assignment.
+- `settings.html` is where the Canvas calendar link and the email reminders get set up.
+
+**10% Proper use of HTML tags including BODY, NAV, MAIN, HEADER, FOOTER**
+
+All four pages share the same skeleton. The `header` holds the app name, the signed in user, and the `nav`. The `main` holds the content, split into `section` elements by topic. The `footer` has my name and a link to this repo. Inside that I used `table` with `thead` and `tbody` for the assignment lists, `dl` for the assignment details, `form` and `label` on every input, and `figure` with `figcaption` for the images.
+
+**10% Links between pages as necessary**
+
+The nav bar is on every page and links to every page. Past that, each assignment title on the dashboard opens the detail view, the detail view links back to the dashboard, the dashboard points to settings, and the login form sends you through to the dashboard. You can click through the entire app without a line of JavaScript.
+
+**10% Application textual content**
+
+None of it is filler. The login page explains what the app does and why I built it. The settings page walks through finding your Canvas calendar feed, since that is the step people actually get stuck on. The assignment page has a description, the stats, and notes other students left behind. The sample data uses the classes I am taking right now.
+
+**10% Placeholder for 3rd party service calls**
+
+Both of my services live on `settings.html`, with a summary on the dashboard under Connected Services. The Canvas iCal field is where a student pastes their calendar link, and the service will fetch that URL, parse it, and save every assignment it finds. The reminder settings below it control the deadline emails I will send through SendGrid.
+
+**10% Application images**
+
+`designSketch.png` sits on the login page and shows the three main views. `chartPlaceholder.jpg` on the assignment page stands in for the time distribution chart until React can render a real one. Both have alt text.
+
+**10% Login placeholder, including user name display**
+
+`index.html` has the net ID and password fields with Login and Create Account buttons. After that, every page shows "Signed in as ryan.shurtliff" in the header with a logout link next to it. The name is hardcoded for now. It will come from the authenticated user once the service is running.
+
+**10% Database data placeholder showing content stored in the database**
+
+Anything that would come out of MongoDB is already on the page. The dashboard has the assignment table, including the checkbox state and the class average. Settings has the sync table showing each class and how many assignments came back from Canvas. The detail page has the assignment record itself, the time distribution buckets, and the notes from other students.
+
+**10% WebSocket data placeholder showing where realtime communication will go**
+
+Live Alerts at the top of the dashboard is where deadline warnings and other students' activity get pushed the moment they happen. The time distribution chart on the assignment page is the other half of that. When somebody finishes the assignment and logs their hours, the chart redraws for everyone who has the page open, with no refresh. HTML comments mark both spots in the source.
 
 
 
