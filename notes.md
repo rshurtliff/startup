@@ -21,7 +21,36 @@ cd Desktop/Fall\ 2026/CS\ 260/startup/
 
 
 9/18/26
-# HTML Notes 9/18/26
+# HTML Areas to improve (from MasteryLS intitial GitHub Submission):
+Areas to improve
+Secure Form Methods
+In index.html, the login form uses the get method. This is a security risk because it appends the password to the URL in the browser history and server logs.
+
+<form method="get" action="dashboard.html">
+Change method="get" to method="post" for any forms handling sensitive user data like passwords.
+
+Accessible Table Inputs
+In dashboard.html, the checkboxes within the assignment table are not associated with labels or unique IDs, which makes them difficult for screen readers to navigate.
+
+<td><input type="checkbox" /></td>
+Assign a unique id to each checkbox and use an aria-label or a hidden label to describe what the checkbox does (e.g., "Mark Startup HTML Deliverable as complete").
+
+External Link Security
+In index.html and other footers, you link to your GitHub repository without specifying how the link should open.
+
+<a href="https://github.com/rshurtliff/startup">GitHub Repository</a>
+Add target="_blank" and rel="noopener noreferrer" to external links to improve user experience and prevent security vulnerabilities related to window hijacking.
+
+Navigation List Consistency
+In index.html, you used the <menu> element inside your <nav>. While valid, <menu> is typically intended for context menus or toolbars.
+
+<nav>
+  <menu>
+    <li><a href="index.html">Login</a></li>
+    ...
+  </menu>
+</nav>
+Consider using a standard unordered list (<ul>) for site-wide navigation, as it is the most common and widely supported pattern for screen readers.
 
 
 ## What HTML Is

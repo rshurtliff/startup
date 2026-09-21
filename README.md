@@ -1,8 +1,9 @@
 # What's New (for the TA's)
+- RESUBITTED **Startup AWS Deliverable**. Added section in this README below.
 - Deployed Files for Simon, per assignments in the Simon HTML module in MasteryLS
 - Added Startup HTML Deliverable
 - Added a deployment script for the Startup, not just Simon
-- Deployed initial HTML Deliverable, might revise later
+- Deployed initial HTML Deliverable
 
 
 # Startup HTML Deliverable
@@ -53,7 +54,9 @@ Anything that would come out of MongoDB is already on the page. The dashboard ha
 Live Alerts at the top of the dashboard is where deadline warnings and other students' activity get pushed the moment they happen. The time distribution chart on the assignment page is the other half of that. When somebody finishes the assignment and logs their hours, the chart redraws for everyone who has the page open, with no refresh. HTML comments mark both spots in the source.
 
 
-
+# Startup AWS Deliverable
+## Summary of What I did for the TA's
+I followed the instructions in MasteryLS and got my AWS server up and running. I added this section in response to the feedback I got from Denise on my initial submission. I had forgotten to configure the CaddyFile so that the links on the page correctly went to my page, so I went back and fixed that. The links for Simon and Startup are now both up and running.
 
 
 # Specification Deliverable
