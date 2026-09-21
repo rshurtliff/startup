@@ -1,6 +1,8 @@
 # What's New (for the TA's)
 - Deployed Files for Simon, per assignments in the Simon HTML module in MasteryLS
-- Added Startup HTL Deliverable
+- Added Startup HTML Deliverable
+- Added a deployment script for the Startup, not just Simon
+- Deployed initial HTML Deliverable, might revise later
 
 
 # Startup HTML Deliverable
