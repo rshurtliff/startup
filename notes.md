@@ -20,7 +20,7 @@ cd Desktop/Fall\ 2026/CS\ 260/startup/
 
 
 
-9/18/26
+9/18/26 (Used Claude to Make these Updates on 9/22/2026)
 # HTML Areas to improve (from MasteryLS intitial GitHub Submission):
 Areas to improve
 Secure Form Methods
@@ -184,9 +184,9 @@ Every page follows the same skeleton:
   <header>
     <h1>Trackr for Students</h1>
     <nav>
-      <menu>
+      <ul>
         <li><a href="dashboard.html">Dashboard</a></li>
-      </menu>
+      </ul>
     </nav>
   </header>
   <main>
@@ -196,7 +196,7 @@ Every page follows the same skeleton:
 </body>
 ```
 
-`menu` works like `ul` and still takes `li` items, but the name says the list is a set of commands or links. Either one is fine for a nav bar.
+I started with `menu` here instead of `ul`. It is valid and takes `li` items the same way, but `menu` is meant for toolbars and context menus. A nav bar should be a `ul`, since that is the pattern screen readers expect. I went back and changed all four pages.
 
 ## Placeholders
 
@@ -267,3 +267,21 @@ Not a problem since Simon gets graded from its own repo, but I should know which
 ## Commits
 
 The rubric wants dozens of commits spread over multiple days, and it says a thin history can get the submission rejected. Batching a day of work into one commit is the thing to avoid. One commit per change, pushed as I go.
+
+## Fixing the Feedback From My First Submission
+
+Four things came back on the initial GitHub submission. All of them were real.
+
+**GET versus POST.** My login form used `method="get"`, which puts whatever you typed into the URL. That means the password lands in browser history, in server logs, and in the referrer header sent to the next site. Anything that writes data or handles something private needs `method="post"`, where the values travel in the request body instead.
+
+I changed more than just the login form. The Canvas iCal URL on my settings page is an unguessable link that gives away a student's whole calendar, so that form should never have been a GET either. The one form I left alone is the class and sort filter on the dashboard, because a filter is a query, not a write. Putting it in the URL is the right behavior there since it makes the filtered view linkable.
+
+Before I changed it I checked that my server would still accept a POST to a plain `.html` file. It returns 200, so the click through still works with no backend.
+
+**Checkboxes need labels too.** The checkboxes in my assignment table were bare `<input type="checkbox" />` with nothing naming them. A sighted person knows what the box means from the row it sits in, but a screen reader reads the controls on their own and would just announce "checkbox" four times. Each one now has a unique `id` and an `aria-label` that says what it does, like "Mark Startup HTML Deliverable as complete." `aria-label` is for when the description should not be visible on screen, which is the case inside a table cell.
+
+**External links.** Links that leave my site now have `target="_blank"` so they open in a new tab, plus `rel="noopener noreferrer"`. Without `noopener` the page I link to can reach back through `window.opener` and redirect my tab somewhere else. `noreferrer` stops my URL from being sent along.
+
+**menu versus ul.** Covered above. Use `ul` for navigation.
+
+The pattern in all four is the same. The page looked fine in my browser, so I assumed it was fine. Valid HTML that renders correctly can still be insecure or unusable with a screen reader.
