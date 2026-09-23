@@ -221,3 +221,49 @@ Sessions save on their own to `~/.claude/projects/` as `.jsonl` files, one per s
 - `/export` writes the conversation out as readable text.
 
 Those files live outside the repo, so they never get pushed to GitHub.
+
+
+
+
+9/22/26
+# Finishing the HTML Deliverable 9/22/26
+
+## Tags I Had Not Used Before
+
+Writing the last three pages made me reach for tags I skipped in the reading.
+
+`dl` is a description list. It takes `dt` for the term and `dd` for the value, so it fits things like Due, Status, and Points better than a table with two columns does.
+
+`dialog` is a real popup element. It stays hidden until something opens it, but adding the `open` attribute forces it to show. I used that for the time logging prompt so the placeholder is visible before I have any JavaScript to open it.
+
+`figure` and `figcaption` wrap an image with its caption so the two stay attached to each other.
+
+For tables, `thead` and `tbody` split the header row off from the data rows. The table works without them, but it makes the structure obvious when I read the source later.
+
+## Input Types Do Real Work
+
+I assumed every input was `type="text"` with different labels. They are not. `type="url"` and `type="email"` make the browser check the format before it submits. `type="number"` with `step="0.25"` gives me quarter hour increments on the time field. `type="datetime-local"` opens a date and time picker for free.
+
+Every input needs a `label` whose `for` matches the input's `id`. That is what lets you click the label to focus the field, and it is how a screen reader knows what the input is asking for.
+
+## The Deploy Script Needed Changing
+
+The script from the Simon repo ends with `scp -r * ` which copies everything in the folder. That is right for Simon, where every file in the folder is part of the site. It is wrong for my startup folder, which also holds my README, my notes, and the whole simon-html directory.
+
+I narrowed it to `scp *.html *.png *.svg *.jpg` so only the site goes up. Using globs instead of listing filenames means new pages get picked up without touching the script again.
+
+## Subdomains
+
+The `-s` flag on the deploy script is not just a label. It picks the directory on the server, `services/<service>/public`, and that is what decides the subdomain. So `-s startup` puts my site at startup.cs260hwtrackr.click and `-s simon` puts Simon at simon.cs260hwtrackr.click. The `-h` flag is only the address used to SSH in.
+
+I had the README pointing at the root domain for a while. The assignment wants it on the startup subdomain.
+
+## simon-html Is Its Own Repo
+
+I tried to edit a file inside simon-html and git told me the path did not match any tracked file. It turns out simon-html has its own `.git` folder, because I cloned it inside my startup folder. My startup repo only stores a pointer to it, not the files. On GitHub that folder shows up grayed out and the TA cannot click into it.
+
+Not a problem since Simon gets graded from its own repo, but I should know which repo I am in before I run git commands.
+
+## Commits
+
+The rubric wants dozens of commits spread over multiple days, and it says a thin history can get the submission rejected. Batching a day of work into one commit is the thing to avoid. One commit per change, pushed as I go.
