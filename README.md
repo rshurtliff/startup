@@ -8,7 +8,7 @@
 
 # Startup HTML Deliverable
 
-Live site: [cs260hwtrackr.click](https://cs260hwtrackr.click)
+Live site: [startup.cs260hwtrackr.click](https://startup.cs260hwtrackr.click)
 
 ## What I Did For Each Rubric Item
 
