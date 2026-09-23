@@ -15,12 +15,12 @@
       <p>Signed in as <span>ryan.shurtliff</span> | <a href="index.html">Logout</a></p>
 
       <nav>
-        <menu>
+        <ul>
           <li><a href="index.html">Login</a></li>
           <li><a href="dashboard.html">Dashboard</a></li>
           <li><a href="assignment.html">Assignment Detail</a></li>
           <li><a href="settings.html">Settings</a></li>
-        </menu>
+        </ul>
       </nav>
     </header>
 
@@ -74,28 +74,53 @@
           </thead>
           <tbody>
             <tr>
-              <td><input type="checkbox" /></td>
+              <td>
+                <input
+                  type="checkbox"
+                  id="done-cs260-startup-html"
+                  aria-label="Mark Startup HTML Deliverable as complete"
+                />
+              </td>
               <td>CS 260</td>
               <td><a href="assignment.html">Startup HTML Deliverable</a></td>
               <td>Sep 22, 11:59 PM</td>
               <td>3.2 hrs</td>
             </tr>
             <tr>
-              <td><input type="checkbox" /></td>
+              <td>
+                <input
+                  type="checkbox"
+                  id="done-fin401-problem-set-4"
+                  aria-label="Mark Problem Set 4 as complete"
+                />
+              </td>
               <td>FIN 401</td>
               <td><a href="assignment.html">Problem Set 4</a></td>
               <td>Sep 23, 11:59 PM</td>
               <td>2.8 hrs</td>
             </tr>
             <tr>
-              <td><input type="checkbox" /></td>
+              <td>
+                <input
+                  type="checkbox"
+                  id="done-mcom320-persuasive-memo"
+                  aria-label="Mark Persuasive Memo Draft as complete"
+                />
+              </td>
               <td>MCOM 320</td>
               <td><a href="assignment.html">Persuasive Memo Draft</a></td>
               <td>Sep 24, 5:00 PM</td>
               <td>1.5 hrs</td>
             </tr>
             <tr>
-              <td><input type="checkbox" checked /></td>
+              <td>
+                <input
+                  type="checkbox"
+                  id="done-rela275-reading-journal"
+                  aria-label="Mark Reading Journal Week 4 as complete"
+                  checked
+                />
+              </td>
               <td>REL A 275</td>
               <td><a href="assignment.html">Reading Journal Week 4</a></td>
               <td>Sep 19, 11:59 PM</td>
@@ -111,7 +136,7 @@
       <dialog open>
         <h2>Nice work</h2>
         <p>How long did <strong>Reading Journal Week 4</strong> actually take you?</p>
-        <form method="get" action="dashboard.html">
+        <form method="post" action="dashboard.html">
           <label for="hours">Time spent</label>
           <input type="number" id="hours" name="hours" min="0" step="0.25" value="1" />
           <span>hours</span>
@@ -124,7 +149,7 @@
         <h2>Add Your Own Assignment</h2>
         <p>For anything your professor never put in Canvas.</p>
 
-        <form method="get" action="dashboard.html">
+        <form method="post" action="dashboard.html">
           <div>
             <label for="title">Assignment</label>
             <input type="text" id="title" name="title" placeholder="Group project check-in" required />
@@ -157,7 +182,7 @@
       <hr />
       <p>Ryan Shurtliff</p>
       <p>
-        <a href="https://github.com/rshurtliff/startup">GitHub Repository</a>
+        <a href="https://github.com/rshurtliff/startup" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
       </p>
     </footer>
   </body>

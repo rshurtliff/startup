@@ -15,12 +15,12 @@
       <p>Signed in as <span>ryan.shurtliff</span> | <a href="index.html">Logout</a></p>
 
       <nav>
-        <menu>
+        <ul>
           <li><a href="index.html">Login</a></li>
           <li><a href="dashboard.html">Dashboard</a></li>
           <li><a href="assignment.html">Assignment Detail</a></li>
           <li><a href="settings.html">Settings</a></li>
-        </menu>
+        </ul>
       </nav>
     </header>
 
@@ -37,7 +37,7 @@
           enrolled in.
         </p>
 
-        <form method="get" action="dashboard.html">
+        <form method="post" action="dashboard.html">
           <div>
             <label for="ical">Canvas iCal feed URL</label>
             <input
@@ -114,7 +114,7 @@
       <section>
         <h2>Email Reminders</h2>
 
-        <form method="get" action="settings.html">
+        <form method="post" action="settings.html">
           <div>
             <label for="email">Send reminders to</label>
             <input type="email" id="email" name="email" value="ryan.shurtliff@byu.edu" required />
@@ -152,7 +152,7 @@
       <hr />
       <p>Ryan Shurtliff</p>
       <p>
-        <a href="https://github.com/rshurtliff/startup">GitHub Repository</a>
+        <a href="https://github.com/rshurtliff/startup" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
       </p>
     </footer>
   </body>
