@@ -30,6 +30,18 @@ Combinators show relationships. `section p` is any paragraph inside a section, `
 
 `a[href*="https"]` matches on an attribute, `section:hover` on state, and `*` grabs everything.
 
+## Responsive Design
+
+Phones lie about their width and scale the page down unless the head says otherwise:
+
+```html
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+```
+
+`display` decides how an element renders. `block` fills the parent, `inline` only fits its content, `none` keeps the element but draws nothing, and `flex` and `grid` resize their children on their own.
+
+`@media` applies rules conditionally, so `@media (orientation: portrait)` can hide or move things on a narrow screen.
+
 
 
 # HTML Areas to improve (from MasteryLS intitial GitHub Submission):
