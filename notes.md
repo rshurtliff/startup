@@ -5,6 +5,9 @@ Elastic IP addrss and terminate the server after the class. For now, the cost to
 To get into the server run this:
 ```ssh -i ~/.ssh/production.pem ubuntu@100.57.209.154```
 
+To push changes to the server, run this from the working directory:
+``` ./deployFiles.sh -k ~/.ssh/production.pem -h cs260hwtrackr.click -s startup ```
+
 My elastic IP address:
 100.57.209.154
 
@@ -17,12 +20,20 @@ cd Desktop/Fall\ 2026/CS\ 260/startup/
 ## PEM Key Local Filepath:
 - /Users/ryanshurtliff/.ssh/production.pem
 
+# CSS Notes:
+
+## Selectors
+
+A selector picks which elements a rule applies to. `p` grabs every paragraph, `.summary` every element carrying that class, `#physics` the one element with that id.
+
+Combinators show relationships. `section p` is any paragraph inside a section, `section > p` only direct children, `div + p` the paragraph right after a div, `div ~ p` any sibling after it.
+
+`a[href*="https"]` matches on an attribute, `section:hover` on state, and `*` grabs everything.
 
 
 
-9/18/26 (Used Claude to Make these Updates on 9/22/2026)
 # HTML Areas to improve (from MasteryLS intitial GitHub Submission):
-Areas to improve
+9/18/26 (Used Claude to Make these Updates on 9/22/2026)
 Secure Form Methods
 In index.html, the login form uses the get method. This is a security risk because it appends the password to the URL in the browser history and server logs.
 
