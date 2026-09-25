@@ -42,7 +42,15 @@ Phones lie about their width and scale the page down unless the head says otherw
 
 `@media` applies rules conditionally, so `@media (orientation: portrait)` can hide or move things on a narrow screen.
 
+## Simon CSS Notes
+Some things you might want to note include:
 
+Flex is used to delimit the header, main, and footer elements. This makes them responsive to different screen sizes.
+The use of absolute positioning relative to the parent element for the game controls.
+The selection based on class attributes to style elements.
+The override of Bootstrap in order to keep the menu from changing the flex direction to column on small screens.
+The use of @media selectors to hide content when the screen is too small.
+As the application gets more complicated we will break up the CSS into individual files that correspond to the component they style
 
 # HTML Areas to improve (from MasteryLS intitial GitHub Submission):
 9/18/26 (Used Claude to Make these Updates on 9/22/2026)
