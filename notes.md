@@ -43,14 +43,14 @@ Phones lie about their width and scale the page down unless the head says otherw
 `@media` applies rules conditionally, so `@media (orientation: portrait)` can hide or move things on a narrow screen.
 
 ## Simon CSS Notes
-Some things you might want to note include:
 
-Flex is used to delimit the header, main, and footer elements. This makes them responsive to different screen sizes.
-The use of absolute positioning relative to the parent element for the game controls.
-The selection based on class attributes to style elements.
-The override of Bootstrap in order to keep the menu from changing the flex direction to column on small screens.
-The use of @media selectors to hide content when the screen is too small.
-As the application gets more complicated we will break up the CSS into individual files that correspond to the component they style
+The CSS is split across files. `main.css` holds what every page shares, and `about.css`, `play.css`, and `scores.css` add only what that one page needs. Four small files are easier to work in than one long one, and it gets more true as the project grows.
+
+Flex lays out the header, main, and footer so the three resize together. The game pad is a grid, `grid-template-columns: 1fr 1fr`, with the controls sitting on top of it using absolute positioning relative to their parent. A `@media (max-height: 600px)` rule hides content once the window gets short.
+
+Simon also overrides Bootstrap so the menu does not flip to a column on a narrow screen. Worth remembering that a framework's defaults are just CSS and I can beat them with my own rule.
+
+It deploys with `-s simon`, which overwrites the HTML version of Simon on that subdomain. The tab has to say "Simon CSS" for the submission to count.
 
 # HTML Areas to improve (from MasteryLS intitial GitHub Submission):
 9/18/26 (Used Claude to Make these Updates on 9/22/2026)

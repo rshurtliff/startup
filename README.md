@@ -4,6 +4,9 @@
 - Added Startup HTML Deliverable
 - Added a deployment script for the Startup, not just Simon
 - Deployed initial HTML Deliverable
+- Deployed Simon CSS
+
+# Startup CSS Deliverable
 
 
 # Startup HTML Deliverable
