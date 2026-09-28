@@ -8,6 +8,7 @@
 - Started the Startup CSS Deliverable: added Bootstrap, the Inter font, and a shared `main.css` with the BYU color palette
 - Fixed the deploy script so it also uploads CSS and JavaScript files
 - Styled the header, navbar, and footer on every page. The nav collapses into a menu on phones
+- Styled the login page: two-column grid layout, Bootstrap sign-in card, and a checkmark feature list
 
 # Startup CSS Deliverable
 
@@ -16,11 +17,15 @@
 
 Every page has a navy BYU navbar across the top with a slight shadow, and the login page adds a navy to royal gradient banner for the tagline. The footer is white with a thin border, so it reads as separate from the gray page background.
 
+On the login page, the sign-in form sits in a white card with a navy stripe across the top. The feature list uses royal blue check marks, and the design sketch has a border and shadow so it doesn't blend into the background.
+
 **20% Use of a CSS framework such as Bootstrap**
 
 Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScript bundle for the collapsing nav. I didn't keep Bootstrap's default blue. At the top of `main.css` I point Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-body-font-family`, and the button variables) at BYU navy and royal, so any Bootstrap component I drop in already matches the rest of the site.
 
 The header on every page is a Bootstrap `navbar` with `navbar-expand-md`, a `navbar-toggler` button, and a `collapse` section, so the links fold into a menu on small screens. The page content sits in a Bootstrap `container`, which lines it up with the navbar. The Logout link is a `btn btn-outline-light`.
+
+The login form uses a Bootstrap `card`, `form-label` and `form-control` on the inputs, `mb-3` for spacing, and `btn btn-primary` / `btn btn-outline-primary` for Login and Create Account. Bootstrap hard-codes its own blue into the glow around a focused input, so I override that in `main.css` to use BYU royal on every form in the site.
 
 **20% All visual elements styled using CSS**
 
@@ -28,6 +33,9 @@ The header on every page is a Bootstrap `navbar` with `navbar-expand-md`, a `nav
 - **Nav links:** faded white until you hover over them or they are the current page, then full white with an underline.
 - **Signed in line:** the username is bold, and Logout is a small outlined button.
 - **Footer:** white bar with a top border and muted text.
+- **Login form:** card with a navy top stripe and shadow, full-width inputs, and matching Login and Create Account buttons.
+- **Feature list:** the default bullets are replaced with white check marks in royal circles.
+- **Design sketch:** bordered and shadowed, and it lifts slightly when you hover over it.
 
 **30% Responsive to window resizing using flexbox and/or grid display**
 
@@ -36,6 +44,8 @@ The header on every page is a Bootstrap `navbar` with `navbar-expand-md`, a `nav
 - **Media queries:** two of them in `main.css` change how the current page is marked. Wide screens get an underline, and the phone menu gets a white bar on the left.
 - **Footer:** a flex row with `flex-wrap`, so my name and the GitHub link sit on opposite sides and wrap onto two lines on a narrow screen.
 - **Tagline:** sized with `clamp()`, so it scales with the window.
+- **Login layout:** `.login-layout` is a CSS grid. On phones it is one column. At 768px and up it becomes two columns (`5fr 7fr`), with the sign-in card on the left and the features and sketch on the right. The card is `position: sticky`, so it stays in view while you scroll past the sketch.
+- **Login buttons:** a flex row where each button has `flex: 1 1 8rem`, so they split the width evenly and stack if the card gets too narrow.
 
 **10% Use of a imported font**
 
@@ -46,8 +56,8 @@ The whole site uses Inter, pulled from Google Fonts in the `head` of each page. 
 - **Element:** `body`, `h1` through `h3`, `a`, `img`, `hr`, and `main` set the base look.
 - **Class:** `.btn-primary` and `.btn-outline-primary` recolor Bootstrap's buttons. `.user-info`, `.username`, `.header-banner`, and `.site-footer` style the header and footer.
 - **ID:** each `body` has an id (`#page-dashboard`) and so does each nav link (`#nav-dashboard`). `#page-dashboard #nav-dashboard` only matches on the dashboard, which is how the current page gets highlighted without any JavaScript.
-- **Descendant:** `header .nav-link` and `.header-banner a` only reach elements inside those sections.
-- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`.
+- **Descendant:** `header .nav-link`, `.header-banner a`, and `.sketch img` only reach elements inside those sections.
+- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`. The check marks in the feature list are `li::before`, and `.form-control:focus` recolors the input glow.
 
 
 
