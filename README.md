@@ -9,8 +9,11 @@
 - Fixed the deploy script so it also uploads CSS and JavaScript files
 - Styled the header, navbar, and footer on every page. The nav collapses into a menu on phones
 - Styled the login page: two-column grid layout, Bootstrap sign-in card, and a checkmark feature list
+- Styled the dashboard: live alert cards, color-coded assignment table, time-logging prompt, and a sidebar for the forms
 
 # Startup CSS Deliverable
+
+**Note on the assignment detail page:** every assignment on the dashboard links to the same `assignment.html`, which always shows the Startup HTML Deliverable. That is on purpose. It is a shared template, and once React is in, one route (`/assignment/:id`) will fill it with whichever assignment you clicked.
 
 ## What I did for Each Rubric Item
 **10% Visually appealing colors and layout. No overflowing elements.**
@@ -19,6 +22,8 @@ Every page has a navy BYU navbar across the top with a slight shadow, and the lo
 
 On the login page, the sign-in form sits in a white card with a navy stripe across the top. The feature list uses royal blue check marks, and the design sketch has a border and shadow so it doesn't blend into the background.
 
+The dashboard color-codes every class. CS 260 is royal blue, FIN 401 is green, MCOM 320 is orange, and REL A 275 is purple. Each row has a colored stripe down its left edge and a tag in the same color. Anything due soon turns amber with a "Due soon" badge. I checked the dashboard at phone width and nothing runs off the page, since the table rows turn into small cards below 576px.
+
 **20% Use of a CSS framework such as Bootstrap**
 
 Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScript bundle for the collapsing nav. I didn't keep Bootstrap's default blue. At the top of `main.css` I point Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-body-font-family`, and the button variables) at BYU navy and royal, so any Bootstrap component I drop in already matches the rest of the site.
@@ -26,6 +31,8 @@ Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScrip
 The header on every page is a Bootstrap `navbar` with `navbar-expand-md`, a `navbar-toggler` button, and a `collapse` section, so the links fold into a menu on small screens. The page content sits in a Bootstrap `container`, which lines it up with the navbar. The Logout link is a `btn btn-outline-light`.
 
 The login form uses a Bootstrap `card`, `form-label` and `form-control` on the inputs, `mb-3` for spacing, and `btn btn-primary` / `btn btn-outline-primary` for Login and Create Account. Bootstrap hard-codes its own blue into the glow around a focused input, so I override that in `main.css` to use BYU royal on every form in the site.
+
+The dashboard uses Bootstrap `card` for the three panels, `form-select` for the filters, `table table-hover align-middle` inside a `table-responsive` wrapper for the assignment list, `form-check-input` for the checkboxes, and `badge` for the due soon tag. The Add Assignment button is `btn btn-primary w-100` so it fills its card.
 
 **20% All visual elements styled using CSS**
 
@@ -36,6 +43,11 @@ The login form uses a Bootstrap `card`, `form-label` and `form-control` on the i
 - **Login form:** card with a navy top stripe and shadow, full-width inputs, and matching Login and Create Account buttons.
 - **Feature list:** the default bullets are replaced with white check marks in royal circles.
 - **Design sketch:** bordered and shadowed, and it lifts slightly when you hover over it.
+- **Live alerts:** each alert is its own card with a colored left edge (amber for deadlines, royal for classmate activity). They slide in one after another when the page loads, and a green "Live" pill next to the heading has a pulsing dot.
+- **Assignment table:** uppercase column headers, a class color stripe and tag on every row, and amber text plus a badge on the one due soonest. Checking a box grays out the row and strikes through the title.
+- **Time-logging prompt:** a light blue box with a royal border under the table that pops in when the page loads. I left it inline instead of as a true pop-up, because it is always open for now and a pop-up would cover the page with no way to close it until React is in.
+- **Connected services:** green dots next to each service to show it is connected.
+- **Motion:** all of the animations turn off for anyone whose system is set to reduce motion (`prefers-reduced-motion`).
 
 **30% Responsive to window resizing using flexbox and/or grid display**
 
@@ -46,6 +58,10 @@ The login form uses a Bootstrap `card`, `form-label` and `form-control` on the i
 - **Tagline:** sized with `clamp()`, so it scales with the window.
 - **Login layout:** `.login-layout` is a CSS grid. On phones it is one column. At 768px and up it becomes two columns (`5fr 7fr`), with the sign-in card on the left and the features and sketch on the right. The card is `position: sticky`, so it stays in view while you scroll past the sketch.
 - **Login buttons:** a flex row where each button has `flex: 1 1 8rem`, so they split the width evenly and stack if the card gets too narrow.
+- **Dashboard layout:** `.dashboard-grid` is a CSS grid. Below 992px everything stacks. Above it, the assignments card takes the main column and the two forms move into a `20rem` sidebar, which is a flex column.
+- **Live alerts:** a grid with `repeat(auto-fit, minmax(15rem, 1fr))`, so the alerts show three across on a laptop and drop to one per line on a phone without any media query.
+- **Filter bar:** a wrapping flex row. The two dropdowns share the space and the Apply button keeps its size.
+- **Assignment table on phones:** five columns don't fit on a phone. Below 576px each row turns into its own small CSS grid with named areas, with the checkbox on the left, the class tag and average on top, then the title, then the due date. The column headers hide, and the average gets an "Avg" label so it still makes sense.
 
 **10% Use of a imported font**
 
@@ -57,7 +73,9 @@ The whole site uses Inter, pulled from Google Fonts in the `head` of each page. 
 - **Class:** `.btn-primary` and `.btn-outline-primary` recolor Bootstrap's buttons. `.user-info`, `.username`, `.header-banner`, and `.site-footer` style the header and footer.
 - **ID:** each `body` has an id (`#page-dashboard`) and so does each nav link (`#nav-dashboard`). `#page-dashboard #nav-dashboard` only matches on the dashboard, which is how the current page gets highlighted without any JavaScript.
 - **Descendant:** `header .nav-link`, `.header-banner a`, and `.sketch img` only reach elements inside those sections.
-- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`. The check marks in the feature list are `li::before`, and `.form-control:focus` recolors the input glow.
+- **Element plus class:** `dialog.time-log` styles only the time-logging dialog.
+- **Adjacent sibling:** `.service-list li + li` adds space above every service except the first.
+- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`. The check marks in the feature list are `li::before`, and `.form-control:focus` recolors the input glow. On the dashboard, `tr:has(.form-check-input:checked)` finds any row whose checkbox is checked and strikes it through, with no JavaScript. `.alert-feed li:nth-child(2)` and `:nth-child(3)` stagger the alert animations, and on phones `td:nth-child(1)` through `(5)` place each cell in the row's grid.
 
 
 
