@@ -10,6 +10,7 @@
 - Styled the header, navbar, and footer on every page. The nav collapses into a menu on phones
 - Styled the login page: two-column grid layout, Bootstrap sign-in card, and a checkmark feature list
 - Styled the dashboard: live alert cards, color-coded assignment table, time-logging prompt, and a sidebar for the forms
+- Styled the assignment detail page. The time distribution is now a bar chart drawn with CSS from the table data, replacing the placeholder photo
 
 # Startup CSS Deliverable
 
@@ -24,6 +25,8 @@ On the login page, the sign-in form sits in a white card with a navy stripe acro
 
 The dashboard color-codes every class. CS 260 is royal blue, FIN 401 is green, MCOM 320 is orange, and REL A 275 is purple. Each row has a colored stripe down its left edge and a tag in the same color. Anything due soon turns amber with a "Due soon" badge. I checked the dashboard at phone width and nothing runs off the page, since the table rows turn into small cards below 576px.
 
+On the assignment detail page, the summary card's top stripe and course label take the class color, so a CS 260 assignment is royal and a FIN 401 assignment would be green. The details, time stats, and student notes are each laid out as tiles so nothing is just a plain list.
+
 **20% Use of a CSS framework such as Bootstrap**
 
 Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScript bundle for the collapsing nav. I didn't keep Bootstrap's default blue. At the top of `main.css` I point Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-body-font-family`, and the button variables) at BYU navy and royal, so any Bootstrap component I drop in already matches the rest of the site.
@@ -33,6 +36,8 @@ The header on every page is a Bootstrap `navbar` with `navbar-expand-md`, a `nav
 The login form uses a Bootstrap `card`, `form-label` and `form-control` on the inputs, `mb-3` for spacing, and `btn btn-primary` / `btn btn-outline-primary` for Login and Create Account. Bootstrap hard-codes its own blue into the glow around a focused input, so I override that in `main.css` to use BYU royal on every form in the site.
 
 The dashboard uses Bootstrap `card` for the three panels, `form-select` for the filters, `table table-hover align-middle` inside a `table-responsive` wrapper for the assignment list, `form-check-input` for the checkboxes, and `badge` for the due soon tag. The Add Assignment button is `btn btn-primary w-100` so it fills its card.
+
+The assignment detail page uses `card` for each panel, `form-check`, `form-check-input`, and `form-check-label` for the checkbox, `form-control` on the hours input and the textarea, and `btn btn-outline-primary` for Open in Canvas.
 
 **20% All visual elements styled using CSS**
 
@@ -47,6 +52,9 @@ The dashboard uses Bootstrap `card` for the three panels, `form-select` for the 
 - **Assignment table:** uppercase column headers, a class color stripe and tag on every row, and amber text plus a badge on the one due soonest. Checking a box grays out the row and strikes through the title.
 - **Time-logging prompt:** a light blue box with a royal border under the table that pops in when the page loads. I left it inline instead of as a true pop-up, because it is always open for now and a pop-up would cover the page with no way to close it until React is in.
 - **Connected services:** green dots next to each service to show it is connected.
+- **Assignment summary:** the due date, status, source, and points are gray tiles with small uppercase labels. The title scales with the window.
+- **Time distribution chart:** the HTML deliverable used `chartPlaceholder.jpg` here, which was a stand-in photo. It is now the Hours Spent table itself, drawn as a bar chart entirely in CSS. Each row carries its count in a CSS variable (`style="--count: 12"`) and the bar height is `calc(var(--count) / var(--max) * 100%)`. The bars grow up from the axis when the page loads and brighten on hover. The table header is hidden on screen but kept for screen readers, so the data is still a real table.
+- **Stats and notes:** Average, Median, and Longest are three tiles with large navy numbers. Each student note is a card with the name in bold and a royal left edge.
 - **Motion:** all of the animations turn off for anyone whose system is set to reduce motion (`prefers-reduced-motion`).
 
 **30% Responsive to window resizing using flexbox and/or grid display**
@@ -62,6 +70,10 @@ The dashboard uses Bootstrap `card` for the three panels, `form-select` for the 
 - **Live alerts:** a grid with `repeat(auto-fit, minmax(15rem, 1fr))`, so the alerts show three across on a laptop and drop to one per line on a phone without any media query.
 - **Filter bar:** a wrapping flex row. The two dropdowns share the space and the Apply button keeps its size.
 - **Assignment table on phones:** five columns don't fit on a phone. Below 576px each row turns into its own small CSS grid with named areas, with the checkbox on the left, the class tag and average on top, then the title, then the due date. The column headers hide, and the average gets an "Avg" label so it still makes sense.
+- **Assignment detail layout:** `.detail-grid` is a CSS grid. On large screens the summary and notes span both columns (`grid-column: 1 / -1`) and the chart and the Mark It Done form share the middle row at `3fr 2fr`. Below 992px it is one column.
+- **Detail tiles and notes:** both use `repeat(auto-fit, minmax(...))`, so they go four across (details) or three across (notes) on a laptop and fold down on a phone.
+- **Bar chart:** the table body is a flex row of bars, and each row is a two-row grid with the bar on top and its label under it. The gap between bars shrinks with the window through `clamp()`.
+- **Stat tiles:** a wrapping flex row that keeps all three on one line even at phone width.
 
 **10% Use of a imported font**
 
@@ -75,7 +87,8 @@ The whole site uses Inter, pulled from Google Fonts in the `head` of each page. 
 - **Descendant:** `header .nav-link`, `.header-banner a`, and `.sketch img` only reach elements inside those sections.
 - **Element plus class:** `dialog.time-log` styles only the time-logging dialog.
 - **Adjacent sibling:** `.service-list li + li` adds space above every service except the first.
-- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`. The check marks in the feature list are `li::before`, and `.form-control:focus` recolors the input glow. On the dashboard, `tr:has(.form-check-input:checked)` finds any row whose checkbox is checked and strikes it through, with no JavaScript. `.alert-feed li:nth-child(2)` and `:nth-child(3)` stagger the alert animations, and on phones `td:nth-child(1)` through `(5)` place each cell in the row's grid.
+- **Child:** `.card-body > h2` only sizes headings that sit directly inside a card.
+- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`. The check marks in the feature list are `li::before`, and `.form-control:focus` recolors the input glow. On the dashboard, `tr:has(.form-check-input:checked)` finds any row whose checkbox is checked and strikes it through, with no JavaScript. `.alert-feed li:nth-child(2)` and `:nth-child(3)` stagger the alert animations, and on phones `td:nth-child(1)` through `(5)` place each cell in the row's grid. The bar chart uses `td:first-child` and `td:last-child` to tell the label from the bar, `tr:nth-child(n)` to stagger the bars growing in, and `tr:hover` to highlight one. The back link's arrow is added with `::before`.
 
 
 
