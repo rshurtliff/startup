@@ -19,25 +19,41 @@
     <link rel="stylesheet" href="main.css" />
   </head>
 
-  <body>
+  <body id="page-dashboard">
     <header>
-      <h1>Trackr for Students</h1>
-
-      <!-- Login placeholder. The name comes from the authenticated user once
-           the service and database are wired up. -->
-      <p>Signed in as <span>ryan.shurtliff</span> | <a href="index.html">Logout</a></p>
-
-      <nav>
-        <ul>
-          <li><a href="index.html">Login</a></li>
-          <li><a href="dashboard.html">Dashboard</a></li>
-          <li><a href="assignment.html">Assignment Detail</a></li>
-          <li><a href="settings.html">Settings</a></li>
-        </ul>
+      <nav class="navbar navbar-expand-md" data-bs-theme="dark">
+        <div class="container">
+          <h1 class="navbar-brand">Trackr <span class="brand-sub">for Students</span></h1>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#main-nav"
+            aria-controls="main-nav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="main-nav">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item"><a class="nav-link" id="nav-login" href="index.html">Login</a></li>
+              <li class="nav-item"><a class="nav-link" id="nav-dashboard" href="dashboard.html" aria-current="page">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" id="nav-assignment" href="assignment.html">Assignment Detail</a></li>
+              <li class="nav-item"><a class="nav-link" id="nav-settings" href="settings.html">Settings</a></li>
+            </ul>
+            <!-- Login placeholder. The name comes from the authenticated user once
+                 the service and database are wired up. -->
+            <p class="user-info">
+              Signed in as <span class="username">ryan.shurtliff</span>
+              <a class="btn btn-sm btn-outline-light" href="index.html">Logout</a>
+            </p>
+          </div>
+        </div>
       </nav>
     </header>
 
-    <main>
+    <main class="container">
       <!-- WebSocket placeholder. Deadline alerts and other students' logged
            times get pushed here in real time. No refresh. -->
       <section>
@@ -191,12 +207,11 @@
       </section>
     </main>
 
-    <footer>
-      <hr />
-      <p>Ryan Shurtliff</p>
-      <p>
-        <a href="https://github.com/rshurtliff/startup" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
-      </p>
+    <footer class="site-footer">
+      <div class="container">
+        <p>Ryan Shurtliff</p>
+        <p><a href="https://github.com/rshurtliff/startup" target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
+      </div>
     </footer>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"

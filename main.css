@@ -68,7 +68,11 @@ html {
   font-size: 100%;
 }
 
+/* Column flex layout pins the footer to the bottom on short pages */
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   margin: 0;
   font-family: var(--font-body);
   color: var(--text);
@@ -120,9 +124,167 @@ hr {
   color: #ffffff;
 }
 
-/* Keeps the content from stretching edge to edge on wide screens */
+/* main grows to fill the space between header and footer.
+   Width comes from Bootstrap's .container so it lines up with the navbar. */
 main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem;
+  flex: 1 0 auto;
+  padding-top: 2rem;
+  padding-bottom: 2.5rem;
+}
+
+/* ---------- Header and navigation ---------- */
+
+header .navbar {
+  background-color: var(--byu-navy);
+  box-shadow: 0 2px 8px rgba(0, 20, 45, 0.25);
+}
+
+/* The h1 doubles as the navbar brand */
+header .navbar-brand {
+  margin: 0 1.5rem 0 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.brand-sub {
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+header .nav-link {
+  position: relative;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  transition: color 0.2s ease;
+}
+
+header .nav-link:hover,
+header .nav-link:focus-visible {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* Current page. Each body has an id, and so does each nav link,
+   so the pair only matches on the page the link points to. */
+#page-login #nav-login,
+#page-dashboard #nav-dashboard,
+#page-assignment #nav-assignment,
+#page-settings #nav-settings {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.username {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Collapsed menu on phones: current page gets a bar on the left,
+   and the sign-in line gets split off from the links */
+@media (max-width: 767.98px) {
+  header .nav-link {
+    padding-left: 0.75rem;
+    border-left: 3px solid transparent;
+  }
+
+  #page-login #nav-login,
+  #page-dashboard #nav-dashboard,
+  #page-assignment #nav-assignment,
+  #page-settings #nav-settings {
+    border-left-color: #ffffff;
+  }
+
+  .user-info {
+    margin-top: 0.5rem;
+    padding: 0.75rem 0 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Full navbar: an underline slides in on hover and stays on the current page */
+@media (min-width: 768px) {
+  header .nav-link::after {
+    content: "";
+    position: absolute;
+    left: var(--bs-navbar-nav-link-padding-x);
+    right: var(--bs-navbar-nav-link-padding-x);
+    bottom: 0.2rem;
+    height: 2px;
+    background-color: #ffffff;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+
+  header .nav-link:hover::after,
+  #page-login #nav-login::after,
+  #page-dashboard #nav-dashboard::after,
+  #page-assignment #nav-assignment::after,
+  #page-settings #nav-settings::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Login page banner under the navbar */
+.header-banner {
+  padding: 2rem 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--byu-navy) 0%, var(--byu-royal) 100%);
+}
+
+.header-banner p {
+  margin: 0;
+}
+
+.tagline {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.header-banner .byline {
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.header-banner a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.header-banner a:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  flex-shrink: 0;
+  padding: 1.25rem 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background-color: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.site-footer .container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.site-footer p {
+  margin: 0;
 }
