@@ -5,8 +5,33 @@
 - Added a deployment script for the Startup, not just Simon
 - Deployed initial HTML Deliverable
 - Deployed Simon CSS
+- Started the Startup CSS Deliverable: added Bootstrap, the Inter font, and a shared `main.css` with the BYU color palette
+- Fixed the deploy script so it also uploads CSS and JavaScript files
 
 # Startup CSS Deliverable
+
+## What I did for Each Rubric Item
+**10% Visually appealing colors and layout. No overflowing elements.**
+
+**20% Use of a CSS framework such as Bootstrap**
+
+Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScript bundle for the collapsing nav. I didn't keep Bootstrap's default blue. At the top of `main.css` I point Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-body-font-family`, and the button variables) at BYU navy and royal, so any Bootstrap component I drop in already matches the rest of the site.
+
+**20% All visual elements styled using CSS**
+
+**30% Responsive to window resizing using flexbox and/or grid display**
+
+**10% Use of a imported font**
+
+The whole site uses Inter, pulled from Google Fonts in the `head` of each page. It is set once on `body` through a `--font-body` variable, with system fonts as a fallback if Google Fonts doesn't load.
+
+**10% Use of different types of selectors including element, class, ID, and pseudo selectors**
+
+- **Element:** `body`, `h1` through `h3`, `a`, `img`, `hr`, and `main` set the base look.
+- **Class:** `.btn-primary` and `.btn-outline-primary` recolor Bootstrap's buttons.
+- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text.
+
+
 
 
 # Startup HTML Deliverable

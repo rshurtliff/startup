@@ -1,4 +1,22 @@
-# Setting up AWS EC2 Server**
+# Startup CSS Deliverable 9/27/26
+
+## Plan
+
+Milestones to complete CSS deliverable
+
+| # | Session | What gets built | Rubric items it covers |
+|---|---|---|---|
+| 1 | **Foundation** | Link Bootstrap (CDN), a Google Font, and one shared `main.css` on all 4 pages. Set up color variables in `:root` and base `body`/heading styles. Fix the deploy script. | Framework, imported font, element selectors |
+| 2 | **Header, nav, footer** | Turn the `nav` into a Bootstrap navbar that collapses on mobile. Lay out the header with flexbox, highlight the current page with an `#id`, add `:hover` effects, and keep the footer at the bottom of the page. | Responsive, pseudo selectors, ID selectors |
+| 3 | **Login page** | Two-column grid (sign-in card on one side, "What you get" plus the sketch on the other) that stacks on phones. Bootstrap form controls and buttons. | Grid, framework, all elements styled |
+| 4 | **Dashboard** | Style the Live Alerts panel (maybe a pulse animation), put the filter bar in a flex row, and make the table scroll on small screens instead of overflowing. Color-code each class, strike through checked rows with `:has(:checked)`, and style the time-logging `dialog` as a modal card. | Most of the "visually appealing" and selector points |
+| 5 | **Assignment detail** | Show the `dl` as a grid of stat tiles, make the chart image responsive, show avg/median/longest as flex cards, and turn student notes into cards. | Flexbox/grid, no overflow |
+| 6 | **Settings** | Style the forms, the sync table, and the danger styling on Delete Account. The long iCal URL input needs care because `size="60"` will overflow on phones. | No overflow, all elements styled |
+| 7 | **Polish and ship** | Test every page at 375px, tablet, and desktop, and fix any leftover overflow. Finish the README rubric and notes.md, then deploy with `-s startup`. | Wraps up everything |
+
+
+
+# Setting up AWS EC2 Server
 - I set up the server and assigned an elastic IP address. For now it's the cheapest server, a t3.nano. Remember to cancel the 
 Elastic IP addrss and terminate the server after the class. For now, the cost to leave it running is the same as keeping the IP address.
 
