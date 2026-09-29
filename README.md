@@ -1,9 +1,4 @@
 # What's New (for the TA's)
-- RESUBITTED **Startup AWS Deliverable**. Added section in this README below.
-- Deployed Files for Simon, per assignments in the Simon HTML module in MasteryLS
-- Added Startup HTML Deliverable
-- Added a deployment script for the Startup, not just Simon
-- Deployed initial HTML Deliverable
 - Deployed Simon CSS
 - Started the Startup CSS Deliverable: added Bootstrap, the Inter font, and a shared `main.css` with the BYU color palette
 - Fixed the deploy script so it also uploads CSS and JavaScript files
@@ -12,9 +7,10 @@
 - Styled the dashboard: live alert cards, color-coded assignment table, time-logging prompt, and a sidebar for the forms
 - Styled the assignment detail page. The time distribution is now a bar chart drawn with CSS from the table data, replacing the placeholder photo
 - Styled the settings page: four cards in a grid, color-coded sync table, numbered setup steps, and red buttons for the destructive actions
-- Tested every page at phone, tablet, and desktop widths, moved the navbar breakpoint up to fit tablets, and finished this README
+- Tested every page at phone, tablet, and desktop widths
 
 # Startup CSS Deliverable
+https://startup.cs260hwtrackr.click/
 
 **Note on the assignment detail page:** every assignment on the dashboard links to the same `assignment.html`, which always shows the Startup HTML Deliverable. That is on purpose. It is a shared template, and once React is in, one route (`/assignment/:id`) will fill it with whichever assignment you clicked.
 
