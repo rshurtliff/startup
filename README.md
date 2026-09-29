@@ -11,6 +11,7 @@
 - Styled the login page: two-column grid layout, Bootstrap sign-in card, and a checkmark feature list
 - Styled the dashboard: live alert cards, color-coded assignment table, time-logging prompt, and a sidebar for the forms
 - Styled the assignment detail page. The time distribution is now a bar chart drawn with CSS from the table data, replacing the placeholder photo
+- Styled the settings page: four cards in a grid, color-coded sync table, numbered setup steps, and red buttons for the destructive actions
 
 # Startup CSS Deliverable
 
@@ -27,6 +28,8 @@ The dashboard color-codes every class. CS 260 is royal blue, FIN 401 is green, M
 
 On the assignment detail page, the summary card's top stripe and course label take the class color, so a CS 260 assignment is royal and a FIN 401 assignment would be green. The details, time stats, and student notes are each laid out as tiles so nothing is just a plain list.
 
+On settings, the buttons that remove or delete something (Remove Link, Delete Account) are outlined in red so they don't look like the normal navy actions. The sync table uses the same class colors as the dashboard.
+
 **20% Use of a CSS framework such as Bootstrap**
 
 Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScript bundle for the collapsing nav. I didn't keep Bootstrap's default blue. At the top of `main.css` I point Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-body-font-family`, and the button variables) at BYU navy and royal, so any Bootstrap component I drop in already matches the rest of the site.
@@ -38,6 +41,8 @@ The login form uses a Bootstrap `card`, `form-label` and `form-control` on the i
 The dashboard uses Bootstrap `card` for the three panels, `form-select` for the filters, `table table-hover align-middle` inside a `table-responsive` wrapper for the assignment list, `form-check-input` for the checkboxes, and `badge` for the due soon tag. The Add Assignment button is `btn btn-primary w-100` so it fills its card.
 
 The assignment detail page uses `card` for each panel, `form-check`, `form-check-input`, and `form-check-label` for the checkbox, `form-control` on the hours input and the textarea, and `btn btn-outline-primary` for Open in Canvas.
+
+Settings uses `card` for its four panels, `form-control` and `form-select` in both forms, `form-switch` to turn the Sunday summary checkbox into an on/off toggle, `table` in a `table-responsive` wrapper for the sync status, and `btn-outline-danger` for Remove Link and Delete Account. I pointed the danger button's variables at a darker red that sits better next to BYU navy.
 
 **20% All visual elements styled using CSS**
 
@@ -55,6 +60,7 @@ The assignment detail page uses `card` for each panel, `form-check`, `form-check
 - **Assignment summary:** the due date, status, source, and points are gray tiles with small uppercase labels. The title scales with the window.
 - **Time distribution chart:** the HTML deliverable used `chartPlaceholder.jpg` here, which was a stand-in photo. It is now the Hours Spent table itself, drawn as a bar chart entirely in CSS. Each row carries its count in a CSS variable (`style="--count: 12"`) and the bar height is `calc(var(--count) / var(--max) * 100%)`. The bars grow up from the axis when the page loads and brighten on hover. The table header is hidden on screen but kept for screen readers, so the data is still a real table.
 - **Stats and notes:** Average, Median, and Longest are three tiles with large navy numbers. Each student note is a card with the name in bold and a royal left edge.
+- **Settings:** the "Where to find it" steps are numbered with navy circles drawn from a CSS counter instead of the default list numbers, and the read-only note under them is a light blue callout. The sync table has class color stripes and tags. The account info is a list of label and value pairs split by thin lines, with the value in bold on the right.
 - **Motion:** all of the animations turn off for anyone whose system is set to reduce motion (`prefers-reduced-motion`).
 
 **30% Responsive to window resizing using flexbox and/or grid display**
@@ -74,6 +80,9 @@ The assignment detail page uses `card` for each panel, `form-check`, `form-check
 - **Detail tiles and notes:** both use `repeat(auto-fit, minmax(...))`, so they go four across (details) or three across (notes) on a laptop and fold down on a phone.
 - **Bar chart:** the table body is a flex row of bars, and each row is a two-row grid with the bar on top and its label under it. The gap between bars shrinks with the window through `clamp()`.
 - **Stat tiles:** a wrapping flex row that keeps all three on one line even at phone width.
+- **Settings layout:** `.settings-grid` is two equal columns at 992px and up, one column below. The cards fill the grid in source order, so the Canvas link sits next to its sync status and the reminder settings sit next to the account card.
+- **No overflow:** the HTML had `size="60"` on the iCal URL input, which forced the page wider than a phone. I removed it, and the input now fills its card and cuts the URL off with an ellipsis. The sync table sits in `table-responsive` so it can never push past the card either.
+- **Settings rows:** the button rows, the sync footer, and each account line are wrapping flex rows, so a label and its value move onto two lines instead of overflowing when the card gets narrow.
 
 **10% Use of a imported font**
 
@@ -88,7 +97,8 @@ The whole site uses Inter, pulled from Google Fonts in the `head` of each page. 
 - **Element plus class:** `dialog.time-log` styles only the time-logging dialog.
 - **Adjacent sibling:** `.service-list li + li` adds space above every service except the first.
 - **Child:** `.card-body > h2` only sizes headings that sit directly inside a card.
-- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`. The check marks in the feature list are `li::before`, and `.form-control:focus` recolors the input glow. On the dashboard, `tr:has(.form-check-input:checked)` finds any row whose checkbox is checked and strikes it through, with no JavaScript. `.alert-feed li:nth-child(2)` and `:nth-child(3)` stagger the alert animations, and on phones `td:nth-child(1)` through `(5)` place each cell in the row's grid. The bar chart uses `td:first-child` and `td:last-child` to tell the label from the bar, `tr:nth-child(n)` to stagger the bars growing in, and `tr:hover` to highlight one. The back link's arrow is added with `::before`.
+- **ID:** `#ical` styles the Canvas URL input on its own.
+- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`. The check marks in the feature list are `li::before`, and `.form-control:focus` recolors the input glow. On the dashboard, `tr:has(.form-check-input:checked)` finds any row whose checkbox is checked and strikes it through, with no JavaScript. `.alert-feed li:nth-child(2)` and `:nth-child(3)` stagger the alert animations, and on phones `td:nth-child(1)` through `(5)` place each cell in the row's grid. The bar chart uses `td:first-child` and `td:last-child` to tell the label from the bar, `tr:nth-child(n)` to stagger the bars growing in, and `tr:hover` to highlight one. The back link's arrow is added with `::before`. On settings, `.steps li::before` prints each step number from a CSS counter, and `.account-list li:last-child` drops the divider under the last row.
 
 
 

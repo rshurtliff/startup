@@ -67,6 +67,21 @@
   --bs-btn-focus-shadow-rgb: 0, 98, 184;
 }
 
+.btn-outline-danger {
+  --bs-btn-color: var(--danger);
+  --bs-btn-border-color: var(--danger);
+  --bs-btn-hover-bg: var(--danger);
+  --bs-btn-hover-border-color: var(--danger);
+  --bs-btn-active-bg: #8f1c13;
+  --bs-btn-active-border-color: #8f1c13;
+  --bs-btn-focus-shadow-rgb: 180, 35, 24;
+}
+
+/* On/off switches use royal too */
+.form-switch .form-check-input:focus {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%230062b8'/%3e%3c/svg%3e");
+}
+
 /* Bootstrap hard-codes its own blue into the focus glow on inputs */
 .form-control:focus,
 .form-select:focus,
@@ -1079,6 +1094,149 @@ dialog.time-log p {
 
 .note-meta strong {
   color: var(--text);
+}
+
+/* ---------- Settings ---------- */
+
+/* Two columns on large screens. Cards land in source order:
+   Canvas link beside sync status, reminders beside account. */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 992px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Long values like the iCal URL scroll inside the box instead of widening it */
+#ical {
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.settings-grid h3 {
+  margin-top: 1.75rem;
+  font-size: 1rem;
+}
+
+/* Numbered steps drawn with a CSS counter instead of the default markers */
+.steps {
+  counter-reset: step;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+/* The number sits in the left padding. Not flex, because the <strong>
+   inside each step would turn into its own column. */
+.steps li {
+  counter-increment: step;
+  position: relative;
+  min-height: 1.6rem;
+  padding: 0.1rem 0 0 2.4rem;
+  font-size: 0.95rem;
+}
+
+.steps li + li {
+  margin-top: 0.6rem;
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--byu-navy);
+  background-color: #e3edf8;
+  border-radius: 50%;
+}
+
+.info-note {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  background-color: #eef5fc;
+  border-left: 4px solid var(--byu-royal);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.sync-table thead th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sync-table tbody td:first-child {
+  border-left: 4px solid var(--class-color, transparent);
+}
+
+.sync-table td:nth-child(2) {
+  font-weight: 600;
+}
+
+.sync-table td:last-child {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.sync-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.sync-footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Label on the left, value on the right, a line between rows */
+.account-list {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.account-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.account-list li:last-child {
+  border-bottom: 0;
+}
+
+.account-list span {
+  color: var(--text-muted);
 }
 
 /* ---------- Motion ---------- */
