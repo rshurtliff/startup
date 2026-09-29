@@ -12,6 +12,7 @@
 - Styled the dashboard: live alert cards, color-coded assignment table, time-logging prompt, and a sidebar for the forms
 - Styled the assignment detail page. The time distribution is now a bar chart drawn with CSS from the table data, replacing the placeholder photo
 - Styled the settings page: four cards in a grid, color-coded sync table, numbered setup steps, and red buttons for the destructive actions
+- Tested every page at phone, tablet, and desktop widths, moved the navbar breakpoint up to fit tablets, and finished this README
 
 # Startup CSS Deliverable
 
@@ -24,17 +25,19 @@ Every page has a navy BYU navbar across the top with a slight shadow, and the lo
 
 On the login page, the sign-in form sits in a white card with a navy stripe across the top. The feature list uses royal blue check marks, and the design sketch has a border and shadow so it doesn't blend into the background.
 
-The dashboard color-codes every class. CS 260 is royal blue, FIN 401 is green, MCOM 320 is orange, and REL A 275 is purple. Each row has a colored stripe down its left edge and a tag in the same color. Anything due soon turns amber with a "Due soon" badge. I checked the dashboard at phone width and nothing runs off the page, since the table rows turn into small cards below 576px.
+The dashboard color-codes every class. CS 260 is royal blue, FIN 401 is green, MCOM 320 is orange, and REL A 275 is purple. Each row has a colored stripe down its left edge and a tag in the same color. Anything due soon turns amber with a "Due soon" badge.
 
 On the assignment detail page, the summary card's top stripe and course label take the class color, so a CS 260 assignment is royal and a FIN 401 assignment would be green. The details, time stats, and student notes are each laid out as tiles so nothing is just a plain list.
 
 On settings, the buttons that remove or delete something (Remove Link, Delete Account) are outlined in red so they don't look like the normal navy actions. The sync table uses the same class colors as the dashboard.
 
+For overflow, I checked all four pages at 360, 390, 768, 1024, and 1440 pixels wide. At every size the page is exactly as wide as the window, with no sideways scroll and no element running past the edge.
+
 **20% Use of a CSS framework such as Bootstrap**
 
 Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScript bundle for the collapsing nav. I didn't keep Bootstrap's default blue. At the top of `main.css` I point Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-body-font-family`, and the button variables) at BYU navy and royal, so any Bootstrap component I drop in already matches the rest of the site.
 
-The header on every page is a Bootstrap `navbar` with `navbar-expand-md`, a `navbar-toggler` button, and a `collapse` section, so the links fold into a menu on small screens. The page content sits in a Bootstrap `container`, which lines it up with the navbar. The Logout link is a `btn btn-outline-light`.
+The header on every page is a Bootstrap `navbar` with `navbar-expand-lg`, a `navbar-toggler` button, and a `collapse` section, so the links fold into a menu on small screens. The page content sits in a Bootstrap `container`, which lines it up with the navbar. The Logout link is a `btn btn-outline-light`.
 
 The login form uses a Bootstrap `card`, `form-label` and `form-control` on the inputs, `mb-3` for spacing, and `btn btn-primary` / `btn btn-outline-primary` for Login and Create Account. Bootstrap hard-codes its own blue into the glow around a focused input, so I override that in `main.css` to use BYU royal on every form in the site.
 
@@ -66,14 +69,14 @@ Settings uses `card` for its four panels, `form-control` and `form-select` in bo
 **30% Responsive to window resizing using flexbox and/or grid display**
 
 - **Sticky footer:** `body` is a column flexbox and `main` has `flex: 1`, so the footer stays at the bottom of the window even on short pages.
-- **Navbar:** above 768px the links sit in one row with the sign-in info pushed to the right. Below that they collapse behind a menu button and stack.
-- **Media queries:** two of them in `main.css` change how the current page is marked. Wide screens get an underline, and the phone menu gets a white bar on the left.
+- **Navbar:** at 992px and up the links sit in one row with the sign-in info pushed to the right. Below that they collapse behind a menu button and stack. I started with 768px, but at tablet width the links and the sign-in line wrapped onto several lines, so I moved the breakpoint up.
+- **Media queries:** two of them in `main.css` change how the current page is marked. Wide screens get an underline, and the collapsed menu gets a white bar on the left.
 - **Footer:** a flex row with `flex-wrap`, so my name and the GitHub link sit on opposite sides and wrap onto two lines on a narrow screen.
 - **Tagline:** sized with `clamp()`, so it scales with the window.
 - **Login layout:** `.login-layout` is a CSS grid. On phones it is one column. At 768px and up it becomes two columns (`5fr 7fr`), with the sign-in card on the left and the features and sketch on the right. The card is `position: sticky`, so it stays in view while you scroll past the sketch.
 - **Login buttons:** a flex row where each button has `flex: 1 1 8rem`, so they split the width evenly and stack if the card gets too narrow.
 - **Dashboard layout:** `.dashboard-grid` is a CSS grid. Below 992px everything stacks. Above it, the assignments card takes the main column and the two forms move into a `20rem` sidebar, which is a flex column.
-- **Live alerts:** a grid with `repeat(auto-fit, minmax(15rem, 1fr))`, so the alerts show three across on a laptop and drop to one per line on a phone without any media query.
+- **Live alerts:** a grid with `repeat(auto-fit, minmax(13rem, 1fr))`, so the alerts show three across on a tablet or laptop and drop to one per line on a phone without any media query.
 - **Filter bar:** a wrapping flex row. The two dropdowns share the space and the Apply button keeps its size.
 - **Assignment table on phones:** five columns don't fit on a phone. Below 576px each row turns into its own small CSS grid with named areas, with the checkbox on the left, the class tag and average on top, then the title, then the due date. The column headers hide, and the average gets an "Avg" label so it still makes sense.
 - **Assignment detail layout:** `.detail-grid` is a CSS grid. On large screens the summary and notes span both columns (`grid-column: 1 / -1`) and the chart and the Mark It Done form share the middle row at `3fr 2fr`. Below 992px it is one column.
@@ -92,13 +95,21 @@ The whole site uses Inter, pulled from Google Fonts in the `head` of each page. 
 
 - **Element:** `body`, `h1` through `h3`, `a`, `img`, `hr`, and `main` set the base look.
 - **Class:** `.btn-primary` and `.btn-outline-primary` recolor Bootstrap's buttons. `.user-info`, `.username`, `.header-banner`, and `.site-footer` style the header and footer.
-- **ID:** each `body` has an id (`#page-dashboard`) and so does each nav link (`#nav-dashboard`). `#page-dashboard #nav-dashboard` only matches on the dashboard, which is how the current page gets highlighted without any JavaScript.
+- **ID:** each `body` has an id (`#page-dashboard`) and so does each nav link (`#nav-dashboard`). `#page-dashboard #nav-dashboard` only matches on the dashboard, which is how the current page gets highlighted without any JavaScript. `#ical` styles the Canvas URL input on its own.
 - **Descendant:** `header .nav-link`, `.header-banner a`, and `.sketch img` only reach elements inside those sections.
 - **Element plus class:** `dialog.time-log` styles only the time-logging dialog.
 - **Adjacent sibling:** `.service-list li + li` adds space above every service except the first.
 - **Child:** `.card-body > h2` only sizes headings that sit directly inside a card.
-- **ID:** `#ical` styles the Canvas URL input on its own.
-- **Pseudo:** `:root` holds the color variables, `a:hover` and `a:focus-visible` handle link states, and `::selection` colors highlighted text. The nav underline is a `::after` pseudo element that grows from nothing on `:hover`. The check marks in the feature list are `li::before`, and `.form-control:focus` recolors the input glow. On the dashboard, `tr:has(.form-check-input:checked)` finds any row whose checkbox is checked and strikes it through, with no JavaScript. `.alert-feed li:nth-child(2)` and `:nth-child(3)` stagger the alert animations, and on phones `td:nth-child(1)` through `(5)` place each cell in the row's grid. The bar chart uses `td:first-child` and `td:last-child` to tell the label from the bar, `tr:nth-child(n)` to stagger the bars growing in, and `tr:hover` to highlight one. The back link's arrow is added with `::before`. On settings, `.steps li::before` prints each step number from a CSS counter, and `.account-list li:last-child` drops the divider under the last row.
+- **Pseudo-classes:**
+  - `:root` holds the color variables.
+  - `a:hover`, `a:focus-visible`, and `.form-control:focus` handle link and input states.
+  - `tr:has(.form-check-input:checked)` finds any dashboard row whose checkbox is checked and strikes it through, with no JavaScript.
+  - `:nth-child()` staggers the alert and bar chart animations, and on phones places each table cell in its row's grid.
+  - `td:first-child` and `td:last-child` tell a bar chart label from its bar, and `.account-list li:last-child` drops the divider under the last account row.
+- **Pseudo-elements:**
+  - The nav underline is `::after`, and it grows in on `:hover`.
+  - The feature list check marks, the back link arrow, and the numbered settings steps are all `::before`. The steps get their numbers from a CSS counter.
+  - `::selection` colors highlighted text.
 
 
 

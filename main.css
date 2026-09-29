@@ -250,9 +250,9 @@ header .nav-link:focus-visible {
   color: #ffffff;
 }
 
-/* Collapsed menu on phones: current page gets a bar on the left,
-   and the sign-in line gets split off from the links */
-@media (max-width: 767.98px) {
+/* Collapsed menu on phones and tablets: current page gets a bar on the left,
+   and the sign-in line gets split off from the links. Matches navbar-expand-lg. */
+@media (max-width: 991.98px) {
   header .nav-link {
     padding-left: 0.75rem;
     border-left: 3px solid transparent;
@@ -273,7 +273,7 @@ header .nav-link:focus-visible {
 }
 
 /* Full navbar: an underline slides in on hover and stays on the current page */
-@media (min-width: 768px) {
+@media (min-width: 992px) {
   header .nav-link::after {
     content: "";
     position: absolute;
@@ -514,7 +514,7 @@ header .nav-link:focus-visible {
 /* Alert cards fill the row and drop to fewer columns as the window narrows */
 .alert-feed {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
   gap: 0.75rem;
   margin: 0;
   padding: 0;

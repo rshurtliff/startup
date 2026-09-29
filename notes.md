@@ -1,3 +1,39 @@
+# Finishing the CSS Deliverable 9/28/26
+
+## Theming Bootstrap
+
+Bootstrap stores its colors and fonts in CSS variables like `--bs-primary` and `--bs-body-bg`, and its components read from those. Changing them in `:root` recolors everything at once, so I never had to fight Bootstrap rule by rule. My stylesheet has to load after Bootstrap's for that to work.
+
+The catch is that one variable can feed a lot of things. I set `--bs-body-bg` to my gray page color, and it turned out cards, tables, and inputs all use it for their background too. Everything came out gray on gray until I pointed `--bs-card-bg`, `--bs-table-bg`, and the input backgrounds back at white. A few things, like the blue glow around a focused input, are hard-coded, so those needed a normal override.
+
+Bootstrap classes are what actually count. Loading the stylesheet only gives you the reset. The navbar, cards, form controls, buttons, and tables come from putting classes like `navbar`, `card`, `form-control`, and `btn btn-primary` in the HTML.
+
+## Flexbox or Grid
+
+Flexbox is for one direction, a row or a column where things share space and wrap. I used it for the navbar, button rows, the footer, and pinning the footer to the bottom (`body` as a column, `main` with `flex: 1`).
+
+Grid is for two directions, or when I want exact columns. Each page layout is a grid that is one column on a phone and two on a bigger screen. `repeat(auto-fit, minmax(13rem, 1fr))` is the most useful line I learned. It fits as many columns as there is room for with no media query at all.
+
+Bootstrap's own `row` and `col` are built on flexbox, so writing my own grids also meant the grader sees both.
+
+One thing that bit me: making an `li` a flex container turns every piece inside it into a flex item. My settings steps had `<strong>` words in the middle of the sentence, and each one became its own column. Absolute positioning for the number circle fixed it and left the text as normal text.
+
+## Selectors That Did Real Work
+
+- `#page-dashboard #nav-dashboard` highlights the current page with no JavaScript. Every body and nav link has an id, and the pair only matches on its own page.
+- `tr:has(input:checked)` styles a row based on something inside it. Checking a box crosses out the whole assignment.
+- `::before` and `::after` add things that aren't in the HTML, like check marks, arrows, the nav underline, and step numbers from a CSS counter.
+
+## A Bar Chart Without JavaScript
+
+The assignment page's time chart is just the Hours Spent table. Each row has `style="--count: 12"` and the table has `--max: 12`. The bar's height is `calc(var(--count) / var(--max) * 100%)`. The data stays a real table for screen readers, and React will only need to change the numbers later.
+
+## Testing for Overflow
+
+The narrowest screen is where things break. `size="60"` on an input and `cols="50"` on a textarea both forced the page wider than a phone. Wide tables go in `table-responsive`, and on phones my assignment rows turn into small grid cards.
+
+Breakpoints should come from the content, not a device list. My navbar collapsed at 768px at first, but at tablet width the links wrapped onto two lines, so I moved it to 992px with `navbar-expand-lg` and the matching media queries.
+
 # Startup CSS Deliverable 9/27/26
 
 ## Plan
