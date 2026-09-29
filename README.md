@@ -19,97 +19,97 @@
 **Note on the assignment detail page:** every assignment on the dashboard links to the same `assignment.html`, which always shows the Startup HTML Deliverable. That is on purpose. It is a shared template, and once React is in, one route (`/assignment/:id`) will fill it with whichever assignment you clicked.
 
 ## What I did for Each Rubric Item
-**10% Visually appealing colors and layout. No overflowing elements.**
+- [x] **10% Visually appealing colors and layout. No overflowing elements.**
 
-Every page has a navy BYU navbar across the top with a slight shadow, and the login page adds a navy to royal gradient banner for the tagline. The footer is white with a thin border, so it reads as separate from the gray page background.
+  Every page has a navy BYU navbar across the top with a slight shadow, and the login page adds a navy to royal gradient banner for the tagline. The footer is white with a thin border, so it reads as separate from the gray page background.
 
-On the login page, the sign-in form sits in a white card with a navy stripe across the top. The feature list uses royal blue check marks, and the design sketch has a border and shadow so it doesn't blend into the background.
+  On the login page, the sign-in form sits in a white card with a navy stripe across the top. The feature list uses royal blue check marks, and the design sketch has a border and shadow so it doesn't blend into the background.
 
-The dashboard color-codes every class. CS 260 is royal blue, FIN 401 is green, MCOM 320 is orange, and REL A 275 is purple. Each row has a colored stripe down its left edge and a tag in the same color. Anything due soon turns amber with a "Due soon" badge.
+  The dashboard color-codes every class. CS 260 is royal blue, FIN 401 is green, MCOM 320 is orange, and REL A 275 is purple. Each row has a colored stripe down its left edge and a tag in the same color. Anything due soon turns amber with a "Due soon" badge.
 
-On the assignment detail page, the summary card's top stripe and course label take the class color, so a CS 260 assignment is royal and a FIN 401 assignment would be green. The details, time stats, and student notes are each laid out as tiles so nothing is just a plain list.
+  On the assignment detail page, the summary card's top stripe and course label take the class color, so a CS 260 assignment is royal and a FIN 401 assignment would be green. The details, time stats, and student notes are each laid out as tiles so nothing is just a plain list.
 
-On settings, the buttons that remove or delete something (Remove Link, Delete Account) are outlined in red so they don't look like the normal navy actions. The sync table uses the same class colors as the dashboard.
+  On settings, the buttons that remove or delete something (Remove Link, Delete Account) are outlined in red so they don't look like the normal navy actions. The sync table uses the same class colors as the dashboard.
 
-For overflow, I checked all four pages at 360, 390, 768, 1024, and 1440 pixels wide. At every size the page is exactly as wide as the window, with no sideways scroll and no element running past the edge.
+  For overflow, I checked all four pages at 360, 390, 768, 1024, and 1440 pixels wide. At every size the page is exactly as wide as the window, with no sideways scroll and no element running past the edge.
 
-**20% Use of a CSS framework such as Bootstrap**
+- [x] **20% Use of a CSS framework such as Bootstrap**
 
-Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScript bundle for the collapsing nav. I didn't keep Bootstrap's default blue. At the top of `main.css` I point Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-body-font-family`, and the button variables) at BYU navy and royal, so any Bootstrap component I drop in already matches the rest of the site.
+  Every page loads Bootstrap 5.3.8 from the jsDelivr CDN, along with its JavaScript bundle for the collapsing nav. I didn't keep Bootstrap's default blue. At the top of `main.css` I point Bootstrap's own variables (`--bs-primary`, `--bs-link-color`, `--bs-body-font-family`, and the button variables) at BYU navy and royal, so any Bootstrap component I drop in already matches the rest of the site.
 
-The header on every page is a Bootstrap `navbar` with `navbar-expand-lg`, a `navbar-toggler` button, and a `collapse` section, so the links fold into a menu on small screens. The page content sits in a Bootstrap `container`, which lines it up with the navbar. The Logout link is a `btn btn-outline-light`.
+  The header on every page is a Bootstrap `navbar` with `navbar-expand-lg`, a `navbar-toggler` button, and a `collapse` section, so the links fold into a menu on small screens. The page content sits in a Bootstrap `container`, which lines it up with the navbar. The Logout link is a `btn btn-outline-light`.
 
-The login form uses a Bootstrap `card`, `form-label` and `form-control` on the inputs, `mb-3` for spacing, and `btn btn-primary` / `btn btn-outline-primary` for Login and Create Account. Bootstrap hard-codes its own blue into the glow around a focused input, so I override that in `main.css` to use BYU royal on every form in the site.
+  The login form uses a Bootstrap `card`, `form-label` and `form-control` on the inputs, `mb-3` for spacing, and `btn btn-primary` / `btn btn-outline-primary` for Login and Create Account. Bootstrap hard-codes its own blue into the glow around a focused input, so I override that in `main.css` to use BYU royal on every form in the site.
 
-The dashboard uses Bootstrap `card` for the three panels, `form-select` for the filters, `table table-hover align-middle` inside a `table-responsive` wrapper for the assignment list, `form-check-input` for the checkboxes, and `badge` for the due soon tag. The Add Assignment button is `btn btn-primary w-100` so it fills its card.
+  The dashboard uses Bootstrap `card` for the three panels, `form-select` for the filters, `table table-hover align-middle` inside a `table-responsive` wrapper for the assignment list, `form-check-input` for the checkboxes, and `badge` for the due soon tag. The Add Assignment button is `btn btn-primary w-100` so it fills its card.
 
-The assignment detail page uses `card` for each panel, `form-check`, `form-check-input`, and `form-check-label` for the checkbox, `form-control` on the hours input and the textarea, and `btn btn-outline-primary` for Open in Canvas.
+  The assignment detail page uses `card` for each panel, `form-check`, `form-check-input`, and `form-check-label` for the checkbox, `form-control` on the hours input and the textarea, and `btn btn-outline-primary` for Open in Canvas.
 
-Settings uses `card` for its four panels, `form-control` and `form-select` in both forms, `form-switch` to turn the Sunday summary checkbox into an on/off toggle, `table` in a `table-responsive` wrapper for the sync status, and `btn-outline-danger` for Remove Link and Delete Account. I pointed the danger button's variables at a darker red that sits better next to BYU navy.
+  Settings uses `card` for its four panels, `form-control` and `form-select` in both forms, `form-switch` to turn the Sunday summary checkbox into an on/off toggle, `table` in a `table-responsive` wrapper for the sync status, and `btn-outline-danger` for Remove Link and Delete Account. I pointed the danger button's variables at a darker red that sits better next to BYU navy.
 
-**20% All visual elements styled using CSS**
+- [x] **20% All visual elements styled using CSS**
 
-- **Header:** navy navbar, with the `h1` as the brand and "for Students" dimmed next to it. On the login page, a gradient banner holds the tagline and GitHub link.
-- **Nav links:** faded white until you hover over them or they are the current page, then full white with an underline.
-- **Signed in line:** the username is bold, and Logout is a small outlined button.
-- **Footer:** white bar with a top border and muted text.
-- **Login form:** card with a navy top stripe and shadow, full-width inputs, and matching Login and Create Account buttons.
-- **Feature list:** the default bullets are replaced with white check marks in royal circles.
-- **Design sketch:** bordered and shadowed, and it lifts slightly when you hover over it.
-- **Live alerts:** each alert is its own card with a colored left edge (amber for deadlines, royal for classmate activity). They slide in one after another when the page loads, and a green "Live" pill next to the heading has a pulsing dot.
-- **Assignment table:** uppercase column headers, a class color stripe and tag on every row, and amber text plus a badge on the one due soonest. Checking a box grays out the row and strikes through the title.
-- **Time-logging prompt:** a light blue box with a royal border under the table that pops in when the page loads. I left it inline instead of as a true pop-up, because it is always open for now and a pop-up would cover the page with no way to close it until React is in.
-- **Connected services:** green dots next to each service to show it is connected.
-- **Assignment summary:** the due date, status, source, and points are gray tiles with small uppercase labels. The title scales with the window.
-- **Time distribution chart:** the HTML deliverable used `chartPlaceholder.jpg` here, which was a stand-in photo. It is now the Hours Spent table itself, drawn as a bar chart entirely in CSS. Each row carries its count in a CSS variable (`style="--count: 12"`) and the bar height is `calc(var(--count) / var(--max) * 100%)`. The bars grow up from the axis when the page loads and brighten on hover. The table header is hidden on screen but kept for screen readers, so the data is still a real table.
-- **Stats and notes:** Average, Median, and Longest are three tiles with large navy numbers. Each student note is a card with the name in bold and a royal left edge.
-- **Settings:** the "Where to find it" steps are numbered with navy circles drawn from a CSS counter instead of the default list numbers, and the read-only note under them is a light blue callout. The sync table has class color stripes and tags. The account info is a list of label and value pairs split by thin lines, with the value in bold on the right.
-- **Motion:** all of the animations turn off for anyone whose system is set to reduce motion (`prefers-reduced-motion`).
+  - **Header:** navy navbar, with the `h1` as the brand and "for Students" dimmed next to it. On the login page, a gradient banner holds the tagline and GitHub link.
+  - **Nav links:** faded white until you hover over them or they are the current page, then full white with an underline.
+  - **Signed in line:** the username is bold, and Logout is a small outlined button.
+  - **Footer:** white bar with a top border and muted text.
+  - **Login form:** card with a navy top stripe and shadow, full-width inputs, and matching Login and Create Account buttons.
+  - **Feature list:** the default bullets are replaced with white check marks in royal circles.
+  - **Design sketch:** bordered and shadowed, and it lifts slightly when you hover over it.
+  - **Live alerts:** each alert is its own card with a colored left edge (amber for deadlines, royal for classmate activity). They slide in one after another when the page loads, and a green "Live" pill next to the heading has a pulsing dot.
+  - **Assignment table:** uppercase column headers, a class color stripe and tag on every row, and amber text plus a badge on the one due soonest. Checking a box grays out the row and strikes through the title.
+  - **Time-logging prompt:** a light blue box with a royal border under the table that pops in when the page loads. I left it inline instead of as a true pop-up, because it is always open for now and a pop-up would cover the page with no way to close it until React is in.
+  - **Connected services:** green dots next to each service to show it is connected.
+  - **Assignment summary:** the due date, status, source, and points are gray tiles with small uppercase labels. The title scales with the window.
+  - **Time distribution chart:** the HTML deliverable used `chartPlaceholder.jpg` here, which was a stand-in photo. It is now the Hours Spent table itself, drawn as a bar chart entirely in CSS. Each row carries its count in a CSS variable (`style="--count: 12"`) and the bar height is `calc(var(--count) / var(--max) * 100%)`. The bars grow up from the axis when the page loads and brighten on hover. The table header is hidden on screen but kept for screen readers, so the data is still a real table.
+  - **Stats and notes:** Average, Median, and Longest are three tiles with large navy numbers. Each student note is a card with the name in bold and a royal left edge.
+  - **Settings:** the "Where to find it" steps are numbered with navy circles drawn from a CSS counter instead of the default list numbers, and the read-only note under them is a light blue callout. The sync table has class color stripes and tags. The account info is a list of label and value pairs split by thin lines, with the value in bold on the right.
+  - **Motion:** all of the animations turn off for anyone whose system is set to reduce motion (`prefers-reduced-motion`).
 
-**30% Responsive to window resizing using flexbox and/or grid display**
+- [x] **30% Responsive to window resizing using flexbox and/or grid display**
 
-- **Sticky footer:** `body` is a column flexbox and `main` has `flex: 1`, so the footer stays at the bottom of the window even on short pages.
-- **Navbar:** at 992px and up the links sit in one row with the sign-in info pushed to the right. Below that they collapse behind a menu button and stack. I started with 768px, but at tablet width the links and the sign-in line wrapped onto several lines, so I moved the breakpoint up.
-- **Media queries:** two of them in `main.css` change how the current page is marked. Wide screens get an underline, and the collapsed menu gets a white bar on the left.
-- **Footer:** a flex row with `flex-wrap`, so my name and the GitHub link sit on opposite sides and wrap onto two lines on a narrow screen.
-- **Tagline:** sized with `clamp()`, so it scales with the window.
-- **Login layout:** `.login-layout` is a CSS grid. On phones it is one column. At 768px and up it becomes two columns (`5fr 7fr`), with the sign-in card on the left and the features and sketch on the right. The card is `position: sticky`, so it stays in view while you scroll past the sketch.
-- **Login buttons:** a flex row where each button has `flex: 1 1 8rem`, so they split the width evenly and stack if the card gets too narrow.
-- **Dashboard layout:** `.dashboard-grid` is a CSS grid. Below 992px everything stacks. Above it, the assignments card takes the main column and the two forms move into a `20rem` sidebar, which is a flex column.
-- **Live alerts:** a grid with `repeat(auto-fit, minmax(13rem, 1fr))`, so the alerts show three across on a tablet or laptop and drop to one per line on a phone without any media query.
-- **Filter bar:** a wrapping flex row. The two dropdowns share the space and the Apply button keeps its size.
-- **Assignment table on phones:** five columns don't fit on a phone. Below 576px each row turns into its own small CSS grid with named areas, with the checkbox on the left, the class tag and average on top, then the title, then the due date. The column headers hide, and the average gets an "Avg" label so it still makes sense.
-- **Assignment detail layout:** `.detail-grid` is a CSS grid. On large screens the summary and notes span both columns (`grid-column: 1 / -1`) and the chart and the Mark It Done form share the middle row at `3fr 2fr`. Below 992px it is one column.
-- **Detail tiles and notes:** both use `repeat(auto-fit, minmax(...))`, so they go four across (details) or three across (notes) on a laptop and fold down on a phone.
-- **Bar chart:** the table body is a flex row of bars, and each row is a two-row grid with the bar on top and its label under it. The gap between bars shrinks with the window through `clamp()`.
-- **Stat tiles:** a wrapping flex row that keeps all three on one line even at phone width.
-- **Settings layout:** `.settings-grid` is two equal columns at 992px and up, one column below. The cards fill the grid in source order, so the Canvas link sits next to its sync status and the reminder settings sit next to the account card.
-- **No overflow:** the HTML had `size="60"` on the iCal URL input, which forced the page wider than a phone. I removed it, and the input now fills its card and cuts the URL off with an ellipsis. The sync table sits in `table-responsive` so it can never push past the card either.
-- **Settings rows:** the button rows, the sync footer, and each account line are wrapping flex rows, so a label and its value move onto two lines instead of overflowing when the card gets narrow.
+  - **Sticky footer:** `body` is a column flexbox and `main` has `flex: 1`, so the footer stays at the bottom of the window even on short pages.
+  - **Navbar:** at 992px and up the links sit in one row with the sign-in info pushed to the right. Below that they collapse behind a menu button and stack. I started with 768px, but at tablet width the links and the sign-in line wrapped onto several lines, so I moved the breakpoint up.
+  - **Media queries:** two of them in `main.css` change how the current page is marked. Wide screens get an underline, and the collapsed menu gets a white bar on the left.
+  - **Footer:** a flex row with `flex-wrap`, so my name and the GitHub link sit on opposite sides and wrap onto two lines on a narrow screen.
+  - **Tagline:** sized with `clamp()`, so it scales with the window.
+  - **Login layout:** `.login-layout` is a CSS grid. On phones it is one column. At 768px and up it becomes two columns (`5fr 7fr`), with the sign-in card on the left and the features and sketch on the right. The card is `position: sticky`, so it stays in view while you scroll past the sketch.
+  - **Login buttons:** a flex row where each button has `flex: 1 1 8rem`, so they split the width evenly and stack if the card gets too narrow.
+  - **Dashboard layout:** `.dashboard-grid` is a CSS grid. Below 992px everything stacks. Above it, the assignments card takes the main column and the two forms move into a `20rem` sidebar, which is a flex column.
+  - **Live alerts:** a grid with `repeat(auto-fit, minmax(13rem, 1fr))`, so the alerts show three across on a tablet or laptop and drop to one per line on a phone without any media query.
+  - **Filter bar:** a wrapping flex row. The two dropdowns share the space and the Apply button keeps its size.
+  - **Assignment table on phones:** five columns don't fit on a phone. Below 576px each row turns into its own small CSS grid with named areas, with the checkbox on the left, the class tag and average on top, then the title, then the due date. The column headers hide, and the average gets an "Avg" label so it still makes sense.
+  - **Assignment detail layout:** `.detail-grid` is a CSS grid. On large screens the summary and notes span both columns (`grid-column: 1 / -1`) and the chart and the Mark It Done form share the middle row at `3fr 2fr`. Below 992px it is one column.
+  - **Detail tiles and notes:** both use `repeat(auto-fit, minmax(...))`, so they go four across (details) or three across (notes) on a laptop and fold down on a phone.
+  - **Bar chart:** the table body is a flex row of bars, and each row is a two-row grid with the bar on top and its label under it. The gap between bars shrinks with the window through `clamp()`.
+  - **Stat tiles:** a wrapping flex row that keeps all three on one line even at phone width.
+  - **Settings layout:** `.settings-grid` is two equal columns at 992px and up, one column below. The cards fill the grid in source order, so the Canvas link sits next to its sync status and the reminder settings sit next to the account card.
+  - **No overflow:** the HTML had `size="60"` on the iCal URL input, which forced the page wider than a phone. I removed it, and the input now fills its card and cuts the URL off with an ellipsis. The sync table sits in `table-responsive` so it can never push past the card either.
+  - **Settings rows:** the button rows, the sync footer, and each account line are wrapping flex rows, so a label and its value move onto two lines instead of overflowing when the card gets narrow.
 
-**10% Use of a imported font**
+- [x] **10% Use of a imported font**
 
-The whole site uses Inter, pulled from Google Fonts in the `head` of each page. It is set once on `body` through a `--font-body` variable, with system fonts as a fallback if Google Fonts doesn't load.
+  The whole site uses Inter, pulled from Google Fonts in the `head` of each page. It is set once on `body` through a `--font-body` variable, with system fonts as a fallback if Google Fonts doesn't load.
 
-**10% Use of different types of selectors including element, class, ID, and pseudo selectors**
+- [x] **10% Use of different types of selectors including element, class, ID, and pseudo selectors**
 
-- **Element:** `body`, `h1` through `h3`, `a`, `img`, `hr`, and `main` set the base look.
-- **Class:** `.btn-primary` and `.btn-outline-primary` recolor Bootstrap's buttons. `.user-info`, `.username`, `.header-banner`, and `.site-footer` style the header and footer.
-- **ID:** each `body` has an id (`#page-dashboard`) and so does each nav link (`#nav-dashboard`). `#page-dashboard #nav-dashboard` only matches on the dashboard, which is how the current page gets highlighted without any JavaScript. `#ical` styles the Canvas URL input on its own.
-- **Descendant:** `header .nav-link`, `.header-banner a`, and `.sketch img` only reach elements inside those sections.
-- **Element plus class:** `dialog.time-log` styles only the time-logging dialog.
-- **Adjacent sibling:** `.service-list li + li` adds space above every service except the first.
-- **Child:** `.card-body > h2` only sizes headings that sit directly inside a card.
-- **Pseudo-classes:**
-  - `:root` holds the color variables.
-  - `a:hover`, `a:focus-visible`, and `.form-control:focus` handle link and input states.
-  - `tr:has(.form-check-input:checked)` finds any dashboard row whose checkbox is checked and strikes it through, with no JavaScript.
-  - `:nth-child()` staggers the alert and bar chart animations, and on phones places each table cell in its row's grid.
-  - `td:first-child` and `td:last-child` tell a bar chart label from its bar, and `.account-list li:last-child` drops the divider under the last account row.
-- **Pseudo-elements:**
-  - The nav underline is `::after`, and it grows in on `:hover`.
-  - The feature list check marks, the back link arrow, and the numbered settings steps are all `::before`. The steps get their numbers from a CSS counter.
-  - `::selection` colors highlighted text.
+  - **Element:** `body`, `h1` through `h3`, `a`, `img`, and `main` set the base look.
+  - **Class:** `.btn-primary` and `.btn-outline-primary` recolor Bootstrap's buttons. `.user-info`, `.username`, `.header-banner`, and `.site-footer` style the header and footer.
+  - **ID:** each `body` has an id (`#page-dashboard`) and so does each nav link (`#nav-dashboard`). `#page-dashboard #nav-dashboard` only matches on the dashboard, which is how the current page gets highlighted without any JavaScript. `#ical` styles the Canvas URL input on its own.
+  - **Descendant:** `header .nav-link`, `.header-banner a`, and `.sketch img` only reach elements inside those sections.
+  - **Element plus class:** `dialog.time-log` styles only the time-logging dialog.
+  - **Adjacent sibling:** `.service-list li + li` adds space above every service except the first.
+  - **Child:** `.card-body > h2` only sizes headings that sit directly inside a card.
+  - **Pseudo-classes:**
+    - `:root` holds the color variables.
+    - `a:hover`, `a:focus-visible`, and `.form-control:focus` handle link and input states.
+    - `tr:has(.form-check-input:checked)` finds any dashboard row whose checkbox is checked and strikes it through, with no JavaScript.
+    - `:nth-child()` staggers the alert and bar chart animations, and on phones places each table cell in its row's grid.
+    - `td:first-child` and `td:last-child` tell a bar chart label from its bar, and `.account-list li:last-child` drops the divider under the last account row.
+  - **Pseudo-elements:**
+    - The nav underline is `::after`, and it grows in on `:hover`.
+    - The feature list check marks, the back link arrow, and the numbered settings steps are all `::before`. The steps get their numbers from a CSS counter.
+    - `::selection` colors highlighted text.
 
 
 
