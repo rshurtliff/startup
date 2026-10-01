@@ -1,0 +1,288 @@
+/* Dashboard view. Imported by src/dashboard/dashboard.jsx. */
+
+/* ---------- Live alerts ---------- */
+
+.live-alerts {
+  margin-bottom: 2rem;
+}
+
+/* Alert cards fill the row and drop to fewer columns as the window narrows */
+.alert-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alert-feed li {
+  padding: 0.8rem 1rem;
+  font-size: 0.925rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--byu-royal);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 30, 60, 0.05);
+  animation: slide-in 0.4s ease-out both;
+}
+
+/* New alerts slide in one after another */
+.alert-feed li:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.alert-feed li:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.alert-feed .alert-due {
+  font-weight: 600;
+  border-left-color: var(--due-soon);
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Main layout ---------- */
+
+/* Assignments take the width, forms move to a sidebar on large screens */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+  }
+}
+
+.dashboard-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ---------- Filter bar ---------- */
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.filter-field {
+  flex: 1 1 10rem;
+}
+
+.filter-field .form-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+/* ---------- Assignment table ---------- */
+
+.assignment-table {
+  margin-bottom: 0;
+}
+
+.assignment-table thead th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.assignment-table tbody td:first-child {
+  border-left: 4px solid var(--class-color, transparent);
+}
+
+.assignment-table a {
+  font-weight: 500;
+}
+
+.due-cell {
+  white-space: nowrap;
+}
+
+.due-soon .due-cell {
+  font-weight: 600;
+  color: var(--due-soon);
+}
+
+.due-badge {
+  margin-left: 0.4rem;
+  background-color: var(--due-soon);
+}
+
+/* A checked box fades its row and strikes through the title. No JavaScript. */
+.assignment-table tr:has(.form-check-input:checked) td {
+  color: var(--done);
+}
+
+.assignment-table tr:has(.form-check-input:checked) a {
+  color: var(--done);
+  text-decoration: line-through;
+}
+
+.assignment-table tr:has(.form-check-input:checked) .class-tag {
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+
+.assignment-table .form-check-input {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Phones: five columns don't fit, so each row becomes a small grid card.
+   Checkbox on the left, class tag and average on top, then title, then due. */
+@media (max-width: 575.98px) {
+  .assignment-table thead {
+    display: none;
+  }
+
+  .assignment-table tbody tr {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      "done tag avg"
+      "done title title"
+      "done due due";
+    border-bottom: 1px solid var(--border);
+  }
+
+  .assignment-table tbody td {
+    padding: 0.2rem 0.5rem;
+    border-bottom: 0;
+  }
+
+  .assignment-table tbody td:nth-child(1) {
+    grid-area: done;
+    display: flex;
+    align-items: center;
+  }
+
+  .assignment-table tbody td:nth-child(2) {
+    grid-area: tag;
+    padding-top: 0.7rem;
+  }
+
+  .assignment-table tbody td:nth-child(3) {
+    grid-area: title;
+  }
+
+  .assignment-table tbody td:nth-child(4) {
+    grid-area: due;
+    padding-bottom: 0.7rem;
+    font-size: 0.875rem;
+  }
+
+  .assignment-table tbody td:nth-child(5) {
+    grid-area: avg;
+    padding-top: 0.7rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  /* The column header is hidden, so the average labels itself */
+  .assignment-table tbody td:nth-child(5)::before {
+    content: "Avg ";
+  }
+}
+
+/* ---------- Time logging prompt ---------- */
+
+/* Shown inline under the table instead of as a real modal, since it is open
+   by default and a modal would cover the page with no way to close it yet */
+dialog.time-log {
+  position: static;
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 1.5rem 0 0;
+  padding: 1.25rem 1.5rem;
+  color: var(--text);
+  background-color: #eef5fc;
+  border: 2px solid var(--byu-royal);
+  border-radius: var(--radius);
+  animation: pop-in 0.35s ease-out both;
+}
+
+dialog.time-log h2 {
+  margin-bottom: 0.25rem;
+  font-size: 1.15rem;
+}
+
+dialog.time-log p {
+  margin-bottom: 0.9rem;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.time-log-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.time-log-form .form-label {
+  margin: 0;
+}
+
+/* ---------- Connected services ---------- */
+
+.service-list {
+  margin: 0 0 1rem;
+  padding: 0;
+  font-size: 0.925rem;
+  list-style: none;
+}
+
+.service-list li {
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+.service-list li + li {
+  margin-top: 0.6rem;
+}
+
+/* Green dot means the service is connected */
+.service-list li::before {
+  content: "";
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  background-color: #1d9a5b;
+  border-radius: 50%;
+}

@@ -13,6 +13,7 @@
 - Moved the header and footer into the `App` component
 - Added the React router with a stub component for each page and a 404 page
 - Moved the login page into its own component and CSS file
+- Moved the dashboard into its own component and CSS file
 
 # React part1
 
@@ -23,17 +24,19 @@
 
   I also moved my files around so Vite can find them. Images live in `public/` now, and all the React code goes in `src/`, with a folder for each page. `main.css` became `src/app.css`. I added `node_modules`, `dist`, and `build` to `.gitignore` so none of that ends up on GitHub.
 
-  React, React Router, Bootstrap, and React Bootstrap all come from npm now instead of a CDN link. `index.html` is just an empty `root` div, and `index.jsx` loads my `App` component from `src/app.jsx` into it. My old login page got renamed to `login.html` until I move it into a component.
+  React, React Router, Bootstrap, and React Bootstrap all come from npm now instead of a CDN link. `index.html` is just an empty `root` div, and `index.jsx` loads my `App` component from `src/app.jsx` into it. While I port each page, the old HTML files sit in `css-version/` so I can copy from them. Each one gets deleted once its component is done.
 
 - [ ] **70% Multiple React components that contain your HTML and CSS**
 
-  The header and footer used to be copied into all four HTML pages. Now they live once in `src/app.jsx`. The navbar is a React Bootstrap `Navbar`, so the phone menu still opens and closes without Bootstrap's JavaScript file. The footer still has my name and the GitHub link.
-
-  React puts everything inside a `root` div instead of right in `body`, so the flex layout that keeps the footer at the bottom moved from `body` to an `.app` wrapper in `src/app.css`.
-
   Each page is its own component in its own folder, with its own CSS file that the component imports. `src/app.css` keeps only the shared stuff like colors, the header, the footer, and cards.
 
+  - **App** (`src/app.jsx` and `app.css`): the header and footer used to be copied into all four HTML pages. Now they live here once. The navbar is a React Bootstrap `Navbar`, so the phone menu still opens and closes without Bootstrap's JavaScript file. The footer still has my name and the GitHub link. React puts everything inside a `root` div instead of right in `body`, so the flex layout that keeps the footer at the bottom moved to an `.app` wrapper.
+
   - **Login** (`src/login/login.jsx` and `login.css`): the sign in card, the feature list, and the design sketch. The blue banner with my name and GitHub link moved in here too, since only the login page has it. Login and Create Account take you to the dashboard. The fields are still required, so you have to type something first.
+
+  - **Dashboard** (`src/dashboard/dashboard.jsx` and `dashboard.css`): live alerts, the color-coded assignment table, the time logging box, and the sidebar forms. Each assignment title is a router `Link` to its own `/assignment/:id`, and "Manage your Canvas link" links to `/settings`. The checked box uses `defaultChecked` and the hours box uses `defaultValue` so React lets you change them. The forms don't reload the page anymore.
+
+  A few styles are used on more than one page, like the class colors, the "Live" tag, and the hours input. Those stayed in `app.css` so I'm not copying them into every page's CSS.
 
 - [x] **20% React router**
 
