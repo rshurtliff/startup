@@ -1,0 +1,32 @@
+{
+  "name": "startup",
+  "version": "1.0.0",
+  "description": "Trackr: every assignment from every class, in one place. BYU CS 260 startup.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rshurtliff/startup.git"
+  },
+  "keywords": [],
+  "author": "Ryan Shurtliff",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rshurtliff/startup/issues"
+  },
+  "homepage": "https://github.com/rshurtliff/startup#readme",
+  "devDependencies": {
+    "vite": "^8.3.2"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "react": "^19.3.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
+  }
+}

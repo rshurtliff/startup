@@ -3,3 +3,5 @@
 simon-html/
 simon-css/
 node_modules
+dist
+build

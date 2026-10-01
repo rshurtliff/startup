@@ -3,114 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Trackr - Login</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="main.css" />
+    <meta name="theme-color" content="#002e5d" />
+
+    <title>Trackr</title>
   </head>
-
-  <body id="page-login">
-    <header>
-      <nav class="navbar navbar-expand-lg" data-bs-theme="dark">
-        <div class="container">
-          <h1 class="navbar-brand">Trackr <span class="brand-sub">for Students</span></h1>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#main-nav"
-            aria-controls="main-nav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="main-nav">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item"><a class="nav-link" id="nav-login" href="index.html" aria-current="page">Login</a></li>
-              <li class="nav-item"><a class="nav-link" id="nav-dashboard" href="dashboard.html">Dashboard</a></li>
-              <li class="nav-item"><a class="nav-link" id="nav-assignment" href="assignment.html">Assignment Detail</a></li>
-              <li class="nav-item"><a class="nav-link" id="nav-settings" href="settings.html">Settings</a></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-      <div class="header-banner">
-        <div class="container">
-          <p class="tagline">Every assignment from every class, in one place.</p>
-          <p class="byline">By Ryan Shurtliff | <a href="https://github.com/rshurtliff/startup" target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
-        </div>
-      </div>
-    </header>
-
-    <main class="container">
-      <div class="login-layout">
-        <section class="card login-card">
-          <div class="card-body">
-            <h2>Sign in</h2>
-
-            <!-- Login placeholder. React will replace this with a real form that
-                 calls the service, and the service will check the credentials
-                 against the database. -->
-            <form method="post" action="dashboard.html">
-              <div class="mb-3">
-                <label class="form-label" for="netid">BYU Net ID</label>
-                <input class="form-control" type="text" id="netid" name="netid" placeholder="your-netid" required />
-              </div>
-              <div class="mb-3">
-                <label class="form-label" for="password">Password</label>
-                <input class="form-control" type="password" id="password" name="password" placeholder="password" required />
-              </div>
-              <div class="login-actions">
-                <button class="btn btn-primary" type="submit">Login</button>
-                <button class="btn btn-outline-primary" type="submit">Create Account</button>
-              </div>
-            </form>
-
-            <p class="login-note">
-              Once you are signed in, your assignments load automatically from your
-              Canvas calendar feed. You can also add your own assignments for things
-              Canvas does not track.
-            </p>
-          </div>
-        </section>
-
-        <section class="features">
-          <h2>What you get</h2>
-          <ul class="feature-list">
-            <li>All of your assignments pulled from Canvas into one list</li>
-            <li>Sort by class, due date, or how much is left to do</li>
-            <li>Check an assignment off and log how long it actually took</li>
-            <li>See how long the assignment took everyone else before you start</li>
-            <li>Email reminders as a deadline gets close</li>
-          </ul>
-
-          <figure class="sketch">
-            <img
-              src="designSketch.png"
-              alt="Design sketch showing the login, dashboard, and assignment detail views"
-              width="300"
-            />
-            <figcaption>The three main views of Trackr.</figcaption>
-          </figure>
-        </section>
-      </div>
-    </main>
-
-    <footer class="site-footer">
-      <div class="container">
-        <p>Ryan Shurtliff</p>
-        <p><a href="https://github.com/rshurtliff/startup" target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
-      </div>
-    </footer>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.jsx"></script>
   </body>
 </html>

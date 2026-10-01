@@ -8,6 +8,23 @@
 - Styled the assignment detail page. The time distribution is now a bar chart drawn with CSS from the table data, replacing the placeholder photo
 - Styled the settings page: four cards in a grid, color-coded sync table, numbered setup steps, and red buttons for the destructive actions
 - Tested every page at phone, tablet, and desktop widths
+- Started React part1. Set up Vite and moved my files into `public/` and `src/`
+- Installed React and got the first `App` component showing with `npm run dev`
+
+# React part1
+
+## What I did for Each Rubric Item
+- [x] **10% Bundled using Vite**
+
+  I set up npm and installed Vite. The scripts are in `package.json`. `npm run dev` runs the app while I work on it, `npm run build` bundles it, and `npm run preview` lets me test the bundled version before I deploy.
+
+  I also moved my files around so Vite can find them. Images live in `public/` now, and all the React code goes in `src/`, with a folder for each page. `main.css` became `src/app.css`. I added `node_modules`, `dist`, and `build` to `.gitignore` so none of that ends up on GitHub.
+
+  React, React Router, Bootstrap, and React Bootstrap all come from npm now instead of a CDN link. `index.html` is just an empty `root` div, and `index.jsx` loads my `App` component from `src/app.jsx` into it. My old login page got renamed to `login.html` until I move it into a component.
+
+- [ ] **70% Multiple React components that contain your HTML and CSS**
+
+- [ ] **20% React router**
 
 # Startup CSS Deliverable
 https://startup.cs260hwtrackr.click/
@@ -192,7 +209,7 @@ Every BYU student needs a way to track everything due across their classes, and 
 
 ## Design Sketch
 
-![Design sketch of the assignment tracker: login, dashboard, and assignment detail views, plus the architecture connecting the React client, Express service, MongoDB, the Canvas iCal feed, and SendGrid](designSketch.png)
+![Design sketch of the assignment tracker: login, dashboard, and assignment detail views, plus the architecture connecting the React client, Express service, MongoDB, the Canvas iCal feed, and SendGrid](public/designSketch.png)
 
 The top row sketches the three main views: **login/register**, the **dashboard** (assignments pulled from Canvas, color-coded by class and sorted by due date, with the time-logging prompt that fires the instant a box is checked), and the **assignment detail** view with its live time-distribution chart.
 
