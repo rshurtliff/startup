@@ -10,6 +10,7 @@
 - Tested every page at phone, tablet, and desktop widths
 - Started React part1. Set up Vite and moved my files into `public/` and `src/`
 - Installed React and got the first `App` component showing with `npm run dev`
+- Moved the header and footer into the `App` component
 
 # React part1
 
@@ -23,6 +24,10 @@
   React, React Router, Bootstrap, and React Bootstrap all come from npm now instead of a CDN link. `index.html` is just an empty `root` div, and `index.jsx` loads my `App` component from `src/app.jsx` into it. My old login page got renamed to `login.html` until I move it into a component.
 
 - [ ] **70% Multiple React components that contain your HTML and CSS**
+
+  The header and footer used to be copied into all four HTML pages. Now they live once in `src/app.jsx`. The navbar is a React Bootstrap `Navbar`, so the phone menu still opens and closes without Bootstrap's JavaScript file. The footer still has my name and the GitHub link.
+
+  React puts everything inside a `root` div instead of right in `body`, so the flex layout that keeps the footer at the bottom moved from `body` to an `.app` wrapper in `src/app.css`.
 
 - [ ] **20% React router**
 

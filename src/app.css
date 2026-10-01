@@ -131,17 +131,21 @@ html {
   font-size: 100%;
 }
 
-/* Column flex layout pins the footer to the bottom on short pages */
 body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
   margin: 0;
   font-family: var(--font-body);
   color: var(--text);
   background-color: var(--page-bg);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+}
+
+/* React renders inside #root, not directly in body, so the column flex
+   layout that pins the footer to the bottom lives on this wrapper */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 h1,
