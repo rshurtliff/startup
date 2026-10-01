@@ -1,0 +1,136 @@
+/* Login view. Imported by src/login/login.jsx. */
+
+/* ---------- Banner ---------- */
+
+/* Gradient strip under the navbar, only on the login page */
+.header-banner {
+  padding: 2rem 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--byu-navy) 0%, var(--byu-royal) 100%);
+}
+
+.header-banner p {
+  margin: 0;
+}
+
+.tagline {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.header-banner .byline {
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.header-banner a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.header-banner a:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---------- Sign in and features ---------- */
+
+/* One column on phones, sign-in card and features side by side from 768px */
+.login-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .login-layout {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 2.5rem;
+  }
+
+  /* The sketch column runs long, so the sign-in card follows you down */
+  .login-card {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+.login-card .card-body {
+  padding: 1.75rem;
+}
+
+/* Buttons share the row evenly and stack if the card gets too narrow */
+.login-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.login-actions .btn {
+  flex: 1 1 8rem;
+  font-weight: 600;
+}
+
+.login-note {
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* Feature list swaps bullets for royal check marks */
+.feature-list {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.feature-list li::before {
+  content: "✓";
+  flex: 0 0 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: var(--byu-royal);
+  border-radius: 50%;
+}
+
+.sketch {
+  margin: 0;
+}
+
+.sketch img {
+  width: 100%;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 30, 60, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.sketch img:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 30, 60, 0.14);
+}
+
+.sketch figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-align: center;
+}

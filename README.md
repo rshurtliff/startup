@@ -12,6 +12,7 @@
 - Installed React and got the first `App` component showing with `npm run dev`
 - Moved the header and footer into the `App` component
 - Added the React router with a stub component for each page and a 404 page
+- Moved the login page into its own component and CSS file
 
 # React part1
 
@@ -29,6 +30,10 @@
   The header and footer used to be copied into all four HTML pages. Now they live once in `src/app.jsx`. The navbar is a React Bootstrap `Navbar`, so the phone menu still opens and closes without Bootstrap's JavaScript file. The footer still has my name and the GitHub link.
 
   React puts everything inside a `root` div instead of right in `body`, so the flex layout that keeps the footer at the bottom moved from `body` to an `.app` wrapper in `src/app.css`.
+
+  Each page is its own component in its own folder, with its own CSS file that the component imports. `src/app.css` keeps only the shared stuff like colors, the header, the footer, and cards.
+
+  - **Login** (`src/login/login.jsx` and `login.css`): the sign in card, the feature list, and the design sketch. The blue banner with my name and GitHub link moved in here too, since only the login page has it. Login and Create Account take you to the dashboard. The fields are still required, so you have to type something first.
 
 - [x] **20% React router**
 
