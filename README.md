@@ -15,6 +15,7 @@
 - Moved the login page into its own component and CSS file
 - Moved the dashboard into its own component and CSS file
 - Moved the assignment detail page into its own component and CSS file
+- Moved settings into its own component and CSS file. Every page is a React component now, and the old HTML files are gone
 
 # React part1
 
@@ -25,9 +26,9 @@
 
   I also moved my files around so Vite can find them. Images live in `public/` now, and all the React code goes in `src/`, with a folder for each page. `main.css` became `src/app.css`. I added `node_modules`, `dist`, and `build` to `.gitignore` so none of that ends up on GitHub.
 
-  React, React Router, Bootstrap, and React Bootstrap all come from npm now instead of a CDN link. `index.html` is just an empty `root` div, and `index.jsx` loads my `App` component from `src/app.jsx` into it. While I port each page, the old HTML files sit in `css-version/` so I can copy from them. Each one gets deleted once its component is done.
+  React, React Router, Bootstrap, and React Bootstrap all come from npm now instead of a CDN link. `index.html` is just an empty `root` div, and `index.jsx` loads my `App` component from `src/app.jsx` into it. While I ported each page, the old HTML files sat in a `css-version/` folder so I could copy from them. I deleted each one once its component was done, and the folder is gone now.
 
-- [ ] **70% Multiple React components that contain your HTML and CSS**
+- [x] **70% Multiple React components that contain your HTML and CSS**
 
   Each page is its own component in its own folder, with its own CSS file that the component imports. `src/app.css` keeps only the shared stuff like colors, the header, the footer, and cards.
 
@@ -38,6 +39,8 @@
   - **Dashboard** (`src/dashboard/dashboard.jsx` and `dashboard.css`): live alerts, the color-coded assignment table, the time logging box, and the sidebar forms. Each assignment title is a router `Link` to its own `/assignment/:id`, and "Manage your Canvas link" links to `/settings`. The checked box uses `defaultChecked` and the hours box uses `defaultValue` so React lets you change them. The forms don't reload the page anymore.
 
   - **Assignment** (`src/assignment/assignment.jsx` and `assignment.css`): the shared detail page for any assignment, with the summary tiles, the bar chart, the stat tiles, the Mark It Done form, and student notes. The bar chart was the interesting part. In HTML each row had `style="--count: 12"`, but JSX wants an object, so it became `style={{ '--count': 12 }}`. The CSS still reads `--count` to set each bar's height. "Back to dashboard" is a router `Link` now.
+
+  - **Settings** (`src/settings/settings.jsx` and `settings.css`): the Canvas link form, sync status table, email reminder settings, and account info. This page has the most filled-in placeholder data, so the iCal link and email use `defaultValue` and the Sunday summary switch uses `defaultChecked`. That way they show my sample data but you can still change them.
 
   A few styles are used on more than one page, like the class colors, the "Live" tag, and the hours input. Those stayed in `app.css` so I'm not copying them into every page's CSS.
 
