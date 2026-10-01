@@ -1,4 +1,80 @@
-# Finishing the CSS Deliverable 9/28/26
+# Vite + React Notes
+``` npm run dev ``` is how you launch a directory that uses vite. This still new so refer back to the Vite page in MasteryLS as needed. Vite directories don't work with the Go Live feature on VSCode.
+
+
+# Finishing the CSS Deliverable 9/28/26:
+## Feedback from MasteryLS
+This is an exceptional CSS deliverable. You have demonstrated a high level of mastery in modern CSS techniques, particularly through the use of CSS variables, the :has() pseudo-class for state management, and a highly creative CSS-only bar chart. Your responsiveness is robust, utilizing both Grid and Flexbox effectively to handle complex layout shifts.
+
+Strengths
+CSS-only Bar Chart Implementation
+In main.css, you implemented a bar chart using a semantic HTML table and CSS variables. This is a brilliant way to maintain accessibility while providing a visual representation of data without the overhead of a JavaScript library.
+
+/* main.css */
+.bar-chart td:last-child {
+  grid-row: 1;
+  align-self: end;
+  height: calc(var(--count) / var(--max) * 100%);
+  min-height: 1.75rem;
+  padding-top: 0.3rem;
+  /* ... */
+  animation: grow-up 0.6s ease-out both;
+}
+Advanced Selector Usage
+Your use of the :has() pseudo-class in main.css allows for sophisticated styling based on child state (checkboxes) that would traditionally require JavaScript. This keeps your codebase cleaner and more performant.
+
+/* main.css */
+.assignment-table tr:has(.form-check-input:checked) td {
+  color: var(--done);
+}
+
+.assignment-table tr:has(.form-check-input:checked) a {
+  color: var(--done);
+  text-decoration: line-through;
+}
+Areas to improve
+High Specificity Selectors
+In main.css, you use ID-based descendant selectors to highlight the active navigation link. This creates very high specificity which can make future overrides difficult.
+
+/* main.css */
+#page-login #nav-login,
+#page-dashboard #nav-dashboard,
+#page-assignment #nav-assignment,
+#page-settings #nav-settings {
+  color: #ffffff;
+  font-weight: 600;
+}
+Recommendation: Consider using a utility class like .active or the standard aria-current="page" attribute selector to reduce specificity.
+
+Fixed Heights in Layouts
+The bar chart container in main.css uses a fixed height, which might cause issues on very small viewport heights or if the content inside the bars (like text) grows.
+
+` /* main.css */
+.bar-chart tbody {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.4rem, 2vw, 1rem);
+  height: 15rem;
+}
+Recommendation: Use min-height or aspect-ratio to allow the chart to scale more fluidly in different viewport orientations.
+
+Bootstrap Versioning Inconsistency
+In index.html (and others), you are referencing Bootstrap version 5.3.8. As of the current stable release, Bootstrap is on 5.3.3.
+
+<!-- index.html -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+  /* ... */
+/>
+Recommendation: Ensure you are using a stable, existing version number to prevent potential 404 errors if a CDN purge occurs for non-existent versions.
+
+Duplicate ID Usage
+In dashboard.html, you have a time-logging dialog with an input ID of hours. If the assignment detail page and dashboard are ever merged into a single view (common in React), this will cause ID collisions.
+
+<!-- dashboard.html -->
+<input class="form-control" type="number" id="hours" name="hours" ... />
+Recommendation: Use more specific IDs (e.g., id="dash-log-hours") or rely on classes for styling to ensure uniqueness across the application.
 
 ## Theming Bootstrap
 
