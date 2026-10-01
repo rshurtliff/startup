@@ -16,8 +16,10 @@
 - Moved the dashboard into its own component and CSS file
 - Moved the assignment detail page into its own component and CSS file
 - Moved settings into its own component and CSS file. Every page is a React component now, and the old HTML files are gone
+- Switched to `deployReact.sh` and deployed React part1
 
 # React part1
+https://startup.cs260hwtrackr.click/
 
 ## What I did for Each Rubric Item
 - [x] **10% Bundled using Vite**
@@ -27,6 +29,8 @@
   I also moved my files around so Vite can find them. Images live in `public/` now, and all the React code goes in `src/`, with a folder for each page. `main.css` became `src/app.css`. I added `node_modules`, `dist`, and `build` to `.gitignore` so none of that ends up on GitHub.
 
   React, React Router, Bootstrap, and React Bootstrap all come from npm now instead of a CDN link. `index.html` is just an empty `root` div, and `index.jsx` loads my `App` component from `src/app.jsx` into it. While I ported each page, the old HTML files sat in a `css-version/` folder so I could copy from them. I deleted each one once its component was done, and the folder is gone now.
+
+  To deploy, I replaced my old `deployFiles.sh` with the course's `deployReact.sh`. It runs `npm run build`, which bundles everything into one JavaScript file and one CSS file, and copies that up to my server.
 
 - [x] **70% Multiple React components that contain your HTML and CSS**
 

@@ -1,3 +1,32 @@
+# Finishing React Phase 1 10/1/26
+
+## What Porting Actually Means
+
+Porting a page is mostly the same five steps every time. Copy only the page's own content into the component, since the header and footer already live in `app.jsx`. Fix the HTML that isn't valid JSX. Move that page's CSS into its own file next to the component and import it. Fix anything that assumed separate HTML pages. Then delete the old `.html` file.
+
+## JSX Is Not HTML
+
+- `class` is `className` and `for` is `htmlFor`, because both are JavaScript keywords.
+- Comments are `{/* */}`, not `<!-- -->`.
+- `style` takes an object, not a string. My bar chart's `style="--count: 12"` had to become `style={{ '--count': 12 }}`. The quotes are needed because of the dashes.
+- Inputs with sample data need `defaultValue` and `defaultChecked`. Plain `value` or `checked` with no `onChange` makes React lock the input and log a warning.
+- A component can only return one element. The login page has the banner and `main` side by side, so they get wrapped in `<>...</>`.
+- Functions like `handleSubmit` go inside the component, above the `return`. The JSX only refers to them by name.
+
+## A Single Page App Changes Links and Forms
+
+There is only one real HTML page now. `<a href="dashboard.html">` becomes `<Link to="/dashboard">`, and forms use `onSubmit` with `event.preventDefault()` so they don't reload everything. `NavLink` adds an `active` class on its own, which replaced my ID selector trick for highlighting the current page.
+
+The Vite dev server will serve a leftover `dashboard.html` at `/dashboard` before React gets a chance, so the old files had to move out of the root while I ported.
+
+## Shared CSS vs Page CSS
+
+`app.css` keeps what more than one page uses: colors, the header, the footer, cards, class color tags. Everything else lives next to its component. When I pasted CSS into a new file, VS Code shifted the indent, and Shift + Option + F fixed it.
+
+## Deploying
+
+`deployReact.sh` replaced `deployFiles.sh`. It runs `npm run build`, which bundles everything into `dist/` (one JS file, one CSS file, plus `public/`), and copies that up. `npm run preview` is the way to test the built version before deploying. The server sends back `index.html` for any path, which is why refreshing on `/settings` still works.
+
 # Startup React Phase 1 Plan 10/1/26
 
 Plan for Startup React Phase 1:
