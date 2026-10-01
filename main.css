@@ -1,5 +1,8 @@
 /* Trackr shared stylesheet. Loaded after Bootstrap so these rules win. */
 
+/* Inter from Google Fonts. @import has to come before every other rule. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 /* ---------- Color and type tokens ---------- */
 
 :root {

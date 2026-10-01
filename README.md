@@ -85,7 +85,7 @@ https://startup.cs260hwtrackr.click/
 
 - [x] **10% Use of a imported font**
 
-  The whole site uses Inter, pulled from Google Fonts in the `head` of each page. It is set once on `body` through a `--font-body` variable, with system fonts as a fallback if Google Fonts doesn't load.
+  The whole site uses Inter from Google Fonts. It is imported at the top of `main.css` with `@import url("https://fonts.googleapis.com/css2?family=Inter...")`, then set once on `body` through a `--font-body` variable, with system fonts as a fallback if Google Fonts doesn't load.
 
 - [x] **10% Use of different types of selectors including element, class, ID, and pseudo selectors**
 

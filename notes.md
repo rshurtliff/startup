@@ -1,3 +1,35 @@
+# Startup React Phase 1 Plan 10/1/26
+
+Plan for Startup React Phase 1:
+
+Rubric: 10% bundled with Vite, 70% multiple React components holding my HTML and CSS, 20% React router.
+
+| # | Session | What gets built | Rubric |
+|---|---|---|---|
+| 1 | **Vite and reorganize** | `npm init`, install Vite, add the dev/build/preview scripts, add `dist` to `.gitignore`. Make `public/` for images and `src/` with a folder per view (login, dashboard, assignment, settings). Move `main.css` to `src/app.css`. | Vite |
+| 2 | **Enable React** | Install `react`, `react-dom`, `react-router-dom`, `bootstrap`, and `react-bootstrap`. Rename the old `index.html` to `login.html`, then write the new `index.html` (just a `#root` div) and `index.jsx`. App stub shows up with `npm run dev`. | Vite |
+| 3 | **App shell** | Move the header and footer into `app.jsx`. Swap the CDN Bootstrap for the npm import. The navbar becomes React Bootstrap `Navbar` so the phone menu collapses without Bootstrap's JS file. Change `body` styles to a wrapper class so the sticky footer still works. Inter font stays in `index.html`. | Components |
+| 4 | **Router** | Stub components for Login, Dashboard, Assignment, Settings, and a NotFound page. `BrowserRouter`, `Routes`, and `NavLink` for the nav. NavLink adds `.active` on its own, so it replaces the `#page-x #nav-x` trick. | Router |
+| 5 | **Login component** | Port the login HTML into `login.jsx` with its own `login.css`. The gradient banner moves into this component since only the login page has it. Login button goes to `/dashboard`. | Components |
+| 6 | **Dashboard component** | Port the dashboard into `dashboard.jsx` and `dashboard.css`. JSX fixes: `class` to `className`, `for` to `htmlFor`, `checked` to `defaultChecked`, comments to `{/* */}`. Assignment titles become router `Link`s. | Components |
+| 7 | **Assignment component** | Port the detail page. The bar chart's `style="--count: 12"` becomes `style={{ '--count': 12 }}`. Route becomes `/assignment/:id`, which is where the shared template idea starts to be real. | Components, Router |
+| 8 | **Settings component** | Port settings. Delete the old `.html` pages and the unused `chartPlaceholder.jpg`. Check every route at phone and desktop width for overflow. | Components |
+| 9 | **Deploy and document** | Replace `deployFiles.sh` with `deployReact.sh`, test with `npm run build` and `npm run preview`, then deploy with `-s startup`. Finish the README checklist and these notes. | All |
+
+Things to watch for:
+- Forms that `POST` to `dashboard.html` would reload the page in a single-page app. They need to stop doing that (button type or a small `onSubmit`) without adding real logic yet.
+- React warns about inputs with `value` or `checked` and no `onChange`. Use `defaultValue` and `defaultChecked` for placeholder data.
+- Refreshing on `/dashboard` only works if the server sends back `index.html` for unknown paths. My Simon React already does this on refresh, so the server is set up.
+- Live Server doesn't work for Vite projects. Use `npm run dev`.
+
+Decisions:
+- Only the navbar uses React Bootstrap (`Navbar`). Everything else keeps plain Bootstrap classes like `className="btn btn-primary"`.
+- `NavLink`'s `.active` class replaces the ID selector trick for the current page.
+- `main.css` splits into a shared `app.css` plus one CSS file per component.
+- The detail route is `/assignment/:id`, and each dashboard row links to its own id. The page still shows the same placeholder for now.
+- "Signed in as" stays visible on every page until Phase 2, when there is real login state to check.
+- Forms work in the single-page app now. Login and Create Account go to `/dashboard`, and the other forms stop reloading the page.
+
 # Vite + React Notes
 ``` npm run dev ``` is how you launch a directory that uses vite. This still new so refer back to the Vite page in MasteryLS as needed. Vite directories don't work with the Go Live feature on VSCode.
 
