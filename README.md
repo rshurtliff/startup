@@ -11,6 +11,7 @@
 - Started React part1. Set up Vite and moved my files into `public/` and `src/`
 - Installed React and got the first `App` component showing with `npm run dev`
 - Moved the header and footer into the `App` component
+- Added the React router with a stub component for each page and a 404 page
 
 # React part1
 
@@ -29,7 +30,13 @@
 
   React puts everything inside a `root` div instead of right in `body`, so the flex layout that keeps the footer at the bottom moved from `body` to an `.app` wrapper in `src/app.css`.
 
-- [ ] **20% React router**
+- [x] **20% React router**
+
+  `src/app.jsx` wraps the whole app in a `BrowserRouter`. The `Routes` block sits between the header and footer and swaps in a component for each path: `/` for Login, `/dashboard`, `/assignment/:id`, and `/settings`. Anything else shows a 404 page with a link back to the dashboard.
+
+  The nav links are React Router `NavLink`s, so clicking one changes the page without reloading. `NavLink` also puts an `active` class on the link for the page you're on, which replaced the ID selector trick I used in the CSS version. On a phone, the menu closes after you tap a link.
+
+  The assignment route takes an id because every assignment uses the same detail page. For now the nav link opens a sample one, `/assignment/cs260-startup-html`.
 
 # Startup CSS Deliverable
 https://startup.cs260hwtrackr.click/

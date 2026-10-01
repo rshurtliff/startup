@@ -232,12 +232,9 @@ header .nav-link:focus-visible {
   text-decoration: none;
 }
 
-/* Current page. Each body has an id, and so does each nav link,
-   so the pair only matches on the page the link points to. */
-#page-login #nav-login,
-#page-dashboard #nav-dashboard,
-#page-assignment #nav-assignment,
-#page-settings #nav-settings {
+/* Current page. React Router's NavLink adds .active to the link
+   for the route that is showing. */
+header .nav-link.active {
   color: #ffffff;
   font-weight: 600;
 }
@@ -265,10 +262,7 @@ header .nav-link:focus-visible {
     border-left: 3px solid transparent;
   }
 
-  #page-login #nav-login,
-  #page-dashboard #nav-dashboard,
-  #page-assignment #nav-assignment,
-  #page-settings #nav-settings {
+  header .nav-link.active {
     border-left-color: #ffffff;
   }
 
@@ -294,10 +288,7 @@ header .nav-link:focus-visible {
   }
 
   header .nav-link:hover::after,
-  #page-login #nav-login::after,
-  #page-dashboard #nav-dashboard::after,
-  #page-assignment #nav-assignment::after,
-  #page-settings #nav-settings::after {
+  header .nav-link.active::after {
     transform: scaleX(1);
   }
 }
@@ -332,6 +323,17 @@ header .nav-link:focus-visible {
 
 .header-banner a:hover {
   color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---------- 404 page ---------- */
+
+.not-found {
+  text-align: center;
+}
+
+.not-found h2 {
+  margin-top: 2rem;
+  font-size: 3rem;
 }
 
 /* ---------- Footer ---------- */
