@@ -14,6 +14,7 @@
 - Added the React router with a stub component for each page and a 404 page
 - Moved the login page into its own component and CSS file
 - Moved the dashboard into its own component and CSS file
+- Moved the assignment detail page into its own component and CSS file
 
 # React part1
 
@@ -35,6 +36,8 @@
   - **Login** (`src/login/login.jsx` and `login.css`): the sign in card, the feature list, and the design sketch. The blue banner with my name and GitHub link moved in here too, since only the login page has it. Login and Create Account take you to the dashboard. The fields are still required, so you have to type something first.
 
   - **Dashboard** (`src/dashboard/dashboard.jsx` and `dashboard.css`): live alerts, the color-coded assignment table, the time logging box, and the sidebar forms. Each assignment title is a router `Link` to its own `/assignment/:id`, and "Manage your Canvas link" links to `/settings`. The checked box uses `defaultChecked` and the hours box uses `defaultValue` so React lets you change them. The forms don't reload the page anymore.
+
+  - **Assignment** (`src/assignment/assignment.jsx` and `assignment.css`): the shared detail page for any assignment, with the summary tiles, the bar chart, the stat tiles, the Mark It Done form, and student notes. The bar chart was the interesting part. In HTML each row had `style="--count: 12"`, but JSX wants an object, so it became `style={{ '--count': 12 }}`. The CSS still reads `--count` to set each bar's height. "Back to dashboard" is a router `Link` now.
 
   A few styles are used on more than one page, like the class colors, the "Live" tag, and the hours input. Those stayed in `app.css` so I'm not copying them into every page's CSS.
 

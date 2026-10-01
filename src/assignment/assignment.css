@@ -1,0 +1,261 @@
+/* Assignment detail view. Imported by src/assignment/assignment.jsx. */
+
+/* ---------- Layout ---------- */
+
+.back-link {
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.back-link a::before {
+  content: "← ";
+}
+
+/* Summary and notes span the page. On large screens the chart and the
+   Mark It Done form share the middle row. */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 992px) {
+  .detail-grid {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .assignment-summary,
+  .notes-panel {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- Summary ---------- */
+
+/* The summary card takes its stripe from the class color */
+.assignment-summary {
+  border-top-color: var(--class-color);
+}
+
+.course-line {
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--class-color);
+}
+
+.assignment-summary h2 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: 1.25rem;
+}
+
+/* Each dt/dd pair is a tile. auto-fit decides how many fit per row. */
+.detail-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.detail-stats div {
+  padding: 0.75rem 1rem;
+  background-color: var(--page-bg);
+  border-radius: var(--radius);
+}
+
+.detail-stats dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.detail-stats dd {
+  margin: 0.15rem 0 0;
+  font-weight: 600;
+}
+
+/* ---------- Bar chart ---------- */
+
+.time-chart {
+  margin: 0 0 1.5rem;
+}
+
+.time-chart figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* The header row stays in the HTML for screen readers but is hidden on screen */
+.bar-chart thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.bar-chart,
+.bar-chart tbody {
+  display: block;
+  width: 100%;
+}
+
+/* Bars sit side by side in a flex row, lined up along the bottom */
+.bar-chart tbody {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.4rem, 2vw, 1rem);
+  height: 15rem;
+}
+
+/* Each row is a two-row grid: the bar on top, its label underneath */
+.bar-chart tr {
+  flex: 1 1 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.bar-chart td {
+  padding: 0;
+  border: 0;
+}
+
+/* Bucket label */
+.bar-chart td:first-child {
+  grid-row: 2;
+  padding-top: 0.5rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--text-muted);
+  border-top: 2px solid var(--border);
+}
+
+/* Bar. Height is this row's count divided by the tallest count. */
+.bar-chart td:last-child {
+  grid-row: 1;
+  align-self: end;
+  height: calc(var(--count) / var(--max) * 100%);
+  min-height: 1.75rem;
+  padding-top: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+  background: linear-gradient(to top, var(--byu-navy), var(--byu-royal));
+  border-radius: 0.35rem 0.35rem 0 0;
+  transform-origin: bottom;
+  animation: grow-up 0.6s ease-out both;
+  transition: filter 0.2s ease;
+}
+
+.bar-chart tr:nth-child(2) td:last-child {
+  animation-delay: 0.05s;
+}
+
+.bar-chart tr:nth-child(3) td:last-child {
+  animation-delay: 0.1s;
+}
+
+.bar-chart tr:nth-child(4) td:last-child {
+  animation-delay: 0.15s;
+}
+
+.bar-chart tr:nth-child(5) td:last-child {
+  animation-delay: 0.2s;
+}
+
+.bar-chart tr:hover td:last-child {
+  filter: brightness(1.2);
+}
+
+.bar-chart tr:hover td:first-child {
+  font-weight: 600;
+  color: var(--byu-navy);
+}
+
+@keyframes grow-up {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* ---------- Stats and notes ---------- */
+
+.stat-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat-list li {
+  flex: 1 1 5.5rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  background-color: var(--page-bg);
+  border-radius: var(--radius);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: clamp(1.05rem, 3vw, 1.25rem);
+  font-weight: 700;
+  color: var(--byu-navy);
+}
+
+.chart-panel .ws-status {
+  margin-top: 1rem;
+}
+
+.note-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.note-list li {
+  padding: 1rem 1.25rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--byu-royal);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 30, 60, 0.05);
+}
+
+.note-list p {
+  margin: 0;
+}
+
+.note-list .note-meta {
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.note-meta strong {
+  color: var(--text);
+}
