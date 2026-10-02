@@ -10,12 +10,28 @@ export function Login() {
   const [netId, setNetId] = useState('');
   const [password, setPassword] = useState('');
 
-  // Placeholder until the service exists. Both buttons just go to the
-  // dashboard, but the required fields still have to be filled in first.
-  function handleSubmit(event) {
-    event.preventDefault();
+  // Each button has its own action. In Phase 2 these call different service
+  // endpoints, one to check an existing login and one to create the account.
+
+  // Placeholder for POST /api/auth/login. A returning user goes to their dashboard.
+  function loginUser() {
     navigate('/dashboard');
   }
+
+  // Placeholder for POST /api/auth/create. A new user has no assignments yet,
+  // so they go to settings first to paste in their Canvas link.
+  function createUser() {
+    navigate('/settings');
+  }
+
+  // Pressing Enter in either field logs in, the same as clicking Login
+  function handleSubmit(event) {
+    event.preventDefault();
+    loginUser();
+  }
+
+  // Both buttons stay disabled until there's something in both fields
+  const missingInfo = !netId || !password;
 
   return (
     <>
@@ -73,10 +89,10 @@ export function Login() {
                   />
                 </div>
                 <div className="login-actions">
-                  <button className="btn btn-primary" type="submit">
+                  <button className="btn btn-primary" type="submit" disabled={missingInfo}>
                     Login
                   </button>
-                  <button className="btn btn-outline-primary" type="submit">
+                  <button className="btn btn-outline-primary" type="button" onClick={createUser} disabled={missingInfo}>
                     Create Account
                   </button>
                 </div>
