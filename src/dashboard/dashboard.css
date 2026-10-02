@@ -127,6 +127,7 @@
 
 .due-badge {
   margin-left: 0.4rem;
+  color: var(--ice);
   background-color: var(--due-soon);
 }
 
@@ -275,7 +276,7 @@ dialog.time-log p {
   margin-top: 0.6rem;
 }
 
-/* Green dot means the service is connected */
+/* Blue dot means the service is connected */
 .service-list li::before {
   content: "";
   position: absolute;
@@ -283,6 +284,6 @@ dialog.time-log p {
   left: 0;
   width: 0.55rem;
   height: 0.55rem;
-  background-color: #1d9a5b;
+  background-color: var(--byu-royal);
   border-radius: 50%;
 }

@@ -17,6 +17,7 @@
 - Moved the assignment detail page into its own component and CSS file
 - Moved settings into its own component and CSS file. Every page is a React component now, and the old HTML files are gone
 - Switched to `deployReact.sh` and deployed React part1
+- Changed the color palette to one based on BYU's all-navy alternate uniform. Deep navy, royal, and ice blue, with no more amber or green
 
 # React part1
 https://startup.cs260hwtrackr.click/

@@ -6,7 +6,7 @@
 .header-banner {
   padding: 2rem 0;
   color: #ffffff;
-  background: linear-gradient(135deg, var(--byu-navy) 0%, var(--byu-royal) 100%);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--byu-royal) 100%);
 }
 
 .header-banner p {

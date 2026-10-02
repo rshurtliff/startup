@@ -8,26 +8,30 @@
 /* ---------- Color and type tokens ---------- */
 
 :root {
-  /* BYU brand colors */
-  --byu-navy: #002e5d;
+  /* Palette from BYU's all-navy alternate uniform: deep navy with royal,
+     and ice blue trim. Royal is BYU's official royal. */
+  --navy: #001a35;
+  --navy-dark: #000e1f;
   --byu-royal: #0062b8;
-  --byu-navy-dark: #001f40;
+  --ice: #8fc1ea;
 
   /* Neutrals */
-  --page-bg: #f4f6f9;
+  --page-bg: #eef1f5;
   --surface: #ffffff;
-  --border: #d9dee6;
-  --text: #1c2430;
-  --text-muted: #5b6675;
+  --border: #d5dbe3;
+  --text: #111a28;
+  --text-muted: #566172;
 
   /* One color per class, used for tags and row accents */
-  --class-cs260: #0062b8;
-  --class-fin401: #1d7a55;
-  --class-mcom320: #c05621;
-  --class-rela275: #6b46c1;
+  --class-cs260: var(--byu-royal);
+  --class-fin401: var(--navy);
+  --class-mcom320: #5aa2de;
+  --class-rela275: #8794a3;
 
   /* Status colors */
-  --due-soon: #d97706;
+  --due-soon: var(--navy);
+  --live: var(--navy);
+  --live-bg: #dbe9f6;
   --danger: #b42318;
   --done: #8a94a3;
 
@@ -35,8 +39,8 @@
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* Point Bootstrap's own variables at the BYU palette */
-  --bs-primary: var(--byu-navy);
-  --bs-primary-rgb: 0, 46, 93;
+  --bs-primary: var(--navy);
+  --bs-primary-rgb: 0, 26, 53;
   --bs-body-font-family: var(--font-body);
   --bs-body-color: var(--text);
   --bs-body-bg: var(--page-bg);
@@ -44,27 +48,27 @@
   --bs-border-radius: var(--radius);
   --bs-link-color: var(--byu-royal);
   --bs-link-color-rgb: 0, 98, 184;
-  --bs-link-hover-color: var(--byu-navy);
-  --bs-link-hover-color-rgb: 0, 46, 93;
+  --bs-link-hover-color: var(--navy);
+  --bs-link-hover-color-rgb: 0, 26, 53;
 }
 
 /* Bootstrap sets button colors per variant, so those get re-pointed too */
 .btn-primary {
-  --bs-btn-bg: var(--byu-navy);
-  --bs-btn-border-color: var(--byu-navy);
+  --bs-btn-bg: var(--navy);
+  --bs-btn-border-color: var(--navy);
   --bs-btn-hover-bg: var(--byu-royal);
   --bs-btn-hover-border-color: var(--byu-royal);
-  --bs-btn-active-bg: var(--byu-navy-dark);
-  --bs-btn-active-border-color: var(--byu-navy-dark);
+  --bs-btn-active-bg: var(--navy-dark);
+  --bs-btn-active-border-color: var(--navy-dark);
 }
 
 .btn-outline-primary {
-  --bs-btn-color: var(--byu-navy);
-  --bs-btn-border-color: var(--byu-navy);
-  --bs-btn-hover-bg: var(--byu-navy);
-  --bs-btn-hover-border-color: var(--byu-navy);
-  --bs-btn-active-bg: var(--byu-navy-dark);
-  --bs-btn-active-border-color: var(--byu-navy-dark);
+  --bs-btn-color: var(--navy);
+  --bs-btn-border-color: var(--navy);
+  --bs-btn-hover-bg: var(--navy);
+  --bs-btn-hover-border-color: var(--navy);
+  --bs-btn-active-bg: var(--navy-dark);
+  --bs-btn-active-border-color: var(--navy-dark);
 }
 
 .btn-primary,
@@ -120,10 +124,10 @@
   --bs-table-hover-bg: #eef5fc;
 }
 
-/* Bootstrap cards pick up a navy stripe across the top */
+/* Bootstrap cards pick up a royal stripe across the top */
 .card {
   --bs-card-bg: var(--surface);
-  border-top: 4px solid var(--byu-navy);
+  border-top: 4px solid var(--byu-royal);
   box-shadow: 0 4px 16px rgba(0, 30, 60, 0.08);
 }
 
@@ -153,7 +157,7 @@ body {
 h1,
 h2,
 h3 {
-  color: var(--byu-navy);
+  color: var(--navy);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -174,7 +178,7 @@ a {
 
 a:hover,
 a:focus-visible {
-  color: var(--byu-navy);
+  color: var(--navy);
   text-decoration: underline;
 }
 
@@ -198,8 +202,10 @@ main {
 
 /* ---------- Header and navigation ---------- */
 
+/* Royal trim line under the navy bar, like the stripe on the uniform */
 header .navbar {
-  background-color: var(--byu-navy);
+  background-color: var(--navy);
+  border-bottom: 3px solid var(--byu-royal);
   box-shadow: 0 2px 8px rgba(0, 20, 45, 0.25);
 }
 
@@ -260,7 +266,7 @@ header .nav-link.active {
   }
 
   header .nav-link.active {
-    border-left-color: #ffffff;
+    border-left-color: var(--ice);
   }
 
   .user-info {
@@ -279,7 +285,7 @@ header .nav-link.active {
     right: var(--bs-navbar-nav-link-padding-x);
     bottom: 0.2rem;
     height: 2px;
-    background-color: #ffffff;
+    background-color: var(--ice);
     transform: scaleX(0);
     transition: transform 0.2s ease;
   }
@@ -357,25 +363,25 @@ header .nav-link.active {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #146c43;
-  background-color: #e3f4ea;
+  color: var(--live);
+  background-color: var(--live-bg);
   border-radius: 999px;
 }
 
 .live-dot {
   width: 0.5rem;
   height: 0.5rem;
-  background-color: #1d9a5b;
+  background-color: var(--byu-royal);
   border-radius: 50%;
   animation: pulse 1.8s ease-out infinite;
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(29, 154, 91, 0.6);
+    box-shadow: 0 0 0 0 rgba(0, 98, 184, 0.55);
   }
   100% {
-    box-shadow: 0 0 0 0.5rem rgba(29, 154, 91, 0);
+    box-shadow: 0 0 0 0.5rem rgba(0, 98, 184, 0);
   }
 }
 
