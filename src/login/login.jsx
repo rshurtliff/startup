@@ -29,9 +29,10 @@ export function Login() {
       <main className="container">
         <div className="login-layout">
           <section className="card login-card">
-            <div className="card-body">
+            <div className="card-header">
               <h2>Sign in</h2>
-
+            </div>
+            <div className="card-body">
               {/* Login placeholder. React will replace this with a real form that
                   calls the service, and the service will check the credentials
                   against the database. */}

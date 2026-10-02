@@ -14,9 +14,10 @@ export function Settings() {
              Canvas, parses the iCal feed, and writes the assignments it finds
              into the database. */}
         <section className="card">
-          <div className="card-body">
+          <div className="card-header">
             <h2>Canvas Calendar Link</h2>
-
+          </div>
+          <div className="card-body">
             <p>
               This is what fills your dashboard. Paste your Canvas calendar feed
               below and Trackr pulls in every assignment from every class you are
@@ -58,9 +59,10 @@ export function Settings() {
         {/* Database placeholder. Sync history and the class list both come out
              of MongoDB, written there by the service after it parses the feed. */}
         <section className="card">
-          <div className="card-body">
+          <div className="card-header">
             <h2>Sync Status</h2>
-
+          </div>
+          <div className="card-body">
             <div className="table-responsive">
               <table className="table align-middle sync-table">
                 <thead>
@@ -105,9 +107,10 @@ export function Settings() {
         {/* Third party service placeholder. These options control the reminder
              emails the service sends through the SendGrid API. */}
         <section className="card">
-          <div className="card-body">
+          <div className="card-header">
             <h2>Email Reminders</h2>
-
+          </div>
+          <div className="card-body">
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label" htmlFor="email">Send reminders to</label>
@@ -131,8 +134,10 @@ export function Settings() {
         </section>
 
         <section className="card">
-          <div className="card-body">
+          <div className="card-header">
             <h2>Account</h2>
+          </div>
+          <div className="card-body">
             <ul className="account-list">
             <li><span>Net ID</span> <strong>ryan.shurtliff</strong></li>
             <li><span>Account created</span> <strong>September 2026</strong></li>

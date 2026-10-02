@@ -13,37 +13,47 @@ export function Assignment() {
       <p className="back-link"><Link to="/dashboard">Back to dashboard</Link></p>
 
       <div className="detail-grid">
-        {/* Database placeholder. This assignment record was parsed out of the
-             Canvas iCal feed and stored in MongoDB. */}
+        {/* Database placeholder. Only fields the Canvas iCal feed actually has:
+            the title and course code (SUMMARY), the due date (DTSTART, usually
+            a date with no time), the description, and a link back to Canvas.
+            Your status and last synced come from Trackr, not Canvas. */}
         <section className="card assignment-summary class-cs260">
+          <div className="card-header">
+            <p className="course-line">CS 260</p>
+          </div>
           <div className="card-body">
-            <p className="course-line">CS 260, Web Programming</p>
             <h2>Startup HTML Deliverable</h2>
 
             <dl className="detail-stats">
               <div>
                 <dt>Due</dt>
-                <dd>Sep 22, 2026 at 11:59 PM</dd>
+                <dd>Tue, Sep 22</dd>
+                <dd className="detail-note">No time listed in Canvas</dd>
               </div>
               <div>
-                <dt>Status</dt>
-                <dd>Not started</dd>
+                <dt>Your status</dt>
+                <dd>Not done yet</dd>
               </div>
               <div>
-                <dt>Source</dt>
-                <dd>Pulled from Canvas</dd>
+                <dt>From</dt>
+                <dd>Canvas calendar</dd>
               </div>
               <div>
-                <dt>Points</dt>
-                <dd>100</dd>
+                <dt>Last synced</dt>
+                <dd>12 minutes ago</dd>
               </div>
             </dl>
 
-            <p>
-              Build the HTML for your startup application. Every page your final app
-              needs, with placeholders for the technology you have not written yet.
-            </p>
-            <a className="btn btn-outline-primary" href="https://byu.instructure.com" target="_blank" rel="noopener noreferrer">Open in Canvas</a>
+            {/* The DESCRIPTION field from the iCal feed, shown as-is. Canvas only
+                sends one for about half of assignments. When it's missing, this
+                says "No description in Canvas" instead. */}
+            <div className="assignment-desc">
+              <p className="desc-label">Description from Canvas</p>
+              <p>View this content in MasteryLS.</p>
+            </div>
+            <a className="btn btn-outline-primary" href="https://byu.instructure.com/calendar" target="_blank" rel="noopener noreferrer">
+              Open in Canvas
+            </a>
           </div>
         </section>
 
@@ -51,12 +61,11 @@ export function Assignment() {
              students finish this assignment and log their times. Anyone with
              this page open sees the update without refreshing. */}
         <section className="card chart-panel">
+          <div className="card-header">
+            <h2>How Long It Takes</h2>
+            <span className="live-indicator"><span className="live-dot"></span>Live</span>
+          </div>
           <div className="card-body">
-            <div className="section-heading">
-              <h2>How Long It Takes</h2>
-              <span className="live-indicator"><span className="live-dot"></span>Live</span>
-            </div>
-
             {/* Database placeholder. The service adds up every logged time for
                  this assignment and returns these buckets. CSS draws the table
                  as a bar chart, using each row's count for the bar height. */}
@@ -112,9 +121,10 @@ export function Assignment() {
              the hours to the database, then pushes the new number out over the
              WebSocket to everyone viewing this page. */}
         <section className="card">
-          <div className="card-body">
+          <div className="card-header">
             <h2>Mark It Done</h2>
-
+          </div>
+          <div className="card-body">
             <form onSubmit={handleSubmit}>
               <div className="form-check mb-3">
                 <input className="form-check-input" type="checkbox" id="complete" name="complete" />

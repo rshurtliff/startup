@@ -2,8 +2,9 @@
 
 /* ---------- Live alerts ---------- */
 
+/* Sits between the assignment list and Connected Services */
 .live-alerts {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Alert cards fill the row and drop to fewer columns as the window narrows */
@@ -52,26 +53,88 @@
   }
 }
 
-/* ---------- Main layout ---------- */
+/* ---------- Assignments card ---------- */
 
-/* Assignments take the width, forms move to a sidebar on large screens */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  align-items: start;
+/* The assignment list is the main part of the page, so the card runs full width */
+.assignments-panel {
+  margin-bottom: 1.5rem;
 }
 
-@media (min-width: 992px) {
-  .dashboard-grid {
-    grid-template-columns: minmax(0, 1fr) 20rem;
-  }
-}
-
-.dashboard-side {
+/* Filters on the left, Add assignment on the right. When the add form
+   opens it takes a full row of its own. */
+.assignments-toolbar {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.assignments-toolbar .filter-bar {
+  flex: 1 1 28rem;
+  margin-bottom: 0;
+}
+
+/* ---------- Add assignment (collapsed until clicked) ---------- */
+
+.add-assignment[open] {
+  flex-basis: 100%;
+  padding: 1rem 1.25rem 1.25rem;
+  background-color: var(--page-bg);
+  border-radius: var(--radius);
+}
+
+/* Chrome hides a closed <details> without removing its layout, so the hidden
+   form fields still poked past the right edge. This takes them out fully. */
+.add-assignment:not([open]) > :not(summary) {
+  display: none;
+}
+
+/* The summary is styled as a Bootstrap button. Hide the browser's triangle. */
+.add-assignment summary {
+  list-style: none;
+}
+
+.add-assignment summary::-webkit-details-marker {
+  display: none;
+}
+
+.add-assignment summary::before {
+  content: "+ ";
+  font-weight: 700;
+}
+
+.add-assignment[open] summary::before {
+  content: "\2212  ";
+}
+
+.add-assignment[open] summary {
+  margin-bottom: 0.75rem;
+}
+
+.add-assignment .text-muted-sm {
+  margin-bottom: 0.75rem;
+}
+
+/* Fields share one row on wide screens and stack on phones */
+.add-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.add-field {
+  flex: 1 1 11rem;
+}
+
+.add-title {
+  flex-grow: 2;
+}
+
+.add-field .form-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
 }
 
 /* ---------- Filter bar ---------- */
@@ -260,30 +323,64 @@ dialog.time-log p {
 
 /* ---------- Connected services ---------- */
 
+/* Kept small on purpose so it doesn't compete with the assignment list.
+   No nameplate, just a navy edge on the left. */
+.services-card {
+  border-left: 3px solid var(--navy);
+}
+
+.services-card .card-body {
+  padding: 0.75rem 1rem;
+}
+
+/* Small label on the left, Manage link on the right */
+.services-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.services-card .services-head h2 {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.services-head a {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Services sit side by side, each in half the card, and stack on a phone */
 .service-list {
-  margin: 0 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.3rem 2rem;
+  margin: 0;
   padding: 0;
-  font-size: 0.925rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
   list-style: none;
 }
 
 .service-list li {
   position: relative;
-  padding-left: 1.25rem;
-}
-
-.service-list li + li {
-  margin-top: 0.6rem;
+  padding-left: 1rem;
 }
 
 /* Blue dot means the service is connected */
 .service-list li::before {
   content: "";
   position: absolute;
-  top: 0.5rem;
+  top: 0.45rem;
   left: 0;
-  width: 0.55rem;
-  height: 0.55rem;
+  width: 0.45rem;
+  height: 0.45rem;
   background-color: var(--byu-royal);
   border-radius: 50%;
 }

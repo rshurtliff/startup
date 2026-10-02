@@ -1,25 +1,10 @@
 # What's New (for the TA's)
-- Deployed Simon CSS
-- Started the Startup CSS Deliverable: added Bootstrap, the Inter font, and a shared `main.css` with the BYU color palette
-- Fixed the deploy script so it also uploads CSS and JavaScript files
-- Styled the header, navbar, and footer on every page. The nav collapses into a menu on phones
-- Styled the login page: two-column grid layout, Bootstrap sign-in card, and a checkmark feature list
-- Styled the dashboard: live alert cards, color-coded assignment table, time-logging prompt, and a sidebar for the forms
-- Styled the assignment detail page. The time distribution is now a bar chart drawn with CSS from the table data, replacing the placeholder photo
-- Styled the settings page: four cards in a grid, color-coded sync table, numbered setup steps, and red buttons for the destructive actions
-- Tested every page at phone, tablet, and desktop widths
-- Started React part1. Set up Vite and moved my files into `public/` and `src/`
-- Installed React and got the first `App` component showing with `npm run dev`
-- Moved the header and footer into the `App` component
-- Added the React router with a stub component for each page and a 404 page
-- Moved the login page into its own component and CSS file
-- Moved the dashboard into its own component and CSS file
-- Moved the assignment detail page into its own component and CSS file
-- Moved settings into its own component and CSS file. Every page is a React component now, and the old HTML files are gone
-- Switched to `deployReact.sh` and deployed React part1
-- Changed the color palette to one based on BYU's all-navy alternate uniform. Deep navy, royal, and ice blue, with no more amber or green
+- Changed some colors / design choices for the CSS
+- Made the imported font easier to see for the TA's (got docked on CSS, even though I used Inter from Google's font library)
+- Ported to a single-page React page
+- Completed Startup React P1: Routing
 
-# React part1
+# Startup React P1: Routing
 https://startup.cs260hwtrackr.click/
 
 ## What I did for Each Rubric Item
@@ -41,9 +26,9 @@ https://startup.cs260hwtrackr.click/
 
   - **Login** (`src/login/login.jsx` and `login.css`): the sign in card, the feature list, and the design sketch. The blue banner with my name and GitHub link moved in here too, since only the login page has it. Login and Create Account take you to the dashboard. The fields are still required, so you have to type something first.
 
-  - **Dashboard** (`src/dashboard/dashboard.jsx` and `dashboard.css`): live alerts, the color-coded assignment table, the time logging box, and the sidebar forms. Each assignment title is a router `Link` to its own `/assignment/:id`, and "Manage your Canvas link" links to `/settings`. The checked box uses `defaultChecked` and the hours box uses `defaultValue` so React lets you change them. The forms don't reload the page anymore.
+  - **Dashboard** (`src/dashboard/dashboard.jsx` and `dashboard.css`): live alerts, the color-coded assignment table, the time logging box, and a Connected Services card at the bottom. The assignment list is the main part of the page, so it comes first and runs full width, with live alerts under it. Adding your own assignment is tucked behind an "Add assignment" button that opens a small form. It uses the HTML `<details>` element, so it opens and closes without any JavaScript. Each assignment title is a router `Link` to its own `/assignment/:id`, and "Manage your Canvas link" links to `/settings`. The checked box uses `defaultChecked` and the hours box uses `defaultValue` so React lets you change them. The forms don't reload the page anymore.
 
-  - **Assignment** (`src/assignment/assignment.jsx` and `assignment.css`): the shared detail page for any assignment, with the summary tiles, the bar chart, the stat tiles, the Mark It Done form, and student notes. The bar chart was the interesting part. In HTML each row had `style="--count: 12"`, but JSX wants an object, so it became `style={{ '--count': 12 }}`. The CSS still reads `--count` to set each bar's height. "Back to dashboard" is a router `Link` now.
+  - **Assignment** (`src/assignment/assignment.jsx` and `assignment.css`): the shared detail page for any assignment, with the summary tiles, the bar chart, the stat tiles, the Mark It Done form, and student notes. The bar chart was the interesting part. In HTML each row had `style="--count: 12"`, but JSX wants an object, so it became `style={{ '--count': 12 }}`. The CSS still reads `--count` to set each bar's height. "Back to dashboard" is a router `Link` now. The summary at the top only shows what the Canvas iCal feed actually gives me: the course code, the title, the due date (usually with no time), the description, and a link back to Canvas. I looked at my real feed to check. Your status and last synced come from Trackr.
 
   - **Settings** (`src/settings/settings.jsx` and `settings.css`): the Canvas link form, sync status table, email reminder settings, and account info. This page has the most filled-in placeholder data, so the iCal link and email use `defaultValue` and the Sunday summary switch uses `defaultChecked`. That way they show my sample data but you can still change them.
 

@@ -33,18 +33,14 @@
 
 /* ---------- Summary ---------- */
 
-/* The summary card takes its stripe from the class color */
-.assignment-summary {
-  border-top-color: var(--class-color);
-}
-
+/* The summary card's nameplate is the course name */
 .course-line {
-  margin-bottom: 0.25rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--class-color);
+  color: #ffffff;
 }
 
 .assignment-summary h2 {
@@ -77,6 +73,34 @@
 .detail-stats dd {
   margin: 0.15rem 0 0;
   font-weight: 600;
+}
+
+/* Small line under a value, like when Canvas gives a date but no time */
+.detail-stats .detail-note {
+  margin-top: 0.1rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* Canvas's own description, set off so it's clear it came from Canvas */
+.assignment-desc {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--border);
+}
+
+.assignment-desc p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.assignment-desc .desc-label {
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* ---------- Bar chart ---------- */

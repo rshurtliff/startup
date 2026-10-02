@@ -124,11 +124,34 @@
   --bs-table-hover-bg: #eef5fc;
 }
 
-/* Bootstrap cards pick up a royal stripe across the top */
+/* Cards use tight corners and a flat edge. The title goes in a Bootstrap
+   card-header, styled as a solid navy band like the name bar on a jersey,
+   with the same royal trim line the navbar has. */
 .card {
   --bs-card-bg: var(--surface);
-  border-top: 4px solid var(--byu-royal);
-  box-shadow: 0 4px 16px rgba(0, 30, 60, 0.08);
+  --bs-card-border-color: var(--border);
+  --bs-card-border-radius: 4px;
+  --bs-card-inner-border-radius: 3px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.7rem 1.1rem;
+  color: #ffffff;
+  background-color: var(--navy);
+  border-bottom: 3px solid var(--byu-royal);
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
 }
 
 /* ---------- Base elements ---------- */
@@ -309,13 +332,14 @@ header .nav-link.active {
 
 /* ---------- Footer ---------- */
 
+/* Navy like the navbar, with the same royal trim line on the edge facing the page */
 .site-footer {
   flex-shrink: 0;
   padding: 1.25rem 0;
   font-size: 0.9rem;
-  color: var(--text-muted);
-  background-color: var(--surface);
-  border-top: 1px solid var(--border);
+  color: rgba(255, 255, 255, 0.78);
+  background-color: var(--navy);
+  border-top: 3px solid var(--byu-royal);
 }
 
 .site-footer .container {
@@ -329,11 +353,18 @@ header .nav-link.active {
   margin: 0;
 }
 
-/* ---------- Pieces used on more than one page ---------- */
-
-.card-body > h2 {
-  font-size: 1.2rem;
+/* Royal links disappear on navy, so the footer link uses ice blue */
+.site-footer a {
+  font-weight: 500;
+  color: var(--ice);
 }
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: #ffffff;
+}
+
+/* ---------- Pieces used on more than one page ---------- */
 
 .text-muted-sm {
   font-size: 0.9rem;

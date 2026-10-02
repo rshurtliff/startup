@@ -197,7 +197,7 @@ To get into the server run this:
 ```ssh -i ~/.ssh/production.pem ubuntu@100.57.209.154```
 
 To push changes to the server, run this from the working directory:
-``` ./deployFiles.sh -k ~/.ssh/production.pem -h cs260hwtrackr.click -s startup ```
+``` ./deployReact.sh -k ~/.ssh/production.pem -h cs260hwtrackr.click -s startup ```
 
 My elastic IP address:
 100.57.209.154
