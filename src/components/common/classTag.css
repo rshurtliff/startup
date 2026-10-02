@@ -1,0 +1,30 @@
+/* Class colors and the class tag. Used on the dashboard, assignment, and settings pages. */
+
+/* An element sets its class once, and the tag, row edge, or card stripe
+   inside it reads --class-color */
+.class-cs260 {
+  --class-color: var(--class-cs260);
+}
+
+.class-fin401 {
+  --class-color: var(--class-fin401);
+}
+
+.class-mcom320 {
+  --class-color: var(--class-mcom320);
+}
+
+.class-rela275 {
+  --class-color: var(--class-rela275);
+}
+
+.class-tag {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--class-color);
+  background-color: color-mix(in srgb, var(--class-color) 12%, white);
+  border-radius: 999px;
+}

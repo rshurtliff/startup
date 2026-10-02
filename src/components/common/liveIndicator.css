@@ -1,0 +1,38 @@
+/* Live indicator and live note. Used on the dashboard and assignment pages. */
+
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--live);
+  background-color: var(--live-bg);
+  border-radius: 999px;
+}
+
+.live-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--byu-royal);
+  border-radius: 50%;
+  animation: pulse 1.8s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 98, 184, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 0.5rem rgba(0, 98, 184, 0);
+  }
+}
+
+.ws-status {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}

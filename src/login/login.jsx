@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 
 export function Login() {
   const navigate = useNavigate();
+
+  // The inputs are controlled: what you type is kept in state, so Phase 2 can
+  // send netId and password to the login endpoint from here.
+  const [netId, setNetId] = useState('');
+  const [password, setPassword] = useState('');
 
   // Placeholder until the service exists. Both buttons just go to the
   // dashboard, but the required fields still have to be filled in first.
@@ -41,13 +46,31 @@ export function Login() {
                   <label className="form-label" htmlFor="netid">
                     BYU Net ID
                   </label>
-                  <input className="form-control" type="text" id="netid" name="netid" placeholder="your-netid" required />
+                  <input
+                    className="form-control"
+                    type="text"
+                    id="netid"
+                    name="netid"
+                    placeholder="your-netid"
+                    value={netId}
+                    onChange={(e) => setNetId(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="mb-3">
                   <label className="form-label" htmlFor="password">
                     Password
                   </label>
-                  <input className="form-control" type="password" id="password" name="password" placeholder="password" required />
+                  <input
+                    className="form-control"
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="login-actions">
                   <button className="btn btn-primary" type="submit">

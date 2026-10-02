@@ -1,6 +1,42 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ClassTag } from '../components/common/classTag';
+import { HoursInput } from '../components/common/hoursInput';
+import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import './dashboard.css';
+
+// Placeholder data. In Phase 2 these come from the service instead of being
+// typed in here, and the JSX below renders whatever it gets back.
+const classes = [
+  { key: 'cs260', code: 'CS 260' },
+  { key: 'fin401', code: 'FIN 401' },
+  { key: 'mcom320', code: 'MCOM 320' },
+  { key: 'rela275', code: 'REL A 275' },
+];
+
+// Database placeholder. Every assignment comes out of MongoDB. The done state
+// and the logged time are written back to it.
+const assignments = [
+  { id: 'cs260-startup-html', classKey: 'cs260', classCode: 'CS 260', title: 'Startup HTML Deliverable', due: 'Tue, Sep 22', average: '3.2 hrs', dueSoon: true, done: false },
+  { id: 'fin401-problem-set-4', classKey: 'fin401', classCode: 'FIN 401', title: 'Problem Set 4', due: 'Wed, Sep 23', average: '2.8 hrs', dueSoon: false, done: false },
+  { id: 'mcom320-persuasive-memo', classKey: 'mcom320', classCode: 'MCOM 320', title: 'Persuasive Memo Draft', due: 'Thu, Sep 24', average: '1.5 hrs', dueSoon: false, done: false },
+  { id: 'rela275-reading-journal', classKey: 'rela275', classCode: 'REL A 275', title: 'Reading Journal Week 4', due: 'Sat, Sep 19', average: '0.7 hrs', dueSoon: false, done: true },
+];
+
+// WebSocket placeholder. Deadline alerts and other students' logged times get
+// pushed here in real time.
+const alerts = [
+  { id: 1, type: 'due', text: 'Due today: CS 260 Startup HTML' },
+  { id: 2, type: 'activity', text: 'Kate D. just logged 2.5 hours on FIN 401 Problem Set 4' },
+  { id: 3, type: 'activity', text: '3 classmates are working on MCOM 320 Memo right now' },
+];
+
+// Third party service placeholders. Canvas supplies the iCal feed the service
+// parses, and SendGrid sends the reminder emails.
+const services = [
+  { name: 'Canvas iCal feed', status: 'last synced 12 minutes ago, 47 assignments loaded' },
+  { name: 'SendGrid email reminders', status: 'on, sent 24 hours before each deadline' },
+];
 
 export function Dashboard() {
   // Placeholder until the service exists. Keeps the forms from reloading the page.
@@ -25,10 +61,11 @@ export function Dashboard() {
                 </label>
                 <select className="form-select" id="class-filter" name="class">
                   <option value="all">All classes</option>
-                  <option value="cs260">CS 260</option>
-                  <option value="fin401">FIN 401</option>
-                  <option value="mcom320">MCOM 320</option>
-                  <option value="rela275">REL A 275</option>
+                  {classes.map((c) => (
+                    <option key={c.key} value={c.key}>
+                      {c.code}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -79,9 +116,8 @@ export function Dashboard() {
             </details>
           </div>
 
-          {/* Database placeholder. Every row below comes out of MongoDB. The
-              checkbox state and the logged time are written back to it. Each
-              title links to the shared detail page with that assignment's id. */}
+          {/* One row per assignment. Each title links to the shared detail page
+              with that assignment's id. */}
           <div className="table-responsive">
             <table className="table table-hover align-middle assignment-table">
               <thead>
@@ -94,81 +130,30 @@ export function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="class-cs260 due-soon">
-                  <td>
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="done-cs260-startup-html"
-                      aria-label="Mark Startup HTML Deliverable as complete"
-                    />
-                  </td>
-                  <td>
-                    <span className="class-tag">CS 260</span>
-                  </td>
-                  <td>
-                    <Link to="/assignment/cs260-startup-html">Startup HTML Deliverable</Link>
-                  </td>
-                  <td className="due-cell">
-                    Tue, Sep 22<span className="badge due-badge">Due soon</span>
-                  </td>
-                  <td>3.2 hrs</td>
-                </tr>
-                <tr className="class-fin401">
-                  <td>
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="done-fin401-problem-set-4"
-                      aria-label="Mark Problem Set 4 as complete"
-                    />
-                  </td>
-                  <td>
-                    <span className="class-tag">FIN 401</span>
-                  </td>
-                  <td>
-                    <Link to="/assignment/fin401-problem-set-4">Problem Set 4</Link>
-                  </td>
-                  <td className="due-cell">Wed, Sep 23</td>
-                  <td>2.8 hrs</td>
-                </tr>
-                <tr className="class-mcom320">
-                  <td>
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="done-mcom320-persuasive-memo"
-                      aria-label="Mark Persuasive Memo Draft as complete"
-                    />
-                  </td>
-                  <td>
-                    <span className="class-tag">MCOM 320</span>
-                  </td>
-                  <td>
-                    <Link to="/assignment/mcom320-persuasive-memo">Persuasive Memo Draft</Link>
-                  </td>
-                  <td className="due-cell">Thu, Sep 24</td>
-                  <td>1.5 hrs</td>
-                </tr>
-                <tr className="class-rela275">
-                  <td>
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="done-rela275-reading-journal"
-                      aria-label="Mark Reading Journal Week 4 as complete"
-                      defaultChecked
-                    />
-                  </td>
-                  <td>
-                    <span className="class-tag">REL A 275</span>
-                  </td>
-                  <td>
-                    <Link to="/assignment/rela275-reading-journal">Reading Journal Week 4</Link>
-                  </td>
-                  <td className="due-cell">Sat, Sep 19</td>
-                  <td>0.7 hrs</td>
-                </tr>
+                {assignments.map((a) => (
+                  <tr key={a.id} className={`class-${a.classKey}${a.dueSoon ? ' due-soon' : ''}`}>
+                    <td>
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id={`done-${a.id}`}
+                        aria-label={`Mark ${a.title} as complete`}
+                        defaultChecked={a.done}
+                      />
+                    </td>
+                    <td>
+                      <ClassTag code={a.classCode} />
+                    </td>
+                    <td>
+                      <Link to={`/assignment/${a.id}`}>{a.title}</Link>
+                    </td>
+                    <td className="due-cell">
+                      {a.due}
+                      {a.dueSoon && <span className="badge due-badge">Due soon</span>}
+                    </td>
+                    <td>{a.average}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -185,10 +170,7 @@ export function Dashboard() {
               <label className="form-label" htmlFor="hours">
                 Time spent
               </label>
-              <div className="hours-input">
-                <input className="form-control" type="number" id="hours" name="hours" min="0" step="0.25" defaultValue="1" />
-                <span>hours</span>
-              </div>
+              <HoursInput id="hours" defaultValue="1" />
               <button className="btn btn-primary" type="submit">
                 Save
               </button>
@@ -200,25 +182,21 @@ export function Dashboard() {
         </div>
       </section>
 
-      {/* WebSocket placeholder. Deadline alerts and other students' logged
-          times get pushed here in real time. No refresh. */}
       <section className="live-alerts">
         <div className="section-heading">
           <h2>Live Alerts</h2>
-          <span className="live-indicator">
-            <span className="live-dot"></span>Connected
-          </span>
+          <LiveIndicator label="Connected" />
         </div>
         <ul className="alert-feed">
-          <li className="alert-due">Due today: CS 260 Startup HTML</li>
-          <li className="alert-activity">Kate D. just logged 2.5 hours on FIN 401 Problem Set 4</li>
-          <li className="alert-activity">3 classmates are working on MCOM 320 Memo right now</li>
+          {alerts.map((alert) => (
+            <li key={alert.id} className={`alert-${alert.type}`}>
+              {alert.text}
+            </li>
+          ))}
         </ul>
-        <p className="ws-status">WebSocket connected. Alerts appear as they happen.</p>
+        <LiveNote>WebSocket connected. Alerts appear as they happen.</LiveNote>
       </section>
 
-      {/* Third party service placeholders. Canvas supplies the iCal feed the
-          service parses, and SendGrid sends the reminder emails. */}
       <section className="card services-card">
         <div className="card-body">
           <div className="services-head">
@@ -226,8 +204,11 @@ export function Dashboard() {
             <Link to="/settings">Manage</Link>
           </div>
           <ul className="service-list">
-            <li>Canvas iCal feed: last synced 12 minutes ago, 47 assignments loaded</li>
-            <li>SendGrid email reminders: on, sent 24 hours before each deadline</li>
+            {services.map((service) => (
+              <li key={service.name}>
+                {service.name}: {service.status}
+              </li>
+            ))}
           </ul>
         </div>
       </section>

@@ -1,6 +1,33 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HoursInput } from '../components/common/hoursInput';
+import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import './assignment.css';
+
+// Database placeholder. The service adds up every logged time for this
+// assignment and returns these buckets. Each bar's height is its count
+// divided by the tallest count.
+const buckets = [
+  { label: 'Under 1', count: 2 },
+  { label: '1 to 2', count: 7 },
+  { label: '2 to 3', count: 12 },
+  { label: '3 to 4', count: 9 },
+  { label: 'Over 4', count: 4 },
+];
+const maxCount = Math.max(...buckets.map((b) => b.count));
+
+const stats = [
+  { label: 'Average', value: '3.2 hours' },
+  { label: 'Median', value: '2.9 hours' },
+  { label: 'Longest', value: '6.5 hours' },
+];
+
+// Database placeholder. Notes other students left when they logged their time.
+const notes = [
+  { name: 'Kate D.', hours: 2.5, text: 'Write the page plan first, it makes the nav bar trivial.' },
+  { name: 'Tyler M.', hours: 2.75, text: 'The placeholders are the whole point, do not try to make it pretty.' },
+  { name: 'Sam R.', hours: 4, text: 'Most of my time went to getting it deployed, not writing HTML.' },
+];
 
 export function Assignment() {
   // Placeholder until the service exists. Keeps the form from reloading the page.
@@ -63,14 +90,13 @@ export function Assignment() {
         <section className="card chart-panel">
           <div className="card-header">
             <h2>How Long It Takes</h2>
-            <span className="live-indicator"><span className="live-dot"></span>Live</span>
+            <LiveIndicator />
           </div>
           <div className="card-body">
-            {/* Database placeholder. The service adds up every logged time for
-                 this assignment and returns these buckets. CSS draws the table
-                 as a bar chart, using each row's count for the bar height. */}
+            {/* CSS draws this table as a bar chart, using each row's count
+                for the bar height. */}
             <figure className="time-chart">
-              <table className="bar-chart" style={{ '--max': 12 }}>
+              <table className="bar-chart" style={{ '--max': maxCount }}>
                 <thead>
                   <tr>
                     <th>Hours Spent</th>
@@ -78,26 +104,12 @@ export function Assignment() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr style={{ '--count': 2 }}>
-                    <td>Under 1</td>
-                    <td>2</td>
-                  </tr>
-                  <tr style={{ '--count': 7 }}>
-                    <td>1 to 2</td>
-                    <td>7</td>
-                  </tr>
-                  <tr style={{ '--count': 12 }}>
-                    <td>2 to 3</td>
-                    <td>12</td>
-                  </tr>
-                  <tr style={{ '--count': 9 }}>
-                    <td>3 to 4</td>
-                    <td>9</td>
-                  </tr>
-                  <tr style={{ '--count': 4 }}>
-                    <td>Over 4</td>
-                    <td>4</td>
-                  </tr>
+                  {buckets.map((bucket) => (
+                    <tr key={bucket.label} style={{ '--count': bucket.count }}>
+                      <td>{bucket.label}</td>
+                      <td>{bucket.count}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
               <figcaption>
@@ -106,14 +118,14 @@ export function Assignment() {
             </figure>
 
             <ul className="stat-list">
-              <li><span className="stat-label">Average</span> <span className="stat-value">3.2 hours</span></li>
-              <li><span className="stat-label">Median</span> <span className="stat-value">2.9 hours</span></li>
-              <li><span className="stat-label">Longest</span> <span className="stat-value">6.5 hours</span></li>
+              {stats.map((stat) => (
+                <li key={stat.label}>
+                  <span className="stat-label">{stat.label}</span> <span className="stat-value">{stat.value}</span>
+                </li>
+              ))}
             </ul>
 
-            <p className="ws-status">
-              Updating live. Tyler M. logged 2.75 hours about a minute ago.
-            </p>
+            <LiveNote>Updating live. Tyler M. logged 2.75 hours about a minute ago.</LiveNote>
           </div>
         </section>
 
@@ -132,10 +144,7 @@ export function Assignment() {
               </div>
               <div className="mb-3">
                 <label className="form-label" htmlFor="hours">How long did it take you?</label>
-                <div className="hours-input">
-                  <input className="form-control" type="number" id="hours" name="hours" min="0" step="0.25" placeholder="3" />
-                  <span>hours</span>
-                </div>
+                <HoursInput id="hours" placeholder="3" />
               </div>
               <div className="mb-3">
                 <label className="form-label" htmlFor="note">Anything worth telling the next person?</label>
@@ -146,28 +155,21 @@ export function Assignment() {
           </div>
         </section>
 
-        {/* Database placeholder. Notes other students left when they logged
-             their time. */}
         <section className="notes-panel">
           <h2>Notes From Other Students</h2>
 
           <ul className="note-list">
-          <li>
-            <p className="note-meta"><strong>Kate D.</strong> spent 2.5 hours.</p>
-            <p>Write the page plan first, it makes the nav bar trivial.</p>
-          </li>
-          <li>
-            <p className="note-meta"><strong>Tyler M.</strong> spent 2.75 hours.</p>
-            <p>The placeholders are the whole point, do not try to make it pretty.</p>
-          </li>
-          <li>
-            <p className="note-meta"><strong>Sam R.</strong> spent 4 hours.</p>
-            <p>Most of my time went to getting it deployed, not writing HTML.</p>
-          </li>
+            {notes.map((note) => (
+              <li key={note.name}>
+                <p className="note-meta">
+                  <strong>{note.name}</strong> spent {note.hours} hours.
+                </p>
+                <p>{note.text}</p>
+              </li>
+            ))}
           </ul>
         </section>
       </div>
-
     </main>
   );
 }

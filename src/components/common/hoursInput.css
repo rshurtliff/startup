@@ -1,0 +1,11 @@
+/* Hours input. Used on the dashboard and assignment pages. */
+
+.hours-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hours-input .form-control {
+  width: 6rem;
+}

@@ -1,5 +1,15 @@
 import React from 'react';
+import { ClassTag } from '../components/common/classTag';
 import './settings.css';
+
+// Database placeholder. Written by the service each time it parses the
+// Canvas feed: how many assignments it found for each class.
+const syncedClasses = [
+  { key: 'cs260', code: 'CS 260', found: 14, lastSynced: '12 minutes ago' },
+  { key: 'fin401', code: 'FIN 401', found: 11, lastSynced: '12 minutes ago' },
+  { key: 'mcom320', code: 'MCOM 320', found: 9, lastSynced: '12 minutes ago' },
+  { key: 'rela275', code: 'REL A 275', found: 13, lastSynced: '12 minutes ago' },
+];
 
 export function Settings() {
   // Placeholder until the service exists. Keeps the forms from reloading the page.
@@ -73,26 +83,15 @@ export function Settings() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="class-cs260">
-                    <td><span className="class-tag">CS 260</span></td>
-                    <td>14</td>
-                    <td>12 minutes ago</td>
-                  </tr>
-                  <tr className="class-fin401">
-                    <td><span className="class-tag">FIN 401</span></td>
-                    <td>11</td>
-                    <td>12 minutes ago</td>
-                  </tr>
-                  <tr className="class-mcom320">
-                    <td><span className="class-tag">MCOM 320</span></td>
-                    <td>9</td>
-                    <td>12 minutes ago</td>
-                  </tr>
-                  <tr className="class-rela275">
-                    <td><span className="class-tag">REL A 275</span></td>
-                    <td>13</td>
-                    <td>12 minutes ago</td>
-                  </tr>
+                  {syncedClasses.map((c) => (
+                    <tr key={c.key} className={`class-${c.key}`}>
+                      <td>
+                        <ClassTag code={c.code} />
+                      </td>
+                      <td>{c.found}</td>
+                      <td>{c.lastSynced}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

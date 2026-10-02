@@ -53,12 +53,14 @@ export default function App() {
                 </Nav>
                 {/* Login placeholder. The name comes from the authenticated user once
                     the service and database are wired up. */}
-                <p className="user-info">
-                  Signed in as <span className="username">ryan.shurtliff</span>
-                  <Link className="btn btn-sm btn-outline-light" to="/">
+                <Nav as="div" className="user-info">
+                  <span>
+                    Signed in as <span className="username">ryan.shurtliff</span>
+                  </span>
+                  <Nav.Link as={Link} to="/" eventKey="logout" className="btn btn-sm btn-outline-light logout-link">
                     Logout
-                  </Link>
-                </p>
+                  </Nav.Link>
+                </Nav>
               </Navbar.Collapse>
             </Container>
           </Navbar>

@@ -1,5 +1,25 @@
 /* Dashboard view. Imported by src/dashboard/dashboard.jsx. */
 
+/* ---------- Small text and headings ---------- */
+
+.text-muted-sm {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Heading with something beside it, like the live indicator */
+.section-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.section-heading h2 {
+  margin: 0;
+}
+
 /* ---------- Live alerts ---------- */
 
 /* Sits between the assignment list and Connected Services */

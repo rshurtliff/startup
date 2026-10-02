@@ -3,6 +3,7 @@
 - Made the imported font easier to see for the TA's (got docked on CSS, even though I used Inter from Google's font library)
 - Ported to a single-page React page
 - Completed Startup React P1: Routing
+- Fixed my React P1 feedback: lists render with `.map()`, shared pieces are components in `src/components/common/`, the login form uses `useState`, and Logout is a `Nav.Link`
 
 # Startup React P1: Routing
 https://startup.cs260hwtrackr.click/
@@ -32,7 +33,11 @@ https://startup.cs260hwtrackr.click/
 
   - **Settings** (`src/settings/settings.jsx` and `settings.css`): the Canvas link form, sync status table, email reminder settings, and account info. This page has the most filled-in placeholder data, so the iCal link and email use `defaultValue` and the Sunday summary switch uses `defaultChecked`. That way they show my sample data but you can still change them.
 
-  A few styles are used on more than one page, like the class colors, the "Live" tag, and the hours input. Those stayed in `app.css` so I'm not copying them into every page's CSS.
+  A few small pieces show up on more than one page, so they're their own components in `src/components/common/`, each with its own CSS file: `ClassTag` (the colored class pill), `LiveIndicator` and `LiveNote` (the pulsing "Live" tag and the line under it), and `HoursInput` (the number box with "hours" after it). That keeps `src/app.css` down to the color variables, Bootstrap theming, and the header and footer.
+
+  The repeated data isn't typed out row by row anymore. Each page keeps its placeholder data in an array at the top of the file, like `assignments` in `dashboard.jsx`, and renders it with `.map()`. That covers the assignment table, live alerts, connected services, the class filter, the chart bars, stats, student notes, and the settings sync table. In Phase 2 those arrays get swapped for data from my service, and the JSX stays the same.
+
+  The login form uses `useState` for the Net ID and password, so the inputs are controlled and ready to send to a login endpoint later. In the header, Logout is a React Bootstrap `Nav.Link` like the rest of the nav, so the phone menu closes when you tap it too.
 
 - [x] **20% React router**
 
