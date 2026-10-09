@@ -1,3 +1,33 @@
+# Startup React Phase 2 Plan 10/8/26
+
+Plan for Startup React Phase 2:
+
+Rubric: 70% multiple React components that implement or mock all app functionality, 30% React `useState` and `useEffect` hooks.
+
+Mocks until the later deliverables: `localStorage` stands in for the database, hard-coded responses stand in for Canvas and SendGrid, and `setInterval` stands in for the WebSocket.
+
+| # | Session | What gets built | Rubric |
+|---|---|---|---|
+| 1 | **Login state** | `App` keeps `userName` in `useState`, starting from `localStorage`. Login and Create Account save the Net ID to `localStorage` and pass it up through an `onLogin` prop. The header shows the real name instead of `ryan.shurtliff`. Simon: `app.jsx`, `login/unauthenticated.jsx`. | useState, Mock |
+| 2 | **Logout and locked pages** | Logout clears `localStorage` and the state, then goes to `/`. Dashboard, Assignment Detail, Settings, and "Signed in as" only show in the nav when someone is logged in. Their routes send you back to login if not. Simon: `app.jsx`, `login/authenticated.jsx`. | Components |
+| 3 | **Real dates** | Change `due` in the dashboard `mockData.js` to real dates and `average` to a number. Add small helpers to format a date like `Tue, Sep 22` and to work out "due soon" instead of hard-coding `dueSoon`. Needed before sorting can work. | Components |
+| 4 | **Assignments in state** | Dashboard loads assignments in a `useEffect` from `localStorage`, using mockData the first time, and keeps them in `useState`. A second `useEffect` saves them back whenever they change. Simon: `scores/scores.jsx`. | useState, useEffect, Mock |
+| 5 | **Filter and sort** | The class and sort dropdowns become controlled inputs. The table shows a filtered and sorted copy of the list, so it updates as you pick and the Apply button goes away. | useState |
+| 6 | **Add assignment** | The Add form gets `useState` for title, class, and due date. Submitting adds a new assignment with its own id, saves it, and clears the form. | useState, Mock |
+| 7 | **Check off and time prompt** | The checkbox toggles `done` on that assignment. The time-log dialog only renders right after you check a box (`{logging && <dialog>}`) and names that assignment. Save stores the hours on it, and Skip just closes it. Main feature from my spec. | useState, Components |
+| 8 | **Assignment detail by id** | `useParams()` gets the id and the page loads that assignment from `localStorage` in a `useEffect`. Title, class, due date, and status come from it instead of being hard-coded. Bad id shows a not found message. | useEffect, Components |
+| 9 | **Mark It Done and the chart** | The Mark It Done form is controlled and saves done, hours, and the note to the same stored assignment, so the dashboard matches. Your hours land in the right chart bucket, your note shows in the notes list, and the average, median, and longest are calculated from the data instead of typed in. | useState, Mock |
+| 10 | **Fake WebSocket** | A `setInterval` inside a `useEffect` adds a random classmate logging a time every few seconds. The chart bars grow and the "Updating live" line changes. Dashboard Live Alerts get the same thing. The cleanup function clears the interval when you leave the page. Simon: `play/gameNotifier.js`, `play/players.jsx`. | useEffect, Mock |
+| 11 | **Canvas link and sync** | The iCal input is controlled and saved to `localStorage`. Save and Sync calls a fake `syncCanvas()` that returns a hard-coded list, then updates the sync table, the totals line, and "last synced". Remove Link clears it. Sync Now runs the same function. | useState, Mock |
+| 12 | **Reminders, account, wrap up** | Reminder email, lead time, and Sunday summary are controlled and saved to `localStorage`. The Account card shows the real Net ID and works out completed count and total hours from the stored assignments. Delete Account clears everything and logs out. Then the README "React part 2" checklist, these notes, and deploy with `-s startup`. | All |
+
+Things to watch for:
+- Commit at the end of every session, and more often when a session runs long. The rubric wants commits spread over several days.
+- `defaultValue` and `defaultChecked` from P1 have to become `value` and `checked` with an `onChange` once the input is in state.
+- Never change state directly (`assignments[0].done = true`). Make a new array or object and pass it to the setter, or React won't re-render.
+- `localStorage` only holds strings, so it's `JSON.stringify` going in and `JSON.parse` coming out.
+- A `useEffect` with a `setInterval` needs to return a cleanup function, or every visit to the page stacks another interval.
+
 # Simon React Phase 2 10/8/26
 
 Cloned the finished simon-react repo and deployed it to https://simon.cs260hwtrackr.click with `./deployReact.sh -k ~/.ssh/production.pem -h cs260hwtrackr.click -s simon`.
