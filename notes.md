@@ -1,3 +1,13 @@
+# Simon React Phase 2 10/8/26
+
+Cloned the finished simon-react repo and deployed it to https://simon.cs260hwtrackr.click with `./deployReact.sh -k ~/.ssh/production.pem -h cs260hwtrackr.click -s simon`.
+
+- The About page puts the image and quote in state and sets them in a `useEffect` with `[]`, so it runs once on load. It looks pointless now, but later the effect just swaps in a real `fetch`.
+- `gameNotifier.js` fakes other players with a `setInterval` that sends a random score every 5 seconds. `players.jsx` adds a handler in `useEffect` and removes it in the cleanup function so handlers don't pile up.
+- `simonGame.jsx` runs on three pieces of state: `allowPlayer`, `sequence`, and `playbackPos`. `onPressed` turns `allowPlayer` off first so you can't click again while it checks your press.
+- The login state lives in `App`, not `Login`, because the nav menu needs it too. `Login` gets an `onAuthChange` function and calls it to tell `App` when it changes. That's "lifting state up."
+- Scores and the username are kept in `localStorage` for now until there is a backend.
+
 # Finishing React Phase 1 10/1/26
 
 ## What Porting Actually Means
