@@ -1,5 +1,18 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 3: Real Dates
+
+The mock data had `due: 'Tue, Sep 22'` and `dueSoon: true`. That's display text, not data. You can't sort it (as text, "Sat" comes before "Tue" no matter the date), and `dueSoon` stays true forever. So the data had to change before sorting and filtering could work.
+
+- `due` is now `'YYYY-MM-DD'`, which is what the Canvas feed gives. That format sorts correctly even as plain text.
+- `average` is a number now, and the table adds "hrs" when it shows it.
+- `dueSoon` is gone from the data. `isDueSoon()` works it out from the date, and the dashboard skips it for finished assignments.
+- The helpers live in `src/utils/dates.js` because the assignment page will need them too.
+- The UTC trap: `new Date('2026-10-12')` reads a date-only string as midnight UTC, which is the evening of the 11th in Utah, so every date showed a day early. `new Date('2026-10-12T00:00')` reads it as local midnight instead.
+- `toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })` turns a date into "Mon, Oct 12" without any library.
+- The mock dates use `daysFromToday(n)` so they're always near today. Hard-coded dates would stop showing "due soon" after a week.
+- A `.map()` callback with `=> (` can only return JSX. Switching to `=> { ... return (...); }` lets me set a variable like `dueSoon` first and use it twice.
+
 ## Session 2: Logout and Locked Pages
 
 Once `userName` lives in `App`, the header can change based on it. Logging out is just logging in backwards.

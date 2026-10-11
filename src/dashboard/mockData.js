@@ -1,5 +1,7 @@
-// Placeholder data for the dashboard. In Phase 2 these come from the service
-// instead, and dashboard.jsx renders whatever it gets back.
+import { daysFromToday } from '../utils/dates';
+
+// Placeholder data for the dashboard. Once the service exists these come from
+// it instead, and dashboard.jsx renders whatever it gets back.
 
 export const classes = [
   { key: 'cs260', code: 'CS 260' },
@@ -10,11 +12,13 @@ export const classes = [
 
 // Database placeholder. Every assignment comes out of MongoDB. The done state
 // and the logged time are written back to it.
+// Due dates are 'YYYY-MM-DD' like the Canvas feed, set a few days around today
+// so "due soon" always has something to show. average is hours.
 export const assignments = [
-  { id: 'cs260-startup-html', classKey: 'cs260', classCode: 'CS 260', title: 'Startup HTML Deliverable', due: 'Tue, Sep 22', average: '3.2 hrs', dueSoon: true, done: false },
-  { id: 'fin401-problem-set-4', classKey: 'fin401', classCode: 'FIN 401', title: 'Problem Set 4', due: 'Wed, Sep 23', average: '2.8 hrs', dueSoon: false, done: false },
-  { id: 'mcom320-persuasive-memo', classKey: 'mcom320', classCode: 'MCOM 320', title: 'Persuasive Memo Draft', due: 'Thu, Sep 24', average: '1.5 hrs', dueSoon: false, done: false },
-  { id: 'rela275-reading-journal', classKey: 'rela275', classCode: 'REL A 275', title: 'Reading Journal Week 4', due: 'Sat, Sep 19', average: '0.7 hrs', dueSoon: false, done: true },
+  { id: 'cs260-startup-html', classKey: 'cs260', classCode: 'CS 260', title: 'Startup HTML Deliverable', due: daysFromToday(1), average: 3.2, done: false },
+  { id: 'fin401-problem-set-4', classKey: 'fin401', classCode: 'FIN 401', title: 'Problem Set 4', due: daysFromToday(3), average: 2.8, done: false },
+  { id: 'mcom320-persuasive-memo', classKey: 'mcom320', classCode: 'MCOM 320', title: 'Persuasive Memo Draft', due: daysFromToday(5), average: 1.5, done: false },
+  { id: 'rela275-reading-journal', classKey: 'rela275', classCode: 'REL A 275', title: 'Reading Journal Week 4', due: daysFromToday(-1), average: 0.7, done: true },
 ];
 
 // WebSocket placeholder. Deadline alerts and other students' logged times get

@@ -17,6 +17,8 @@ Still in progress. I'll check each item off once it's done.
 
   - **App header** (`src/app.jsx`): the Dashboard, Assignment Detail, and Settings links and the "Signed in as" line only show when someone is logged in. Logout calls `logout()`, which clears the saved name and the state, so the header goes back to just the Login link. The `/dashboard`, `/assignment/:id`, and `/settings` routes also check `userName` and send you to the login page with `<Navigate>` if nobody is logged in, so typing the URL doesn't get you in either.
 
+  - **Due dates** (`src/utils/dates.js`): assignments store their due date the way Canvas sends it, like `2026-10-12`. `formatDue()` shows it as "Mon, Oct 12", and `isDueSoon()` decides which rows turn amber and get the "Due soon" badge, instead of that being hard-coded. Finished assignments never show as due soon.
+
 - [ ] **30% React useState and useEffect hooks**
 
   - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one.

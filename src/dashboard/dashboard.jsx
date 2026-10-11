@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
+import { formatDue, isDueSoon } from '../utils/dates';
 import { classes, assignments, alerts, services } from './mockData';
 import './dashboard.css';
 
@@ -98,30 +99,34 @@ export function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {assignments.map((a) => (
-                  <tr key={a.id} className={`class-${a.classKey}${a.dueSoon ? ' due-soon' : ''}`}>
-                    <td>
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id={`done-${a.id}`}
-                        aria-label={`Mark ${a.title} as complete`}
-                        defaultChecked={a.done}
-                      />
-                    </td>
-                    <td>
-                      <ClassTag code={a.classCode} />
-                    </td>
-                    <td>
-                      <Link to={`/assignment/${a.id}`}>{a.title}</Link>
-                    </td>
-                    <td className="due-cell">
-                      {a.due}
-                      {a.dueSoon && <span className="badge due-badge">Due soon</span>}
-                    </td>
-                    <td>{a.average}</td>
-                  </tr>
-                ))}
+                {assignments.map((a) => {
+                  // Finished work isn't due soon, even if the date is close
+                  const dueSoon = !a.done && isDueSoon(a.due);
+                  return (
+                    <tr key={a.id} className={`class-${a.classKey}${dueSoon ? ' due-soon' : ''}`}>
+                      <td>
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`done-${a.id}`}
+                          aria-label={`Mark ${a.title} as complete`}
+                          defaultChecked={a.done}
+                        />
+                      </td>
+                      <td>
+                        <ClassTag code={a.classCode} />
+                      </td>
+                      <td>
+                        <Link to={`/assignment/${a.id}`}>{a.title}</Link>
+                      </td>
+                      <td className="due-cell">
+                        {formatDue(a.due)}
+                        {dueSoon && <span className="badge due-badge">Due soon</span>}
+                      </td>
+                      <td>{a.average} hrs</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
