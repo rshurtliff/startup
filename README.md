@@ -5,6 +5,22 @@
 - Completed Startup React P1: Routing
 - Fixed my React P1 feedback: lists render with `.map()`, shared pieces are components in `src/components/common/`, the login form uses `useState`, and Logout is a `Nav.Link`
 
+# Startup React part 2: Reactivity
+https://startup.cs260hwtrackr.click/
+
+Still in progress. I'll check each item off once it's done.
+
+## What I did for Each Rubric Item
+- [ ] **70% Multiple React components that implement or mock all app functionality**
+
+  - **Login** (`src/login/login.jsx`): Login and Create Account save your Net ID to `localStorage` and pass it up to `App` through an `onLogin` prop. `localStorage` stands in for the database until the login endpoint exists.
+
+  - **App header** (`src/app.jsx`): the Dashboard, Assignment Detail, and Settings links and the "Signed in as" line only show when someone is logged in. Logout calls `logout()`, which clears the saved name and the state, so the header goes back to just the Login link. The `/dashboard`, `/assignment/:id`, and `/settings` routes also check `userName` and send you to the login page with `<Navigate>` if nobody is logged in, so typing the URL doesn't get you in either.
+
+- [ ] **30% React useState and useEffect hooks**
+
+  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one.
+
 # Startup React P1: Routing
 https://startup.cs260hwtrackr.click/
 

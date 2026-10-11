@@ -1,3 +1,30 @@
+# Startup React Phase 2 Notes 10/10/26
+
+## Session 2: Logout and Locked Pages
+
+Once `userName` lives in `App`, the header can change based on it. Logging out is just logging in backwards.
+
+- `{userName && (...)}` hides "Signed in as" and the Logout button together when nobody is logged in.
+- `&&` can only give back one thing, so the Dashboard, Assignment Detail, and Settings links are wrapped in a fragment, `<>...</>`. It groups them without adding an extra element to the page. One check instead of three.
+- `logout()` undoes both halves of `loginUser`: `localStorage.removeItem('userName')` and `setUserName('')`. Both `&&` blocks go false and React hides them on the next render.
+- `onClick={logout}` with no parentheses. That hands React the function to call later. `onClick={logout()}` would call it during render and log you out right away.
+- The Logout link still has `to="/"`, so one click runs `logout` and then goes to the login page. No `navigate` needed.
+- JavaScript is case sensitive. `setuserName` is a different name than `setUserName` and just throws "not defined."
+- Hiding a link doesn't lock the page. You can still type `/settings` in the address bar. The routes need their own check.
+- `<Navigate to="/" />` is a component that shows nothing and redirects as soon as it renders. So locking a route is just picking which component to render: `element={userName ? <Settings /> : <Navigate to="/" />}`.
+- Ternary instead of `&&` for routes because I want something in both cases. `&&` would give a blank page when logged out.
+
+## Session 1: Lifting State Up
+
+The header and the login page both need to know who is logged in, so the name has to live in `App`, the parent they share. `App` keeps it with `useState` and passes Login a function prop called `onLogin`. Login can't change `App`'s state itself, but it can call that function, and `App` sets its own state. That's what the course means by "lifting state up."
+
+- `const [userName, setUserName] = useState(localStorage.getItem('userName') || '')` gives back the value and a setter. The starting value is only used on the first render. `getItem` returns `null` when nothing is saved, so `|| ''` keeps it a string, and `''` means logged out.
+- `onLogin={(name) => setUserName(name)}` is just a lambda. Functions are values in JavaScript, so `onLogin={setUserName}` works too.
+- `loginUser` needs both lines. `localStorage.setItem` makes the name survive a refresh, and `onLogin` updates the header right now. With only one of them, you either lose it on refresh or don't see it until you refresh.
+- `netId` is already in state from the controlled input, so `loginUser` just uses the variable instead of reading the box.
+- An `on...` prop is a convention for "a function the child calls when something happens." React doesn't treat the name specially.
+- `{userName && (...)}` only renders the JSX when `userName` isn't empty, since `''` is falsy. That's how "Signed in as" will hide when nobody is logged in.
+
 # Startup React Phase 2 Plan 10/8/26
 
 Plan for Startup React Phase 2:
