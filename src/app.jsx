@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -12,6 +12,8 @@ import { Assignment } from './assignment/assignment';
 import { Settings } from './settings/settings';
 
 export default function App() {
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
+
   return (
     <BrowserRouter>
       <div className="app">
@@ -55,7 +57,7 @@ export default function App() {
                     the service and database are wired up. */}
                 <Nav as="div" className="user-info">
                   <span>
-                    Signed in as <span className="username">ryan.shurtliff</span>
+                    Signed in as <span className="username">{userName}</span>
                   </span>
                   <Nav.Link as={Link} to="/" eventKey="logout" className="btn btn-sm btn-outline-light logout-link">
                     Logout
@@ -67,7 +69,7 @@ export default function App() {
         </header>
 
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Login onLogin={(name) => setUserName(name)} />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/assignment/:id" element={<Assignment />} />
           <Route path="/settings" element={<Settings />} />

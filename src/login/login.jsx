@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 
-export function Login() {
+export function Login({ onLogin }) {
   const navigate = useNavigate();
 
   // The inputs are controlled: what you type is kept in state, so Phase 2 can
@@ -10,17 +10,24 @@ export function Login() {
   const [netId, setNetId] = useState('');
   const [password, setPassword] = useState('');
 
-  // Each button has its own action. In Phase 2 these call different service
-  // endpoints, one to check an existing login and one to create the account.
+  // Each button has its own action. Once the service exists these call different
+  // service endpoints, one to check an existing login and one to create the account.
 
-  // Placeholder for POST /api/auth/login. A returning user goes to their dashboard.
+  // Placeholder for POST /api/auth/login. For now the Net ID is saved to
+  // localStorage and handed up to App so the header can show it. A returning
+  // user goes to their dashboard.
   function loginUser() {
+    localStorage.setItem('userName', netId);
+    onLogin(netId);
     navigate('/dashboard');
   }
 
-  // Placeholder for POST /api/auth/create. A new user has no assignments yet,
-  // so they go to settings first to paste in their Canvas link.
+  // Placeholder for POST /api/auth/create. Saves the Net ID the same way as
+  // loginUser for now. A new user has no assignments yet, so they go to
+  // settings first to paste in their Canvas link.
   function createUser() {
+    localStorage.setItem('userName', netId);
+    onLogin(netId);
     navigate('/settings');
   }
 
