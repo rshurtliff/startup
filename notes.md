@@ -1,5 +1,17 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 4: Assignments in State
+
+An import from `mockData.js` can't change, so the dashboard list had to become state before anything can be checked off or added. `localStorage` is the stand-in database, saved under the key `assignments`.
+
+- `useState([])` starts the list empty. A `useEffect` fills it in, the same as Simon's `scores.jsx`.
+- `useEffect(() => { ... }, [])` runs after the component shows up on screen. The empty `[]` means only once, on first load.
+- First visit ever, nothing is saved, so it uses the mock data and saves that. After that it always reads from `localStorage`.
+- `localStorage` only holds strings. `JSON.stringify` going in, `JSON.parse` coming out.
+- `import { assignments as mockAssignments }` renames on import so it doesn't collide with the state called `assignments`.
+- Saving goes through `saveAssignments(newList)`, which sets the state and writes `localStorage` together, like `loginUser` does. I skipped a second `useEffect` for saving because it would also run on the first render while the list is still `[]` and save the empty list over the real data.
+- To reset to the mock data while testing, delete the `assignments` key in DevTools and refresh.
+
 ## Session 3: Real Dates
 
 The mock data had `due: 'Tue, Sep 22'` and `dueSoon: true`. That's display text, not data. You can't sort it (as text, "Sat" comes before "Tue" no matter the date), and `dueSoon` stays true forever. So the data had to change before sorting and filtering could work.

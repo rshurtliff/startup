@@ -1,13 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon } from '../utils/dates';
-import { classes, assignments, alerts, services } from './mockData';
+import { classes, assignments as mockAssignments, alerts, services } from './mockData';
 import './dashboard.css';
 
 export function Dashboard() {
+  // The assignment list is state so it can change when you check something off
+  // or add one. It starts empty and the effect below fills it in.
+  const [assignments, setAssignments] = useState([]);
+
+  // Runs once after the page first shows up. localStorage stands in for the
+  // database until the service exists. The first visit ever has nothing saved,
+  // so it starts from the mock data and saves that.
+  useEffect(() => {
+    const saved = localStorage.getItem('assignments');
+    if (saved) {
+      setAssignments(JSON.parse(saved));
+    } else {
+      setAssignments(mockAssignments);
+      localStorage.setItem('assignments', JSON.stringify(mockAssignments));
+    }
+  }, []);
+
+  // Every change to the list goes through here so the state and localStorage
+  // never get out of sync. Checking off and adding assignments use this.
+  function saveAssignments(newList) {
+    setAssignments(newList);
+    localStorage.setItem('assignments', JSON.stringify(newList));
+  }
+
   // Placeholder until the service exists. Keeps the forms from reloading the page.
   function handleSubmit(event) {
     event.preventDefault();

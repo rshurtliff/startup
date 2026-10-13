@@ -21,7 +21,9 @@ Still in progress. I'll check each item off once it's done.
 
 - [ ] **30% React useState and useEffect hooks**
 
-  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one.
+  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one. `Dashboard` (`src/dashboard/dashboard.jsx`) keeps the assignment list in state.
+
+  - **useEffect:** when the dashboard loads, a `useEffect` reads the assignments from `localStorage`. The first time, nothing is saved yet, so it starts from my mock data and saves it. Any change to the list goes through `saveAssignments()`, which updates the state and `localStorage` together.
 
 # Startup React P1: Routing
 https://startup.cs260hwtrackr.click/
