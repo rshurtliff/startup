@@ -1,5 +1,20 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 5: Filter and Sort
+
+In React you don't "apply" a filter. What's picked lives in state, and every render works out which rows to show from it. Change a dropdown, the state changes, React re-renders, and the table updates. So the Apply button is gone.
+
+- `const [sortBy, setSortBy] = useState('due')` is array destructuring. `useState` gives back `[value, setter]` and the brackets on the left unpack them. The names are up to me. I don't write `setSortBy` myself, `useState` makes it.
+- The start value has to match an option's `value`, like `'all'` and `'due'`, or the dropdown and state disagree.
+- A controlled dropdown needs both `value={classFilter}` (state shows in the box) and `onChange={(e) => setClassFilter(e.target.value)}` (picking updates the state). Without `onChange` the box still changes on screen, but the state never does.
+- `e.target.value` is the option's `value`, not its label. `<option value="time">Estimated time</option>` gives `'time'`. Labels are for people and can change, values are for code.
+- `console.log` in a component prints in the browser console, not the terminal, and runs on every render. It printed `all` twice on load because `setAssignments` in the effect caused a second render.
+- A blank page usually means the component crashed while rendering. Check the browser console first. Mine was `classFiler is not defined`, a typo Vite's build didn't catch.
+- `.filter((a) => ...)` keeps the items where the function returns true and gives back a new array. `a` is just the name for one assignment at a time.
+- `assignments` is an array of object literals, like a list of dictionaries. Nothing defines that they have a `classKey`. They just do because mockData wrote them that way, so a typo gives `undefined` instead of an error.
+- `.sort((a, b) => ...)` wants a negative number if `a` goes first, positive if `b` does. `a.average - b.average` works for numbers and `localeCompare` is the version for text.
+- `.sort()` changes the array it's called on, unlike `.filter()`. Fine on `filtered` since it's already a copy. Sorting `assignments` directly would change state behind React's back.
+
 ## Session 4: Assignments in State
 
 An import from `mockData.js` can't change, so the dashboard list had to become state before anything can be checked off or added. `localStorage` is the stand-in database, saved under the key `assignments`.

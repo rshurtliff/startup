@@ -12,6 +12,10 @@ export function Dashboard() {
   // or add one. It starts empty and the effect below fills it in.
   const [assignments, setAssignments] = useState([]);
 
+  // Class and Sort by dropdowns
+  const [classFilter, setClassFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('due');
+
   // Runs once after the page first shows up. localStorage stands in for the
   // database until the service exists. The first visit ever has nothing saved,
   // so it starts from the mock data and saves that.
@@ -37,6 +41,22 @@ export function Dashboard() {
     event.preventDefault();
   }
 
+  // The rows to show. Only the ones that match the Class dropdown. This is a
+  // copy, so assignments itself stays whole.
+  const filtered = assignments.filter((a) => classFilter === 'all' || a.classKey === classFilter);
+
+  // Puts the rows in order based on the Sort by dropdown. Due dates are
+  // 'YYYY-MM-DD', so they sort correctly as plain text.
+  filtered.sort((a, b) => {
+    if (sortBy === 'class') {
+      return a.classCode.localeCompare(b.classCode);
+    }
+    if (sortBy === 'time') {
+      return a.average - b.average;
+    }
+    return a.due.localeCompare(b.due);
+  });
+
   return (
     <main className="container">
       <section className="card assignments-panel">
@@ -52,7 +72,7 @@ export function Dashboard() {
                 <label className="form-label" htmlFor="class-filter">
                   Class
                 </label>
-                <select className="form-select" id="class-filter" name="class">
+                <select className="form-select" id="class-filter" name="class" value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
                   <option value="all">All classes</option>
                   {classes.map((c) => (
                     <option key={c.key} value={c.key}>
@@ -66,16 +86,12 @@ export function Dashboard() {
                 <label className="form-label" htmlFor="sort">
                   Sort by
                 </label>
-                <select className="form-select" id="sort" name="sort">
+                <select className="form-select" id="sort" name="sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                   <option value="due">Due date</option>
                   <option value="class">Class</option>
                   <option value="time">Estimated time</option>
                 </select>
               </div>
-
-              <button className="btn btn-outline-primary" type="submit">
-                Apply
-              </button>
             </form>
 
             {/* Collapsed until clicked. <details> opens and closes on its own,
@@ -123,7 +139,7 @@ export function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {assignments.map((a) => {
+                {filtered.map((a) => {
                   // Finished work isn't due soon, even if the date is close
                   const dueSoon = !a.done && isDueSoon(a.due);
                   return (

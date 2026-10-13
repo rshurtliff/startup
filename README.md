@@ -19,9 +19,11 @@ Still in progress. I'll check each item off once it's done.
 
   - **Due dates** (`src/utils/dates.js`): assignments store their due date the way Canvas sends it, like `2026-10-12`. `formatDue()` shows it as "Mon, Oct 12", and `isDueSoon()` decides which rows turn amber and get the "Due soon" badge, instead of that being hard-coded. Finished assignments never show as due soon.
 
+  - **Filter and sort** (`src/dashboard/dashboard.jsx`): the Class and Sort by dropdowns work now. The table updates as soon as you pick something, so I took out the Apply button. You can sort by due date, class, or class average time.
+
 - [ ] **30% React useState and useEffect hooks**
 
-  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one. `Dashboard` (`src/dashboard/dashboard.jsx`) keeps the assignment list in state.
+  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one. `Dashboard` (`src/dashboard/dashboard.jsx`) keeps the assignment list in state, plus what's picked in the Class and Sort by dropdowns. The table shows a filtered and sorted copy of the list, worked out from that state on every render.
 
   - **useEffect:** when the dashboard loads, a `useEffect` reads the assignments from `localStorage`. The first time, nothing is saved yet, so it starts from my mock data and saves it. Any change to the list goes through `saveAssignments()`, which updates the state and `localStorage` together.
 
