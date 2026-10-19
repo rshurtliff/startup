@@ -64,6 +64,12 @@ export function Dashboard() {
     setNewDue('');
   }
 
+  // Removes an assignment I added myself. Keeps every assignment except the
+  // one with this id and saves that as the new list.
+  function deleteAssignment(id) {
+    saveAssignments(assignments.filter((a) => a.id !== id));
+  }
+
   // Placeholder until the service exists. Keeps the forms from reloading the page.
   function handleSubmit(event) {
     event.preventDefault();
@@ -202,13 +208,29 @@ export function Dashboard() {
                   return (
                     <tr key={a.id} className={`class-${a.classKey}${dueSoon ? ' due-soon' : ''}`}>
                       <td>
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id={`done-${a.id}`}
-                          aria-label={`Mark ${a.title} as complete`}
-                          defaultChecked={a.done}
-                        />
+                        {/* Flex row so the checkbox and the X line up */}
+                        <div className="done-cell">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id={`done-${a.id}`}
+                            aria-label={`Mark ${a.title} as complete`}
+                            defaultChecked={a.done}
+                          />
+                          {/* Only assignments added with the form can be deleted. Canvas
+                              ones would just come back on the next sync. */}
+                          {a.id.startsWith('custom-') && (
+                            <button
+                              className="btn btn-sm btn-outline-danger delete-btn"
+                              type="button"
+                              aria-label={`Delete ${a.title}`}
+                              title="Delete"
+                              onClick={() => deleteAssignment(a.id)}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <ClassTag code={a.classCode} />

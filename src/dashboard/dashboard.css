@@ -214,6 +214,25 @@
   background-color: var(--due-soon);
 }
 
+/* Checkbox and the X sit side by side, centered on the same line */
+.done-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Small X on an assignment I added. Same size square as the checkbox. */
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+}
+
 /* A checked box fades its row and strikes through the title. No JavaScript. */
 .assignment-table tr:has(.form-check-input:checked) td {
   color: var(--done);
@@ -262,6 +281,11 @@
     grid-area: done;
     display: flex;
     align-items: center;
+  }
+
+  /* The done column is narrow here, so the X stacks under the checkbox */
+  .done-cell {
+    flex-direction: column;
   }
 
   .assignment-table tbody td:nth-child(2) {

@@ -21,7 +21,7 @@ Still in progress. I'll check each item off once it's done.
 
   - **Filter and sort** (`src/dashboard/dashboard.jsx`): the Class and Sort by dropdowns work now. The table updates as soon as you pick something, so I took out the Apply button. You can sort by due date, class, or class average time.
 
-  - **Add assignment** (`addAssignment()` in `src/dashboard/dashboard.jsx`): the Add form works now. You type a title, pick one of your classes and a due date, and it shows up in the table and gets saved to `localStorage`, so it's still there after a refresh. Nobody has logged time on it yet, so its class average says "No data yet".
+  - **Add assignment** (`addAssignment()` in `src/dashboard/dashboard.jsx`): the Add form works now. You type a title, pick one of your classes and a due date, and it shows up in the table and gets saved to `localStorage`, so it's still there after a refresh. Nobody has logged time on it yet, so its class average says "No data yet". Assignments I added also get a small X next to their checkbox that deletes them (`deleteAssignment()`). Canvas assignments don't, since they'd just come back on the next sync.
 
 - [ ] **30% React useState and useEffect hooks**
 

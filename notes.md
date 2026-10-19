@@ -1,5 +1,14 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 6.5: Delete Added Assignments
+
+Not in the original plan. Without it, a typo in an added assignment was stuck there forever.
+
+- The delete button is a small X next to the checkbox. Only assignments I added can be deleted. Their ids start with `custom-`, so `a.id.startsWith('custom-') && (...)` shows the button just on those. Canvas ones would come right back on the next sync anyway.
+- Deleting is `.filter()` again: keep everything whose id isn't this one, then `saveAssignments` the new list. Same "new array, never change the old one" rule as adding.
+- `onClick={() => deleteAssignment(a.id)}` instead of `onClick={deleteAssignment}`. The function needs to know which row was clicked, so it gets wrapped in an arrow function that passes the id. The arrow runs on the click, not during render.
+- The button is `type="button"` so it can't accidentally submit a form.
+
 ## Session 6: Add Assignment
 
 The Add form needed state for each box, `value` and `onChange` on each box, and a function that builds a new assignment and saves the longer list.
@@ -99,6 +108,7 @@ Mocks until the later deliverables: `localStorage` stands in for the database, h
 | 4 | **Assignments in state** | Dashboard loads assignments in a `useEffect` from `localStorage`, using mockData the first time, and keeps them in `useState`. A second `useEffect` saves them back whenever they change. Simon: `scores/scores.jsx`. | useState, useEffect, Mock |
 | 5 | **Filter and sort** | The class and sort dropdowns become controlled inputs. The table shows a filtered and sorted copy of the list, so it updates as you pick and the Apply button goes away. | useState |
 | 6 | **Add assignment** | The Add form gets `useState` for title, class, and due date. Submitting adds a new assignment with its own id, saves it, and clears the form. | useState, Mock |
+| 6.5 | **Delete added assignments** | Added after session 6. A small Delete button shows only on assignments I added (`custom-` ids), since Canvas ones would come back on the next sync. `deleteAssignment(id)` filters that one out and saves the rest. | Mock |
 | 7 | **Check off and time prompt** | The checkbox toggles `done` on that assignment. The time-log dialog only renders right after you check a box (`{logging && <dialog>}`) and names that assignment. Save stores the hours on it, and Skip just closes it. Main feature from my spec. | useState, Components |
 | 8 | **Assignment detail by id** | `useParams()` gets the id and the page loads that assignment from `localStorage` in a `useEffect`. Title, class, due date, and status come from it instead of being hard-coded. Bad id shows a not found message. | useEffect, Components |
 | 9 | **Mark It Done and the chart** | The Mark It Done form is controlled and saves done, hours, and the note to the same stored assignment, so the dashboard matches. Your hours land in the right chart bucket, your note shows in the notes list, and the average, median, and longest are calculated from the data instead of typed in. | useState, Mock |
