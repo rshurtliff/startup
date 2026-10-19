@@ -21,9 +21,11 @@ Still in progress. I'll check each item off once it's done.
 
   - **Filter and sort** (`src/dashboard/dashboard.jsx`): the Class and Sort by dropdowns work now. The table updates as soon as you pick something, so I took out the Apply button. You can sort by due date, class, or class average time.
 
+  - **Add assignment** (`addAssignment()` in `src/dashboard/dashboard.jsx`): the Add form works now. You type a title, pick one of your classes and a due date, and it shows up in the table and gets saved to `localStorage`, so it's still there after a refresh. Nobody has logged time on it yet, so its class average says "No data yet".
+
 - [ ] **30% React useState and useEffect hooks**
 
-  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one. `Dashboard` (`src/dashboard/dashboard.jsx`) keeps the assignment list in state, plus what's picked in the Class and Sort by dropdowns. The table shows a filtered and sorted copy of the list, worked out from that state on every render.
+  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one. `Dashboard` (`src/dashboard/dashboard.jsx`) keeps the assignment list in state, plus what's picked in the Class and Sort by dropdowns and what's typed in the Add assignment form. The table shows a filtered and sorted copy of the list, worked out from that state on every render.
 
   - **useEffect:** when the dashboard loads, a `useEffect` reads the assignments from `localStorage`. The first time, nothing is saved yet, so it starts from my mock data and saves it. Any change to the list goes through `saveAssignments()`, which updates the state and `localStorage` together.
 

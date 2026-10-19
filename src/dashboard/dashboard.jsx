@@ -16,6 +16,11 @@ export function Dashboard() {
   const [classFilter, setClassFilter] = useState('all');
   const [sortBy, setSortBy] = useState('due');
 
+  // What's typed in the Add assignment form
+  const [newTitle, setNewTitle] = useState('');
+  const [newClass, setNewClass] = useState('cs260');
+  const [newDue, setNewDue] = useState('');
+
   // Runs once after the page first shows up. localStorage stands in for the
   // database until the service exists. The first visit ever has nothing saved,
   // so it starts from the mock data and saves that.
@@ -34,6 +39,29 @@ export function Dashboard() {
   function saveAssignments(newList) {
     setAssignments(newList);
     localStorage.setItem('assignments', JSON.stringify(newList));
+  }
+
+  // Builds a new assignment from the Add form and saves it with the rest.
+  // Custom assignments get the same fields as the Canvas ones so the table,
+  // filter, and sort all treat them the same.
+  function addAssignment(event) {
+    event.preventDefault();
+
+    const pickedClass = classes.find((c) => c.key === newClass);
+    const newAssignment = {
+      id: `custom-${Date.now()}`,
+      classKey: pickedClass.key,
+      classCode: pickedClass.code,
+      title: newTitle,
+      due: newDue,
+      average: null,
+      done: false,
+    };
+    saveAssignments([...assignments, newAssignment]);
+
+    // Empty the boxes for the next one. The class stays picked.
+    setNewTitle('');
+    setNewDue('');
   }
 
   // Placeholder until the service exists. Keeps the forms from reloading the page.
@@ -99,24 +127,53 @@ export function Dashboard() {
             <details className="add-assignment">
               <summary className="btn btn-outline-primary">Add assignment</summary>
               <p className="text-muted-sm">For anything your professor never put in Canvas.</p>
-              <form className="add-form" onSubmit={handleSubmit}>
+              <form className="add-form" onSubmit={addAssignment}>
                 <div className="add-field add-title">
                   <label className="form-label" htmlFor="title">
                     Assignment
                   </label>
-                  <input className="form-control" type="text" id="title" name="title" placeholder="Group project check-in" required />
+                  <input
+                    className="form-control"
+                    type="text"
+                    id="title"
+                    name="title"
+                    placeholder="Group project check-in"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="add-field">
                   <label className="form-label" htmlFor="course">
                     Class
                   </label>
-                  <input className="form-control" type="text" id="course" name="course" placeholder="CS 260" required />
+                  <select
+                    className="form-select"
+                    id="course"
+                    name="course"
+                    value={newClass}
+                    onChange={(e) => setNewClass(e.target.value)}
+                  >
+                    {classes.map((c) => (
+                      <option key={c.key} value={c.key}>
+                        {c.code}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="add-field">
                   <label className="form-label" htmlFor="due">
                     Due
                   </label>
-                  <input className="form-control" type="datetime-local" id="due" name="due" required />
+                  <input
+                    className="form-control"
+                    type="date"
+                    id="due"
+                    name="due"
+                    value={newDue}
+                    onChange={(e) => setNewDue(e.target.value)}
+                    required
+                  />
                 </div>
                 <button className="btn btn-primary" type="submit">
                   Add
@@ -163,7 +220,7 @@ export function Dashboard() {
                         {formatDue(a.due)}
                         {dueSoon && <span className="badge due-badge">Due soon</span>}
                       </td>
-                      <td>{a.average} hrs</td>
+                      <td>{a.average === null ? 'No data yet' : `${a.average} hrs`}</td>
                     </tr>
                   );
                 })}

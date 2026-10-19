@@ -1,5 +1,23 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 6: Add Assignment
+
+The Add form needed state for each box, `value` and `onChange` on each box, and a function that builds a new assignment and saves the longer list.
+
+- `value` and `onChange` go on the `<input>`, not the `<label>`. The label is just the text above the box. `htmlFor` on the label and `id` on the input are what link them.
+- A text box's `onChange` runs on every keystroke, and `e.target.value` is everything typed so far.
+- If a box has `value` but no working `onChange`, React locks it and you can't type.
+- The Class box became a dropdown built from `classes`. Free text like "cs 260" wouldn't match any `classKey`, so the filter and the colors would miss it.
+- The Due box is `type="date"`, which gives `'YYYY-MM-DD'` like the Canvas dates. `datetime-local` adds a time and wouldn't match.
+- `classes.find(...)` is like `.filter()` but returns the first match instead of an array.
+- A new assignment needs the same property names as the mock ones. A missing `classKey` doesn't error, it just quietly drops out of the filter.
+- `${...}` only works inside backticks. In single quotes it's plain text, so every id would have been the same.
+- `[...assignments, newAssignment]` is spread syntax: a new array with everything from before plus one more. `.push()` would change state directly, and React wouldn't notice.
+- Every property in an object needs a comma after it. The error pointed at `average`, but the missing comma was on the line above. Check the line before an error too.
+- `onSubmit` on the form, not `onClick` on the button, so Enter works too and the browser checks `required` first.
+- Clearing a controlled box is just setting its state back to `''`.
+- `{a.average === null ? 'No data yet' : `${a.average} hrs`}` is a ternary inside JSX for when a new assignment has no times logged yet.
+
 ## Session 5: Filter and Sort
 
 In React you don't "apply" a filter. What's picked lives in state, and every render works out which rows to show from it. Change a dropdown, the state changes, React re-renders, and the table updates. So the Apply button is gone.
