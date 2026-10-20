@@ -314,6 +314,11 @@
   .assignment-table tbody td:nth-child(5)::before {
     content: "Avg ";
   }
+
+  /* "Avg Only you" reads oddly, so assignments I added skip the label */
+  .assignment-table tbody td.no-average::before {
+    content: none;
+  }
 }
 
 /* ---------- Time logging prompt ---------- */

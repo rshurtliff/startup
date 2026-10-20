@@ -4,6 +4,7 @@ import { ClassTag } from '../components/common/classTag';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon } from '../utils/dates';
+import { isCustom } from '../utils/assignments';
 import { classes, assignments as mockAssignments, alerts, services } from './mockData';
 import './dashboard.css';
 
@@ -20,6 +21,11 @@ export function Dashboard() {
   const [newTitle, setNewTitle] = useState('');
   const [newClass, setNewClass] = useState('cs260');
   const [newDue, setNewDue] = useState('');
+
+  // The assignment that was just checked off, so the time prompt knows which
+  // one it's asking about. null means the prompt is closed.
+  const [loggingId, setLoggingId] = useState(null);
+  const [loggedHours, setLoggedHours] = useState('1');
 
   // Runs once after the page first shows up. localStorage stands in for the
   // database until the service exists. The first visit ever has nothing saved,
@@ -70,6 +76,35 @@ export function Dashboard() {
     saveAssignments(assignments.filter((a) => a.id !== id));
   }
 
+  // Checks or unchecks one assignment and saves the list. .map() builds a new
+  // list where only the clicked one is swapped for an updated copy.
+  // Checking one off opens the time prompt for it, unless it's one I added.
+  // Nobody else has those, so there's no class average for my time to go into.
+  // Unchecking clears any hours I logged, since it isn't done anymore.
+  function toggleDone(id) {
+    const assignment = assignments.find((a) => a.id === id);
+    const nowDone = !assignment.done;
+    const newList = assignments.map((a) => (a.id === id ? { ...a, done: nowDone, myHours: nowDone ? a.myHours : null } : a));
+    saveAssignments(newList);
+
+    if (nowDone && !isCustom(assignment)) {
+      setLoggedHours('1');
+      setLoggingId(id);
+    } else if (loggingId === id) {
+      setLoggingId(null);
+    }
+  }
+
+  // Save on the time prompt. Stores my hours on that assignment as myHours and
+  // closes the prompt. Once the service exists this also goes into the class
+  // average for everyone.
+  function saveTime(event) {
+    event.preventDefault();
+    const newList = assignments.map((a) => (a.id === loggingId ? { ...a, myHours: Number(loggedHours) } : a));
+    saveAssignments(newList);
+    setLoggingId(null);
+  }
+
   // Placeholder until the service exists. Keeps the forms from reloading the page.
   function handleSubmit(event) {
     event.preventDefault();
@@ -86,10 +121,17 @@ export function Dashboard() {
       return a.classCode.localeCompare(b.classCode);
     }
     if (sortBy === 'time') {
+      // Assignments I added have no class average, so they go at the end
+      if (isCustom(a) || isCustom(b)) {
+        return isCustom(a) - isCustom(b);
+      }
       return a.average - b.average;
     }
     return a.due.localeCompare(b.due);
   });
+
+  // The assignment the time prompt is asking about, if it's open
+  const loggingAssignment = assignments.find((a) => a.id === loggingId);
 
   return (
     <main className="container">
@@ -215,11 +257,12 @@ export function Dashboard() {
                             type="checkbox"
                             id={`done-${a.id}`}
                             aria-label={`Mark ${a.title} as complete`}
-                            defaultChecked={a.done}
+                            checked={a.done}
+                            onChange={() => toggleDone(a.id)}
                           />
                           {/* Only assignments added with the form can be deleted. Canvas
                               ones would just come back on the next sync. */}
-                          {a.id.startsWith('custom-') && (
+                          {isCustom(a) && (
                             <button
                               className="btn btn-sm btn-outline-danger delete-btn"
                               type="button"
@@ -242,7 +285,11 @@ export function Dashboard() {
                         {formatDue(a.due)}
                         {dueSoon && <span className="badge due-badge">Due soon</span>}
                       </td>
-                      <td>{a.average === null ? 'No data yet' : `${a.average} hrs`}</td>
+                      {/* Assignments I added are only mine, so there's no class
+                          average to show */}
+                      <td className={isCustom(a) ? 'no-average' : ''}>
+                        {isCustom(a) ? 'Only you' : `${a.average} hrs`}
+                      </td>
                     </tr>
                   );
                 })}
@@ -250,27 +297,35 @@ export function Dashboard() {
             </table>
           </div>
 
-          {/* Time logging prompt. Phase 2 opens this the instant a box gets
-              checked, and the answer is saved to the database. Shown open here
-              so the placeholder is visible. */}
-          <dialog className="time-log" open>
-            <h2>Nice work</h2>
-            <p>
-              How long did <strong>Reading Journal Week 4</strong> actually take you?
-            </p>
-            <form className="time-log-form" onSubmit={handleSubmit}>
-              <label className="form-label" htmlFor="hours">
-                Time spent
-              </label>
-              <HoursInput id="hours" defaultValue="1" />
-              <button className="btn btn-primary" type="submit">
-                Save
-              </button>
-              <button className="btn btn-link" type="submit">
-                Skip
-              </button>
-            </form>
-          </dialog>
+          {/* Time logging prompt. Only shows right after a box gets checked, and
+              asks about that assignment. Once the service exists the hours go
+              to the database too. */}
+          {loggingAssignment && (
+            <dialog className="time-log" open>
+              <h2>Nice work</h2>
+              <p>
+                How long did <strong>{loggingAssignment.title}</strong> actually take you?
+              </p>
+              <form className="time-log-form" onSubmit={saveTime}>
+                <label className="form-label" htmlFor="hours">
+                  Time spent
+                </label>
+                <HoursInput
+                  id="hours"
+                  value={loggedHours}
+                  onChange={(e) => setLoggedHours(e.target.value)}
+                  required
+                />
+                <button className="btn btn-primary" type="submit">
+                  Save
+                </button>
+                {/* Skip closes the prompt. The assignment stays checked off. */}
+                <button className="btn btn-link" type="button" onClick={() => setLoggingId(null)}>
+                  Skip
+                </button>
+              </form>
+            </dialog>
+          )}
         </div>
       </section>
 

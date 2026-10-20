@@ -1,5 +1,22 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 7: Check Off and Time Prompt
+
+This is the main feature from my spec. Checking a box saves it as done and opens the "Nice work" prompt for that assignment. Save stores my hours on it, and Skip just closes the prompt.
+
+- The checkbox was `defaultChecked`, so the browser flipped it but React and `localStorage` never knew. Now it's `checked={a.done}` with `onChange={() => toggleDone(a.id)}`.
+- To change one item in a list: `.map()` over it, return an updated copy for the one that matches and the item unchanged for the rest.
+- `{ ...a, done: true }` is spread on an object. It copies every property of `a` into a new object, then `done` overrides just that one.
+- `!a.done` flips true and false, so one function both checks and unchecks.
+- `loggingId` holds which assignment the prompt is about. `null` means closed, so `{loggingAssignment && <dialog>}` only shows it when there is one.
+- Keeping the id in state and looking up the assignment with `.find()` on each render means the prompt always shows the current title.
+- Skip is `type="button"` with its own `onClick`. As `type="submit"` it would have run Save.
+- `HoursInput` now takes `value` and `onChange` and passes them to its `<input>`. A component only does what its props let it, so it has to hand them through.
+- Number inputs give back a string, so `Number(loggedHours)` turns `'2.5'` into `2.5` before saving.
+- Unchecking clears `myHours`, since the assignment isn't done anymore.
+- Assignments I added don't get the prompt and say "Only you" instead of an average. Nobody else has them, so my time can't go into a class average. `isCustom()` in `src/utils/assignments.js` checks for the `custom-` id so the dashboard and assignment page use the same rule.
+- Subtracting booleans works in JavaScript (`true - false` is 1), which is how sorting by time pushes custom ones to the end.
+
 ## Session 6.5: Delete Added Assignments
 
 Not in the original plan. Without it, a typo in an added assignment was stuck there forever.
