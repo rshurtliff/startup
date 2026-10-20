@@ -22,8 +22,9 @@ export const assignments = [
   { id: 'rela275-reading-journal', classKey: 'rela275', classCode: 'REL A 275', title: 'Reading Journal Week 4', due: daysFromToday(-1), average: 0.7, done: true },
 ];
 
-// WebSocket placeholder. Deadline alerts and other students' logged times get
-// pushed here in real time.
+// WebSocket placeholder. The alerts the dashboard starts with. Classmates
+// logging time get added in front by liveNotifier.js, and once the service
+// exists deadline alerts come over the WebSocket too.
 export const alerts = [
   { id: 1, type: 'due', text: 'Due today: CS 260 Startup HTML' },
   { id: 2, type: 'activity', text: 'Kate D. just logged 2.5 hours on FIN 401 Problem Set 4' },

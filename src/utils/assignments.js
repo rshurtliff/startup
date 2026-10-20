@@ -1,5 +1,6 @@
 import { assignments as mockAssignments } from '../dashboard/mockData';
 import { classTimesFor } from '../assignment/mockData';
+import { LiveNotifier } from '../liveNotifier';
 
 // localStorage stands in for the database until the service exists. The
 // dashboard and the assignment page both read and write this same list.
@@ -32,7 +33,7 @@ export function allTimesFor(assignment) {
   if (isCustom(assignment)) {
     return [];
   }
-  const times = classTimesFor(assignment);
+  const times = [...classTimesFor(assignment), ...LiveNotifier.timesFor(assignment.id)];
   if (assignment.done && assignment.myHours != null) {
     times.push(assignment.myHours);
   }

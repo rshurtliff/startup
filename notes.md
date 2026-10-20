@@ -1,5 +1,19 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 10: Fake WebSocket
+
+My spec says the chart updates live as classmates log time. The real version needs the server, so `src/liveNotifier.js` fakes it with `setInterval`, the same setup as Simon's `gameNotifier.js`.
+
+- The notifier is one shared object (`new LiveEventNotifier()` at the bottom of the file). It keeps a list of handlers, which are just functions, and calls each one with every event. When the real WebSocket comes, only this file changes.
+- Every 5 seconds a made-up classmate logs hours on a random Canvas assignment, somewhere from half to 1.5 times its class average.
+- The notifier keeps those times by assignment id, like a server would. `allTimesFor()` adds them in, so the chart, the stats, and the Class Average on both pages all count them.
+- A `useEffect` that returns a function: that function is the cleanup. React runs it when the component leaves the screen, or before the effect runs again for a new `[id]`. That's where `removeHandler` goes, so leaving and coming back doesn't stack up listeners.
+- The handler has to be defined inside the effect so `addHandler` and `removeHandler` get the exact same function. A different copy wouldn't match in the `.filter()`.
+- Simon's `removeHandler` calls `.filter()` but never saves the result, so its handlers never actually get removed. Mine does `this.handlers = this.handlers.filter(...)`.
+- On the assignment page, `setLastLive(event)` re-renders the page, and that render picks up the new time. That's what makes the bars move.
+- `setAlerts((prev) => [alert, ...prev].slice(0, 3))` passes the setter a function instead of a value. The handler was made once, when the effect ran, so it would be stuck with the `alerts` from the first render. With a function, React hands over the current list every time.
+- Events go to a random assignment, so one assignment page only gets one about every 20 seconds. The dashboard shows all of them.
+
 ## Session 9: Mark It Done and the Chart
 
 Mark It Done saves to the same stored assignment the dashboard reads, and the chart, stats, and notes are worked out from data for each assignment instead of being one fixed mock.

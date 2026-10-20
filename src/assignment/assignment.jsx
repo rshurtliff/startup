@@ -5,6 +5,7 @@ import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { notesById } from './mockData';
 import { formatDue } from '../utils/dates';
 import { allTimesFor, classAverage, isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
+import { LiveNotifier } from '../liveNotifier';
 import './assignment.css';
 
 // The chart's bars. Each logged time lands in the first bucket it fits under.
@@ -64,6 +65,28 @@ export function Assignment() {
     setNote(found && found.myNote ? found.myNote : '');
     setSaved(false);
     setLoaded(true);
+  }, [id]);
+
+  // The last classmate who logged time on this assignment, for the line under
+  // the chart. Setting it also redraws the chart, which picks up their time.
+  const [lastLive, setLastLive] = useState(null);
+
+  // Listens for classmates logging time while this page is open. The function
+  // it returns is the cleanup: React runs it when I leave the page or the id
+  // changes, so the page stops listening.
+  useEffect(() => {
+    setLastLive(null);
+
+    function handleLiveEvent(event) {
+      if (event.assignmentId === id) {
+        setLastLive(event);
+      }
+    }
+
+    LiveNotifier.addHandler(handleLiveEvent);
+    return () => {
+      LiveNotifier.removeHandler(handleLiveEvent);
+    };
   }, [id]);
 
   // Save on Mark It Done. Writes done, my hours, and my note onto this
@@ -225,7 +248,11 @@ export function Assignment() {
                 ))}
               </ul>
 
-              <LiveNote>Updating live. Tyler M. logged 2.75 hours about a minute ago.</LiveNote>
+              <LiveNote>
+                {lastLive
+                  ? `Updating live. ${lastLive.name} just logged ${lastLive.hours} hours.`
+                  : 'Updating live. Waiting for classmates to log time.'}
+              </LiveNote>
             </div>
           </section>
         )}

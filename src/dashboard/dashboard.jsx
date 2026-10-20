@@ -5,7 +5,8 @@ import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon } from '../utils/dates';
 import { classAverage, isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
-import { classes, alerts, services } from './mockData';
+import { classes, alerts as mockAlerts, services } from './mockData';
+import { LiveNotifier } from '../liveNotifier';
 import './dashboard.css';
 
 export function Dashboard() {
@@ -32,6 +33,29 @@ export function Dashboard() {
   // exists. The first visit ever starts from the mock data.
   useEffect(() => {
     setAssignments(loadAssignments());
+  }, []);
+
+  // The Live Alerts feed. Starts with the mock alerts, and each classmate who
+  // logs time gets added to the front. Only the newest three show.
+  const [alerts, setAlerts] = useState(mockAlerts);
+
+  // Listens for classmates logging time while the dashboard is open, and stops
+  // when I leave it. setAlerts gets a function so it always adds to the
+  // current list, not the one from when this effect first ran.
+  useEffect(() => {
+    function handleLiveEvent(event) {
+      const alert = {
+        id: Date.now(),
+        type: 'activity',
+        text: `${event.name} just logged ${event.hours} hours on ${event.classCode} ${event.title}`,
+      };
+      setAlerts((prev) => [alert, ...prev].slice(0, 3));
+    }
+
+    LiveNotifier.addHandler(handleLiveEvent);
+    return () => {
+      LiveNotifier.removeHandler(handleLiveEvent);
+    };
   }, []);
 
   // Every change to the list goes through here so the state and localStorage
