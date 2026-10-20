@@ -2,14 +2,40 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
-import { buckets, stats, notes } from './mockData';
-import { assignments as mockAssignments } from '../dashboard/mockData';
+import { classTimesFor, notesById } from './mockData';
 import { formatDue } from '../utils/dates';
-import { isCustom } from '../utils/assignments';
+import { isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
 import './assignment.css';
 
-// The tallest bar sets the chart's scale
-const maxCount = Math.max(...buckets.map((b) => b.count));
+// The chart's bars. Each logged time lands in the first bucket it fits under.
+const bucketRanges = [
+  { label: 'Under 1', under: 1 },
+  { label: '1 to 2', under: 2 },
+  { label: '2 to 3', under: 3 },
+  { label: '3 to 4', under: 4 },
+  { label: 'Over 4', under: Infinity },
+];
+
+// Counts how many times fall in each bucket
+function makeBuckets(times) {
+  return bucketRanges.map((range, i) => {
+    const over = i === 0 ? 0 : bucketRanges[i - 1].under;
+    return { label: range.label, count: times.filter((t) => t >= over && t < range.under).length };
+  });
+}
+
+// The middle time once they're in order. With an even count it's the average
+// of the two in the middle.
+function median(times) {
+  const sorted = [...times].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+// 3.25 becomes '3.3 hours'
+function formatHours(hours) {
+  return `${hours.toFixed(1)} hours`;
+}
 
 export function Assignment() {
   // The id from the URL, like 'fin401-problem-set-4' from /assignment/fin401-problem-set-4
@@ -20,18 +46,42 @@ export function Assignment() {
   const [assignment, setAssignment] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
-  // Finds this id in the saved list, the same list the dashboard uses. Runs
-  // again whenever the id in the URL changes.
+  // What's in the Mark It Done form. saved shows a "Saved" line after Save
+  // until something in the form changes again.
+  const [finished, setFinished] = useState(false);
+  const [hours, setHours] = useState('');
+  const [note, setNote] = useState('');
+  const [saved, setSaved] = useState(false);
+
+  // Finds this id in the saved list, the same list the dashboard uses, and
+  // fills the form with what I saved last time. Runs again whenever the id in
+  // the URL changes.
   useEffect(() => {
-    const saved = localStorage.getItem('assignments');
-    const list = saved ? JSON.parse(saved) : mockAssignments;
-    setAssignment(list.find((a) => a.id === id) || null);
+    const found = loadAssignments().find((a) => a.id === id) || null;
+    setAssignment(found);
+    setFinished(found ? found.done : false);
+    setHours(found && found.myHours != null ? String(found.myHours) : '');
+    setNote(found && found.myNote ? found.myNote : '');
+    setSaved(false);
     setLoaded(true);
   }, [id]);
 
-  // Placeholder until the service exists. Keeps the form from reloading the page.
-  function handleSubmit(event) {
+  // Save on Mark It Done. Writes done, my hours, and my note onto this
+  // assignment in the saved list, so the dashboard's checkbox matches. Hours
+  // and the note only count if it's finished, and assignments I added never
+  // get hours or a note since nobody else has them.
+  function saveProgress(event) {
     event.preventDefault();
+    const countsForClass = finished && !isCustom(assignment);
+    const updated = {
+      ...assignment,
+      done: finished,
+      myHours: countsForClass && hours !== '' ? Number(hours) : null,
+      myNote: countsForClass && note.trim() ? note.trim() : null,
+    };
+    saveAssignmentList(loadAssignments().map((a) => (a.id === updated.id ? updated : a)));
+    setAssignment(updated);
+    setSaved(true);
   }
 
   // Nothing to show until the effect has looked for the assignment
@@ -50,6 +100,27 @@ export function Assignment() {
         </Link>
       </main>
     );
+  }
+
+  // Everyone's logged times for the chart and stats: the class's, plus mine
+  // once I've saved hours on it.
+  const times = isCustom(assignment) ? [] : classTimesFor(assignment);
+  if (assignment.done && assignment.myHours != null) {
+    times.push(assignment.myHours);
+  }
+  const buckets = makeBuckets(times);
+  // The tallest bar sets the chart's scale
+  const maxCount = Math.max(...buckets.map((b) => b.count));
+  const stats = [
+    { label: 'Average', value: formatHours(times.reduce((sum, t) => sum + t, 0) / times.length) },
+    { label: 'Median', value: formatHours(median(times)) },
+    { label: 'Longest', value: formatHours(Math.max(...times)) },
+  ];
+
+  // Other students' notes, with mine first once I've saved one
+  const notes = [...(notesById[assignment.id] || [])];
+  if (assignment.myNote) {
+    notes.unshift({ name: 'You', hours: assignment.myHours, text: assignment.myNote });
   }
 
   return (
@@ -78,7 +149,10 @@ export function Assignment() {
               </div>
               <div>
                 <dt>Your status</dt>
-                <dd>{assignment.done ? 'Done' : 'Not done yet'}</dd>
+                <dd>
+                  {assignment.done ? 'Done' : 'Not done yet'}
+                  {assignment.done && assignment.myHours != null && ` in ${assignment.myHours} hours`}
+                </dd>
               </div>
               <div>
                 <dt>From</dt>
@@ -142,7 +216,7 @@ export function Assignment() {
                   </tbody>
                 </table>
                 <figcaption>
-                  Hours spent by the 34 students who have finished this assignment.
+                  Hours spent by the {times.length} students who have finished this assignment.
                 </figcaption>
               </figure>
 
@@ -159,28 +233,72 @@ export function Assignment() {
           </section>
         )}
 
-        {/* Time logging placeholder. Checking the box writes the completion and
-             the hours to the database, then pushes the new number out over the
-             WebSocket to everyone viewing this page. */}
+        {/* Saves to the same assignment the dashboard shows. Once the service
+            exists the hours go to the database too and get pushed over the
+            WebSocket to everyone viewing this page. */}
         <section className="card">
           <div className="card-header">
             <h2>Mark It Done</h2>
           </div>
           <div className="card-body">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={saveProgress}>
               <div className="form-check mb-3">
-                <input className="form-check-input" type="checkbox" id="complete" name="complete" />
-                <label className="form-check-label" htmlFor="complete">I finished this assignment</label>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="complete"
+                  name="complete"
+                  checked={finished}
+                  onChange={(e) => {
+                    setFinished(e.target.checked);
+                    setSaved(false);
+                  }}
+                />
+                <label className="form-check-label" htmlFor="complete">
+                  I finished this assignment
+                </label>
               </div>
-              <div className="mb-3">
-                <label className="form-label" htmlFor="hours">How long did it take you?</label>
-                <HoursInput id="hours" placeholder="3" />
-              </div>
-              <div className="mb-3">
-                <label className="form-label" htmlFor="note">Anything worth telling the next person?</label>
-                <textarea className="form-control" id="note" name="note" rows="3" placeholder="Start early, the deployment script took me longer than the HTML."></textarea>
-              </div>
-              <button className="btn btn-primary w-100" type="submit">Save</button>
+              {/* Assignments I added don't ask how long or for a note */}
+              {!isCustom(assignment) && (
+                <>
+                  <div className="mb-3">
+                    <label className="form-label" htmlFor="hours">
+                      How long did it take you?
+                    </label>
+                    <HoursInput
+                      id="hours"
+                      placeholder="3"
+                      value={hours}
+                      onChange={(e) => {
+                        setHours(e.target.value);
+                        setSaved(false);
+                      }}
+                      required={finished}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label" htmlFor="note">
+                      Anything worth telling the next person?
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="note"
+                      name="note"
+                      rows="3"
+                      placeholder="Start early, the deployment script took me longer than the HTML."
+                      value={note}
+                      onChange={(e) => {
+                        setNote(e.target.value);
+                        setSaved(false);
+                      }}
+                    ></textarea>
+                  </div>
+                </>
+              )}
+              <button className="btn btn-primary w-100" type="submit">
+                Save
+              </button>
+              {saved && <p className="save-note">Saved.</p>}
             </form>
           </div>
         </section>
@@ -190,6 +308,7 @@ export function Assignment() {
           <section className="notes-panel">
             <h2>Notes From Other Students</h2>
 
+            {notes.length === 0 && <p>No notes yet.</p>}
             <ul className="note-list">
               {notes.map((note) => (
                 <li key={note.name}>

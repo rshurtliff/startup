@@ -4,8 +4,8 @@ import { ClassTag } from '../components/common/classTag';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon } from '../utils/dates';
-import { isCustom } from '../utils/assignments';
-import { classes, assignments as mockAssignments, alerts, services } from './mockData';
+import { isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
+import { classes, alerts, services } from './mockData';
 import './dashboard.css';
 
 export function Dashboard() {
@@ -27,24 +27,18 @@ export function Dashboard() {
   const [loggingId, setLoggingId] = useState(null);
   const [loggedHours, setLoggedHours] = useState('1');
 
-  // Runs once after the page first shows up. localStorage stands in for the
-  // database until the service exists. The first visit ever has nothing saved,
-  // so it starts from the mock data and saves that.
+  // Runs once after the page first shows up. loadAssignments() reads the list
+  // from localStorage, which stands in for the database until the service
+  // exists. The first visit ever starts from the mock data.
   useEffect(() => {
-    const saved = localStorage.getItem('assignments');
-    if (saved) {
-      setAssignments(JSON.parse(saved));
-    } else {
-      setAssignments(mockAssignments);
-      localStorage.setItem('assignments', JSON.stringify(mockAssignments));
-    }
+    setAssignments(loadAssignments());
   }, []);
 
   // Every change to the list goes through here so the state and localStorage
   // never get out of sync. Checking off and adding assignments use this.
   function saveAssignments(newList) {
     setAssignments(newList);
-    localStorage.setItem('assignments', JSON.stringify(newList));
+    saveAssignmentList(newList);
   }
 
   // Builds a new assignment from the Add form and saves it with the rest.
@@ -80,11 +74,11 @@ export function Dashboard() {
   // list where only the clicked one is swapped for an updated copy.
   // Checking one off opens the time prompt for it, unless it's one I added.
   // Nobody else has those, so there's no class average for my time to go into.
-  // Unchecking clears any hours I logged, since it isn't done anymore.
+  // Unchecking clears any hours and note I logged, since it isn't done anymore.
   function toggleDone(id) {
     const assignment = assignments.find((a) => a.id === id);
     const nowDone = !assignment.done;
-    const newList = assignments.map((a) => (a.id === id ? { ...a, done: nowDone, myHours: nowDone ? a.myHours : null } : a));
+    const newList = assignments.map((a) => (a.id === id ? { ...a, done: nowDone, myHours: nowDone ? a.myHours : null, myNote: nowDone ? a.myNote : null } : a));
     saveAssignments(newList);
 
     if (nowDone && !isCustom(assignment)) {

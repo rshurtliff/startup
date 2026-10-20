@@ -1,5 +1,21 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 9: Mark It Done and the Chart
+
+Mark It Done saves to the same stored assignment the dashboard reads, and the chart, stats, and notes are worked out from data for each assignment instead of being one fixed mock.
+
+- `loadAssignments()` and `saveAssignmentList()` in `src/utils/assignments.js` are the one place that touches `localStorage`. Both pages use them, so they can't drift apart on the key name or the mock fallback.
+- The mock data is now a list of other students' hours per assignment, spread around its class average. Buckets, average, median, and longest are calculated from that list on every render, so they always match the Class Average on the dashboard.
+- Saving my hours adds them to that list, so the chart and stats move when I save. My note shows first as "You".
+- The form fields are filled from the saved assignment inside the same `useEffect` that loads it, so coming back to the page shows what I saved last time.
+- A checkbox uses `e.target.checked`, not `e.target.value`.
+- `onChange={(e) => { setHours(e.target.value); setSaved(false); }}`: an arrow function with braces can run more than one line. Here it also hides the "Saved." line once I change something.
+- `required={finished}`: hours are only required once the box is checked.
+- `[...times].sort(...)` copies before sorting. `.sort()` changes the array it's called on, and I didn't want to reorder the original list.
+- `notes.unshift(...)` adds to the front of an array, `push` adds to the end.
+- `x != null` (with `!=`, not `!==`) is true for anything except `null` and `undefined`. The mock assignments have no `myHours` at all, so they're `undefined`, not `null`.
+- Assignments I added only get the checkbox. No hours, no note, never in the stats.
+
 ## Session 8: Assignment Detail by Id
 
 The detail page used to show Startup HTML no matter which row you clicked. Now it reads the id from the URL and loads that assignment from the same `localStorage` list the dashboard uses.
