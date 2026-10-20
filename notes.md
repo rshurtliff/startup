@@ -1,5 +1,22 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Session 8: Assignment Detail by Id
+
+The detail page used to show Startup HTML no matter which row you clicked. Now it reads the id from the URL and loads that assignment from the same `localStorage` list the dashboard uses.
+
+- `:id` in `path="/assignment/:id"` is a URL parameter. `const { id } = useParams()` gives me whatever is in that spot of the address.
+- `[id]` as the dependency list means the effect runs on load and again whenever the id changes. React keeps the same page on screen when you go from one assignment to another, so `[]` would keep showing the old one.
+- The dependency list always has to be an array. `}, id)` gave "useEffect received a final argument that is not an array."
+- `.find()` returns `undefined` when nothing matches, and `|| null` makes "not found" always `null`.
+- If nothing is saved yet (opening a link before ever visiting the dashboard), it falls back to the mock list.
+- `useState` gives the value now and a setter that saves a new value and redraws. A plain `let` would reset every render and never redraw. The console showed `null` then the object: two renders, before and after the effect.
+- Early returns: `if (!loaded) return null;` and `if (!assignment) return (...not found...)` before the main `return`. Otherwise `assignment.title` crashes on `null` during the first render.
+- Hooks have to stay above any early return so React sees the same hooks every render.
+- Reading the console: each red error points at a line. Fixing the first crash can reveal the next one (`localStorate` didn't show up until the render stopped crashing).
+- A space in a class string, `class -${...}`, gives two wrong classes. It builds fine and just quietly loses the styling.
+- Assignments I added say "Added by you" and skip Last synced, the Canvas description, the Open in Canvas button, the chart, and the notes. They only have Mark It Done.
+- A JSX comment can't go right inside `&& (`. That spot expects one element, so the comment goes above the `{... && (` line.
+
 ## Session 7: Check Off and Time Prompt
 
 This is the main feature from my spec. Checking a box saves it as done and opens the "Nice work" prompt for that assignment. Save stores my hours on it, and Skip just closes the prompt.

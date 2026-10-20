@@ -29,6 +29,11 @@
   .notes-panel {
     grid-column: 1 / -1;
   }
+
+  /* An assignment I added has no chart, so Mark It Done gets the whole row */
+  .detail-grid-single {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- Summary ---------- */

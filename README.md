@@ -25,11 +25,13 @@ Still in progress. I'll check each item off once it's done.
 
   - **Check off and log time** (`toggleDone()` and `saveTime()` in `src/dashboard/dashboard.jsx`): this is the main feature from my spec. Checking a box saves that assignment as done, and the "Nice work" prompt pops up asking how long that assignment took. Save stores my hours on it, and Skip just closes the prompt. The prompt only shows right after you check something, and not for assignments I added, since nobody else has them and there's no class average for my time to go into. Unchecking an assignment clears the hours I logged.
 
+  - **Assignment detail** (`src/assignment/assignment.jsx`): the page reads the id from the URL with `useParams()` and shows that assignment's title, class, class color, due date, and whether I've finished it. A bad link shows "Assignment not found" with a way back. Assignments I added say "Added by you" and skip the Canvas parts (last synced, description, Open in Canvas) and the class time chart and notes, since nobody else has them.
+
 - [ ] **30% React useState and useEffect hooks**
 
   - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one. `Dashboard` (`src/dashboard/dashboard.jsx`) keeps the assignment list in state, plus what's picked in the Class and Sort by dropdowns and what's typed in the Add assignment form. `loggingId` keeps track of which assignment the time prompt is asking about. The table shows a filtered and sorted copy of the list, worked out from that state on every render.
 
-  - **useEffect:** when the dashboard loads, a `useEffect` reads the assignments from `localStorage`. The first time, nothing is saved yet, so it starts from my mock data and saves it. Any change to the list goes through `saveAssignments()`, which updates the state and `localStorage` together.
+  - **useEffect:** when the dashboard loads, a `useEffect` reads the assignments from `localStorage`. The first time, nothing is saved yet, so it starts from my mock data and saves it. Any change to the list goes through `saveAssignments()`, which updates the state and `localStorage` together. The assignment page has its own `useEffect` that finds the assignment for the id in the URL. Its dependency list is `[id]`, so it loads again if you go from one assignment straight to another.
 
 # Startup React P1: Routing
 https://startup.cs260hwtrackr.click/
