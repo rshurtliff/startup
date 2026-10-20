@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
-import { classTimesFor, notesById } from './mockData';
+import { notesById } from './mockData';
 import { formatDue } from '../utils/dates';
-import { isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
+import { allTimesFor, classAverage, isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
 import './assignment.css';
 
 // The chart's bars. Each logged time lands in the first bucket it fits under.
@@ -103,16 +103,13 @@ export function Assignment() {
   }
 
   // Everyone's logged times for the chart and stats: the class's, plus mine
-  // once I've saved hours on it.
-  const times = isCustom(assignment) ? [] : classTimesFor(assignment);
-  if (assignment.done && assignment.myHours != null) {
-    times.push(assignment.myHours);
-  }
+  // once I've saved hours on it
+  const times = allTimesFor(assignment);
   const buckets = makeBuckets(times);
   // The tallest bar sets the chart's scale
   const maxCount = Math.max(...buckets.map((b) => b.count));
   const stats = [
-    { label: 'Average', value: formatHours(times.reduce((sum, t) => sum + t, 0) / times.length) },
+    { label: 'Average', value: formatHours(classAverage(assignment)) },
     { label: 'Median', value: formatHours(median(times)) },
     { label: 'Longest', value: formatHours(Math.max(...times)) },
   ];

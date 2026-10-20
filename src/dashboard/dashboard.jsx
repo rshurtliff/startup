@@ -4,7 +4,7 @@ import { ClassTag } from '../components/common/classTag';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon } from '../utils/dates';
-import { isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
+import { classAverage, isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
 import { classes, alerts, services } from './mockData';
 import './dashboard.css';
 
@@ -119,7 +119,7 @@ export function Dashboard() {
       if (isCustom(a) || isCustom(b)) {
         return isCustom(a) - isCustom(b);
       }
-      return a.average - b.average;
+      return classAverage(a) - classAverage(b);
     }
     return a.due.localeCompare(b.due);
   });
@@ -282,7 +282,7 @@ export function Dashboard() {
                       {/* Assignments I added are only mine, so there's no class
                           average to show */}
                       <td className={isCustom(a) ? 'no-average' : ''}>
-                        {isCustom(a) ? 'Only you' : `${a.average} hrs`}
+                        {isCustom(a) ? 'Only you' : `${classAverage(a).toFixed(1)} hrs`}
                       </td>
                     </tr>
                   );

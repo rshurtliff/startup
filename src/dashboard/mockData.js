@@ -13,7 +13,8 @@ export const classes = [
 // Database placeholder. Every assignment comes out of MongoDB. The done state
 // and the logged time are written back to it.
 // Due dates are 'YYYY-MM-DD' like the Canvas feed, set a few days around today
-// so "due soon" always has something to show. average is hours.
+// so "due soon" always has something to show. average is the class average in
+// hours that the mock class times are spread around (see assignment/mockData.js).
 export const assignments = [
   { id: 'cs260-startup-html', classKey: 'cs260', classCode: 'CS 260', title: 'Startup HTML Deliverable', due: daysFromToday(1), average: 3.2, done: false },
   { id: 'fin401-problem-set-4', classKey: 'fin401', classCode: 'FIN 401', title: 'Problem Set 4', due: daysFromToday(3), average: 2.8, done: false },

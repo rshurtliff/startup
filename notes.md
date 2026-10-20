@@ -7,6 +7,7 @@ Mark It Done saves to the same stored assignment the dashboard reads, and the ch
 - `loadAssignments()` and `saveAssignmentList()` in `src/utils/assignments.js` are the one place that touches `localStorage`. Both pages use them, so they can't drift apart on the key name or the mock fallback.
 - The mock data is now a list of other students' hours per assignment, spread around its class average. Buckets, average, median, and longest are calculated from that list on every render, so they always match the Class Average on the dashboard.
 - Saving my hours adds them to that list, so the chart and stats move when I save. My note shows first as "You".
+- The dashboard's Class Average used to read the fixed `average` from mockData, so after saving it said 2.8 while the detail page said 2.9. Now both call `classAverage()`, which uses the same times as the chart. One calculation in one place means they can't disagree.
 - The form fields are filled from the saved assignment inside the same `useEffect` that loads it, so coming back to the page shows what I saved last time.
 - A checkbox uses `e.target.checked`, not `e.target.value`.
 - `onChange={(e) => { setHours(e.target.value); setSaved(false); }}`: an arrow function with braces can run more than one line. Here it also hides the "Saved." line once I change something.
