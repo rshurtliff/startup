@@ -4,14 +4,17 @@
 - Ported to a single-page React page
 - Completed Startup React P1: Routing
 - Fixed my React P1 feedback: lists render with `.map()`, shared pieces are components in `src/components/common/`, the login form uses `useState`, and Logout is a `Nav.Link`
+- Completed Startup React part 2: Reactivity. The whole app works now, with `localStorage`, hard-coded responses, and `setInterval` standing in for the service, database, and WebSocket
 
 # Startup React part 2: Reactivity
 https://startup.cs260hwtrackr.click/
 
-Still in progress. I'll check each item off once it's done.
+Simon React is deployed at https://simon.cs260hwtrackr.click/
+
+Until the service and database exist, `localStorage` stands in for the database, hard-coded responses stand in for Canvas and SendGrid, and `setInterval` stands in for the WebSocket.
 
 ## What I did for Each Rubric Item
-- [ ] **70% Multiple React components that implement or mock all app functionality**
+- [x] **70% Multiple React components that implement or mock all app functionality**
 
   - **Login** (`src/login/login.jsx`): Login and Create Account save your Net ID to `localStorage` and pass it up to `App` through an `onLogin` prop. `localStorage` stands in for the database until the login endpoint exists.
 
@@ -31,11 +34,17 @@ Still in progress. I'll check each item off once it's done.
 
   - **Live updates** (`src/liveNotifier.js`): this stands in for the WebSocket. Every 5 seconds a made-up classmate logs time on a random assignment, using `setInterval`, the same way Simon's `gameNotifier.js` does. On the assignment page, the chart, stats, and the "Updating live" line change when someone logs time on that assignment. The dashboard's Live Alerts show each one as it comes in, newest first, and the Class Average column counts them too.
 
-- [ ] **30% React useState and useEffect hooks**
+  - **Canvas link and sync** (`src/settings/settings.jsx`): Save and Sync saves my iCal link and runs `syncCanvas()` in `src/settings/mockData.js`. That's a hard-coded response that hands back the same thing the real sync will once the service exists: when it synced, how many assignments it found per class, and the assignments. Any Canvas assignment missing from my dashboard gets added back, and ones already there keep my checkmarks and hours. The Sync Status table, the total, and "last synced" fill in from that, and Sync Now runs it again. Remove Link clears the link and the status. The assignment page's Last synced tile and the dashboard's Connected Services card show the real sync time too, like "just now" or "5 minutes ago".
 
-  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one. `Dashboard` (`src/dashboard/dashboard.jsx`) keeps the assignment list in state, plus what's picked in the Class and Sort by dropdowns and what's typed in the Add assignment form. `loggingId` keeps track of which assignment the time prompt is asking about. The assignment page keeps the Mark It Done form in state too: finished, hours, and the note. The table shows a filtered and sorted copy of the list, worked out from that state on every render.
+  - **Email reminders** (`saveReminders()` in `src/settings/settings.jsx`): the email, how far ahead, and the Sunday summary switch are saved, and the dashboard's Connected Services line shows the lead time I picked. The emails themselves come from SendGrid once the service exists.
 
-  - **useEffect:** when the dashboard loads, a `useEffect` reads the assignments from `localStorage`. The first time, nothing is saved yet, so it starts from my mock data and saves it. Any change to the list goes through `saveAssignments()`, which updates the state and `localStorage` together. The assignment page has its own `useEffect` that finds the assignment for the id in the URL. Its dependency list is `[id]`, so it loads again if you go from one assignment straight to another. Both pages also have a `useEffect` that adds a handler to the live notifier when the page shows up, and returns a cleanup function that removes it when you leave, so listeners don't pile up.
+  - **Account** (`src/settings/settings.jsx`): shows my real Net ID, when the account was made, and how many assignments I've finished and how many hours I've logged, worked out from my saved assignments. Change Password opens a small form that checks the two boxes match. It doesn't save the password anywhere yet, since that belongs on the server. Delete Account asks first, then clears everything Trackr saved and logs me out.
+
+- [x] **30% React useState and useEffect hooks**
+
+  - **useState:** `App` (`src/app.jsx`) keeps the logged in `userName` in state, starting from whatever is saved in `localStorage`, so a refresh doesn't log you out. The header shows that name instead of my hard-coded one. `Dashboard` (`src/dashboard/dashboard.jsx`) keeps the assignment list in state, plus what's picked in the Class and Sort by dropdowns and what's typed in the Add assignment form. The table shows a filtered and sorted copy of the list, worked out from that state on every render. `loggingId` keeps track of which assignment the time prompt is asking about, and `alerts` holds the Live Alerts feed. The assignment page keeps the Mark It Done form in state too: finished, hours, and the note. Settings keeps every form on the page in state, plus the last sync.
+
+  - **useEffect:** when the dashboard loads, a `useEffect` reads the assignments from `localStorage`. The first time, nothing is saved yet, so it starts from my mock data and saves it. Any change to the list goes through `saveAssignments()`, which updates the state and `localStorage` together. The assignment page has its own `useEffect` that finds the assignment for the id in the URL. Its dependency list is `[id]`, so it loads again if you go from one assignment straight to another. Both pages also have a `useEffect` that adds a handler to the live notifier when the page shows up, and returns a cleanup function that removes it when you leave, so listeners don't pile up. Settings has a `useEffect` that fills the page with the saved link, sync status, reminder settings, and account info when it opens.
 
 # Startup React P1: Routing
 https://startup.cs260hwtrackr.click/

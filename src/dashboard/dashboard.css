@@ -433,3 +433,8 @@ dialog.time-log p {
   background-color: var(--byu-royal);
   border-radius: 50%;
 }
+
+/* Gray dot for a service that isn't set up yet */
+.service-list li.service-off::before {
+  background-color: var(--text-muted);
+}

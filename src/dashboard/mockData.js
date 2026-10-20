@@ -30,10 +30,3 @@ export const alerts = [
   { id: 2, type: 'activity', text: 'Kate D. just logged 2.5 hours on FIN 401 Problem Set 4' },
   { id: 3, type: 'activity', text: '3 classmates are working on MCOM 320 Memo right now' },
 ];
-
-// Third party service placeholders. Canvas supplies the iCal feed the service
-// parses, and SendGrid sends the reminder emails.
-export const services = [
-  { name: 'Canvas iCal feed', status: 'last synced 12 minutes ago, 47 assignments loaded' },
-  { name: 'SendGrid email reminders', status: 'on, sent 24 hours before each deadline' },
-];

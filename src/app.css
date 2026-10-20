@@ -88,6 +88,24 @@
   --bs-btn-focus-shadow-rgb: 180, 35, 24;
 }
 
+/* The solid red button for confirming a delete */
+.btn-danger {
+  --bs-btn-bg: var(--danger);
+  --bs-btn-border-color: var(--danger);
+  --bs-btn-hover-bg: #8f1c13;
+  --bs-btn-hover-border-color: #8f1c13;
+  --bs-btn-active-bg: #8f1c13;
+  --bs-btn-active-border-color: #8f1c13;
+}
+
+/* Short line under a Save button once it saved. Used on the assignment and
+   settings pages. */
+.save-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
 /* On/off switches use royal too */
 .form-switch .form-check-input:focus {
   --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%230062b8'/%3e%3c/svg%3e");

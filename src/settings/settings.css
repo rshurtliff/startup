@@ -140,3 +140,13 @@
 .account-list span {
   color: var(--text-muted);
 }
+
+/* Change Password form and the Delete Account check open in the Account card */
+.account-form,
+.delete-confirm {
+  margin-bottom: 0.5rem;
+}
+
+.delete-confirm p {
+  color: var(--danger);
+}

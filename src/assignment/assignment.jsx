@@ -3,7 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { notesById } from './mockData';
-import { formatDue } from '../utils/dates';
+import { formatDue, timeAgo } from '../utils/dates';
+import { loadSyncInfo } from '../utils/settings';
 import { allTimesFor, classAverage, isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
 import { LiveNotifier } from '../liveNotifier';
 import './assignment.css';
@@ -47,6 +48,9 @@ export function Assignment() {
   const [assignment, setAssignment] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
+  // The last Canvas sync, for the Last synced tile
+  const [syncInfo, setSyncInfo] = useState(null);
+
   // What's in the Mark It Done form. saved shows a "Saved" line after Save
   // until something in the form changes again.
   const [finished, setFinished] = useState(false);
@@ -64,6 +68,7 @@ export function Assignment() {
     setHours(found && found.myHours != null ? String(found.myHours) : '');
     setNote(found && found.myNote ? found.myNote : '');
     setSaved(false);
+    setSyncInfo(loadSyncInfo());
     setLoaded(true);
   }, [id]);
 
@@ -182,7 +187,7 @@ export function Assignment() {
               {!isCustom(assignment) && (
                 <div>
                   <dt>Last synced</dt>
-                  <dd>12 minutes ago</dd>
+                  <dd>{syncInfo ? timeAgo(syncInfo.syncedAt) : 'Not synced yet'}</dd>
                 </div>
               )}
             </dl>
@@ -322,7 +327,7 @@ export function Assignment() {
               <button className="btn btn-primary w-100" type="submit">
                 Save
               </button>
-              {saved && <p className="save-note">Saved.</p>}
+              {saved && <p className="save-note text-center">Saved.</p>}
             </form>
           </div>
         </section>

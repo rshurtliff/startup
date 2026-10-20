@@ -288,11 +288,3 @@
 .note-meta strong {
   color: var(--text);
 }
-
-/* Shows under Save once Mark It Done is saved */
-.save-note {
-  margin: 0.75rem 0 0;
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-}

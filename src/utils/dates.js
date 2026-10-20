@@ -21,6 +21,24 @@ export function isDueSoon(due) {
   return daysLeft >= 0 && daysLeft <= 2;
 }
 
+// A saved time like '2026-10-19T21:04:00.000Z' as 'just now', '5 minutes ago',
+// '2 hours ago', or '3 days ago'
+export function timeAgo(isoTime) {
+  const minutes = Math.floor((Date.now() - new Date(isoTime)) / (1000 * 60));
+  if (minutes < 1) {
+    return 'just now';
+  }
+  if (minutes < 60) {
+    return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+  }
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  }
+  const days = Math.floor(hours / 24);
+  return `${days} day${days === 1 ? '' : 's'} ago`;
+}
+
 // For the mock data: a date n days from today in the same 'YYYY-MM-DD' format,
 // so the sample assignments are always near today when I test.
 export function daysFromToday(n) {

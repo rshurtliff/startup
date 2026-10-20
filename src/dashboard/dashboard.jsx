@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
-import { formatDue, isDueSoon } from '../utils/dates';
+import { formatDue, isDueSoon, timeAgo } from '../utils/dates';
 import { classAverage, isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
-import { classes, alerts as mockAlerts, services } from './mockData';
+import { classes, alerts as mockAlerts } from './mockData';
+import { leadTimeLabels, loadReminders, loadSyncInfo, totalFound } from '../utils/settings';
 import { LiveNotifier } from '../liveNotifier';
 import './dashboard.css';
 
@@ -28,11 +29,18 @@ export function Dashboard() {
   const [loggingId, setLoggingId] = useState(null);
   const [loggedHours, setLoggedHours] = useState('1');
 
-  // Runs once after the page first shows up. loadAssignments() reads the list
-  // from localStorage, which stands in for the database until the service
-  // exists. The first visit ever starts from the mock data.
+  // The Canvas sync and reminder settings from the Settings page, for the
+  // Connected Services card
+  const [syncInfo, setSyncInfo] = useState(null);
+  const [reminders, setReminders] = useState(null);
+
+  // Runs once after the page first shows up. loadAssignments() and the
+  // settings loaders read from localStorage, which stands in for the database
+  // until the service exists. The first visit ever starts from the mock data.
   useEffect(() => {
     setAssignments(loadAssignments());
+    setSyncInfo(loadSyncInfo());
+    setReminders(loadReminders());
   }, []);
 
   // The Live Alerts feed. Starts with the mock alerts, and each classmate who
@@ -147,6 +155,22 @@ export function Dashboard() {
     }
     return a.due.localeCompare(b.due);
   });
+
+  // What the Connected Services card says about Canvas and SendGrid
+  const services = [
+    {
+      name: 'Canvas iCal feed',
+      on: !!syncInfo,
+      status: syncInfo
+        ? `last synced ${timeAgo(syncInfo.syncedAt)}, ${totalFound(syncInfo)} assignments loaded`
+        : 'not connected yet, add your link in Settings',
+    },
+    {
+      name: 'SendGrid email reminders',
+      on: true,
+      status: reminders ? `on, sent ${leadTimeLabels[reminders.leadTime]} before each deadline` : '',
+    },
+  ];
 
   // The assignment the time prompt is asking about, if it's open
   const loggingAssignment = assignments.find((a) => a.id === loggingId);
@@ -370,7 +394,7 @@ export function Dashboard() {
           </div>
           <ul className="service-list">
             {services.map((service) => (
-              <li key={service.name}>
+              <li key={service.name} className={service.on ? '' : 'service-off'}>
                 {service.name}: {service.status}
               </li>
             ))}

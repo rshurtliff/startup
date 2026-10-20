@@ -87,7 +87,7 @@ export default function App() {
           <Route path="/" element={<Login onLogin={(name) => setUserName(name)} />} />
           <Route path="/dashboard" element={userName ? <Dashboard /> : <Navigate to="/" />} />
           <Route path="/assignment/:id" element={userName ? <Assignment /> : <Navigate to="/" />} />
-          <Route path="/settings" element={userName ? <Settings /> : <Navigate to="/" />} />
+          <Route path="/settings" element={userName ? <Settings userName={userName} onLogout={logout} /> : <Navigate to="/" />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
 

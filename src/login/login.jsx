@@ -18,6 +18,11 @@ export function Login({ onLogin }) {
   // user goes to their dashboard.
   function loginUser() {
     localStorage.setItem('userName', netId);
+    // No real accounts yet, so the first login in this browser counts as when
+    // the account was made
+    if (!localStorage.getItem('accountCreated')) {
+      localStorage.setItem('accountCreated', new Date().toISOString());
+    }
     onLogin(netId);
     navigate('/dashboard');
   }
@@ -27,6 +32,8 @@ export function Login({ onLogin }) {
   // settings first to paste in their Canvas link.
   function createUser() {
     localStorage.setItem('userName', netId);
+    // Settings shows this as "Account created"
+    localStorage.setItem('accountCreated', new Date().toISOString());
     onLogin(netId);
     navigate('/settings');
   }

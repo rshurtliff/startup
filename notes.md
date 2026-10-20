@@ -1,5 +1,22 @@
 # Startup React Phase 2 Notes 10/10/26
 
+## Sessions 11 and 12: Canvas Sync, Reminders, Account
+
+Settings works now. Everything on it is saved to `localStorage` and shows up on the other pages too.
+
+- `syncCanvas()` is the course's "hard-coded response" mock. It returns exactly what the real sync will (when it synced, counts per class, the assignments), so only the inside of the function changes once the service exists.
+- The real sync has to run on the server. Browsers block reading Canvas's feed from another site (CORS), and the iCal link is private like a password.
+- The Service rubric wants a third party call from the frontend. Canvas will be called from the backend, so I'll need something small from the frontend too, like Simon's quote.
+- `new Date().toISOString()` saves a time as text, since `localStorage` only holds strings. `timeAgo()` turns it back into "5 minutes ago".
+- `.some()` is true if any item matches. Sync uses it to only add Canvas assignments that aren't already in my list.
+- `.reduce((sum, c) => sum + c.found, 0)` keeps a running total. The `0` is where `sum` starts.
+- `classes.map((c) => ({ ...c, found }))` needs the parentheses around the braces, or JavaScript reads the `{` as a function body.
+- One `useEffect` can load several things at once. Settings loads the link, sync, reminders, and account info in one.
+- `placeholder` is just the gray hint text in an empty box. `defaultValue` puts real text in it. A controlled input uses `value` instead of `defaultValue`.
+- A password never goes in `localStorage`. Change Password only checks the two boxes match until the login service exists.
+- Delete Account asks first with a second button instead of `window.confirm`, then clears every key Trackr saved and calls `onLogout` from `App`.
+- `loadSyncInfo()` and `loadReminders()` live in `src/utils/settings.js` because the dashboard and assignment page read them too.
+
 ## Session 10: Fake WebSocket
 
 My spec says the chart updates live as classmates log time. The real version needs the server, so `src/liveNotifier.js` fakes it with `setInterval`, the same setup as Simon's `gameNotifier.js`.

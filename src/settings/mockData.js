@@ -1,10 +1,16 @@
-// Placeholder data for the settings page. In Phase 2 this comes from the service.
+import { classes, assignments as canvasAssignments } from '../dashboard/mockData';
 
-// Database placeholder. Written by the service each time it parses the
-// Canvas feed: how many assignments it found for each class.
-export const syncedClasses = [
-  { key: 'cs260', code: 'CS 260', found: 14, lastSynced: '12 minutes ago' },
-  { key: 'fin401', code: 'FIN 401', found: 11, lastSynced: '12 minutes ago' },
-  { key: 'mcom320', code: 'MCOM 320', found: 9, lastSynced: '12 minutes ago' },
-  { key: 'rela275', code: 'REL A 275', found: 13, lastSynced: '12 minutes ago' },
-];
+// Third party service placeholder. Once the service exists it fetches my iCal
+// link from Canvas and parses it. For now this hands back the same shape the
+// real one will: when it synced, how many assignments it found for each class,
+// and the assignments themselves.
+export function syncCanvas(icalUrl) {
+  return {
+    syncedAt: new Date().toISOString(),
+    classes: classes.map((c) => ({
+      ...c,
+      found: canvasAssignments.filter((a) => a.classKey === c.key).length,
+    })),
+    assignments: canvasAssignments,
+  };
+}
