@@ -34,11 +34,10 @@ export function Dashboard() {
   const [syncInfo, setSyncInfo] = useState(null);
   const [reminders, setReminders] = useState(null);
 
-  // Runs once after the page first shows up. loadAssignments() and the
-  // settings loaders read from localStorage, which stands in for the database
-  // until the service exists. The first visit ever starts from the mock data.
+  // Runs once after the page first shows up. Assignments come from the server.
+  // The sync and reminder settings still come from localStorage until session 6.
   useEffect(() => {
-    setAssignments(loadAssignments());
+    loadAssignments().then((list) => setAssignments(list));
     setSyncInfo(loadSyncInfo());
     setReminders(loadReminders());
   }, []);
@@ -66,7 +65,7 @@ export function Dashboard() {
     };
   }, []);
 
-  // Every change to the list goes through here so the state and localStorage
+  // Every change to the list goes through here so the state and the server
   // never get out of sync. Checking off and adding assignments use this.
   function saveAssignments(newList) {
     setAssignments(newList);
