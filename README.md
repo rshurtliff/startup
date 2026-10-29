@@ -1,6 +1,6 @@
 # What's New (for the TA's)
 - Working on the Startup Service deliverable. Trackr has a real backend now for logins, assignment lists, and class times. Still to do: Settings on the server, a third party API, and deploying.
-- Completed Startup React part 2: Reactivity. The whole app works now, with `localStorage`, hard-coded responses, and `setInterval` standing in for the service, database, and WebSocket
+
 
 # Startup Service deliverable
 https://startup.cs260hwtrackr.click/ (still the React part 2 version until I deploy the service)
