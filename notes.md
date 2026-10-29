@@ -1,3 +1,18 @@
+# Startup Service Notes 10/28/26
+
+## In-class: AI Built Login and Create Account
+
+The attendance assignment was to have AI add login and create account to my startup, so Claude wrote this one instead of me typing it. It covers plan sessions 1 through 3.
+
+- `service/` is its own app with its own `package.json`. The backend packages (`express cookie-parser bcryptjs uuid`) went in there, not the root.
+- `uuid` 14 only works with `import`, not `require`. My server runs Node 22.12, which is right at the edge for that, so it's pinned to version 11 like Simon Service.
+- `service/index.js` follows Simon Service with Net ID instead of email and port 4000. Create gives 409 if the Net ID is taken, login gives 401 for a wrong password, and logout deletes the token.
+- `verifyAuth` is middleware: it runs before the endpoint and only calls `next()` if the cookie's token matches a user. `GET /api/user/me` is the endpoint behind it.
+- The cookie is `httpOnly`, so my React code can't read the token at all. The browser just sends it back on every `/api` call.
+- Users live in an array on the server, so restarting the service logs everyone out. The name in `localStorage` would still say I'm logged in, so `App` asks `/api/user/me` on load and clears the name if it gets a 401.
+- `vite.config.js` sends `/api` calls from `npm run dev` to port 4000. Run both: F5 on `service/index.js`, then `npm run dev`.
+- Tested every endpoint with curl first. `-c cookie.txt` saves the cookie and `-b cookie.txt` sends it back.
+
 # Startup Service Plan 10/28/26
 
 Plan for Startup Service. I type, Claude guides one step at a time.
@@ -10,9 +25,9 @@ Data lives in memory on the server for now (plain arrays and objects that reset 
 
 | # | Session | What gets built | Rubric |
 |---|---|---|---|
-| 1 | **Service skeleton** | Make `service/` with its own `package.json` and install `express cookie-parser bcryptjs uuid`. `service/index.js` listens on port 4000, uses `express.json()`, `cookieParser()`, `express.static('public')`, and an `/api` router with one test endpoint. Add `vite.config.js` so `/api` calls from Vite go to port 4000. Run it with the VS Code debugger (F5). Simon: `service/index.js`, `vite.config.js`. | Express, Static |
-| 2 | **Auth endpoints** | `POST /api/auth/create`, `POST /api/auth/login`, `DELETE /api/auth/logout`. Passwords hashed with `bcrypt.hash`, checked with `bcrypt.compare`. A `uuid` token goes in an httpOnly cookie. `verifyAuth` middleware blocks anyone without a good token. Test with curl before touching the frontend. | Auth, BCrypt, Endpoints |
-| 3 | **Login page uses the service** | Login and Create Account `fetch` the auth endpoints and show an error when the Net ID is taken (409) or the password is wrong (401). Logout calls the logout endpoint. Simon: `login/unauthenticated.jsx`, `login/authenticated.jsx`. | Frontend calls, Auth |
+| 1 | **Service skeleton** (done in class 10/28 by AI) | Make `service/` with its own `package.json` and install `express cookie-parser bcryptjs uuid`. `service/index.js` listens on port 4000, uses `express.json()`, `cookieParser()`, `express.static('public')`, and an `/api` router with one test endpoint. Add `vite.config.js` so `/api` calls from Vite go to port 4000. Run it with the VS Code debugger (F5). Simon: `service/index.js`, `vite.config.js`. | Express, Static |
+| 2 | **Auth endpoints** (done in class 10/28 by AI) | `POST /api/auth/create`, `POST /api/auth/login`, `DELETE /api/auth/logout`. Passwords hashed with `bcrypt.hash`, checked with `bcrypt.compare`. A `uuid` token goes in an httpOnly cookie. `verifyAuth` middleware blocks anyone without a good token. Test with curl before touching the frontend. | Auth, BCrypt, Endpoints |
+| 3 | **Login page uses the service** (done in class 10/28 by AI) | Login and Create Account `fetch` the auth endpoints and show an error when the Net ID is taken (409) or the password is wrong (401). Logout calls the logout endpoint. Simon: `login/unauthenticated.jsx`, `login/authenticated.jsx`. | Frontend calls, Auth |
 | 4 | **Assignments on the server** | `GET /api/assignments` and `PUT /api/assignments`, both behind `verifyAuth`, store each user's list on the server. `loadAssignments` and `saveAssignmentList` in `src/utils/assignments.js` switch from `localStorage` to `fetch`, so the dashboard and detail page use the server. | Endpoints, Frontend calls |
 | 5 | **Shared class times** | `POST /api/times/:id` saves my hours when I Mark It Done, and `GET /api/times/:id` returns everyone's hours on that assignment. The chart and stats read from it, so two accounts see each other's times. This is the part of Trackr that actually needs a server. | Endpoints, Frontend calls |
 | 6 | **Settings and sync** | `GET` and `PUT /api/settings` for the iCal link and reminders. `POST /api/sync` moves `syncCanvas()` to the server (still the hard-coded list for now). `DELETE /api/user` for Delete Account. Settings stops using `localStorage`. | Endpoints, Frontend calls |

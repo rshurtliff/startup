@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Link, Navigate, NavLink, Route, Routes } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -14,11 +14,32 @@ import { Settings } from './settings/settings';
 export default function App() {
   const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
 
-  // Undoes what loginUser did: clears the saved name and empties the state, so
-  // the header and nav go back to their logged out look.
-  function logout() {
+  // The saved name can outlive the login. The service forgets everyone when it
+  // restarts, and the cookie can expire. So on load, ask the service who is
+  // logged in, and clear the name if the answer is nobody.
+  useEffect(() => {
+    if (!userName) return;
+    fetch('/api/user/me').then((response) => {
+      if (response.status === 401) {
+        clearUser();
+      }
+    }).catch(() => {
+      // Service unreachable. Keep the name and let later calls sort it out.
+    });
+  }, []);
+
+  function clearUser() {
     localStorage.removeItem('userName');
     setUserName('');
+  }
+
+  // Tells the service to forget the login token, then clears the name so the
+  // header and nav go back to their logged out look. Clears it even if the
+  // service can't be reached.
+  function logout() {
+    fetch('/api/auth/logout', { method: 'delete' })
+      .catch(() => {})
+      .finally(() => clearUser());
   }
 
   return (

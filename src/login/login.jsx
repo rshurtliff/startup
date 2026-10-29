@@ -5,37 +5,59 @@ import './login.css';
 export function Login({ onLogin }) {
   const navigate = useNavigate();
 
-  // The inputs are controlled: what you type is kept in state, so Phase 2 can
-  // send netId and password to the login endpoint from here.
+  // The inputs are controlled: what you type is kept in state and sent to the
+  // service when a button is clicked.
   const [netId, setNetId] = useState('');
   const [password, setPassword] = useState('');
 
-  // Each button has its own action. Once the service exists these call different
-  // service endpoints, one to check an existing login and one to create the account.
+  // The service's message when login or create fails, shown under the buttons
+  const [error, setError] = useState(null);
 
-  // Placeholder for POST /api/auth/login. For now the Net ID is saved to
-  // localStorage and handed up to App so the header can show it. A returning
-  // user goes to their dashboard.
-  function loginUser() {
-    localStorage.setItem('userName', netId);
-    // No real accounts yet, so the first login in this browser counts as when
-    // the account was made
-    if (!localStorage.getItem('accountCreated')) {
-      localStorage.setItem('accountCreated', new Date().toISOString());
+  // A returning user goes to their dashboard
+  async function loginUser() {
+    if (await loginOrCreate('/api/auth/login')) {
+      // Settings shows this as "Account created" until that page reads it
+      // from the service
+      if (!localStorage.getItem('accountCreated')) {
+        localStorage.setItem('accountCreated', new Date().toISOString());
+      }
+      navigate('/dashboard');
     }
-    onLogin(netId);
-    navigate('/dashboard');
   }
 
-  // Placeholder for POST /api/auth/create. Saves the Net ID the same way as
-  // loginUser for now. A new user has no assignments yet, so they go to
-  // settings first to paste in their Canvas link.
-  function createUser() {
-    localStorage.setItem('userName', netId);
-    // Settings shows this as "Account created"
-    localStorage.setItem('accountCreated', new Date().toISOString());
-    onLogin(netId);
-    navigate('/settings');
+  // A new user has no assignments yet, so they go to settings first to paste
+  // in their Canvas link
+  async function createUser() {
+    if (await loginOrCreate('/api/auth/create')) {
+      localStorage.setItem('accountCreated', new Date().toISOString());
+      navigate('/settings');
+    }
+  }
+
+  // Both buttons send the Net ID and password to the service. If it says yes,
+  // the service has set the login cookie, so save the name and tell App.
+  // Returns true when it worked.
+  async function loginOrCreate(endpoint) {
+    setError(null);
+    try {
+      const response = await fetch(endpoint, {
+        method: 'post',
+        body: JSON.stringify({ netId: netId, password: password }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      });
+      if (response.ok) {
+        localStorage.setItem('userName', netId);
+        onLogin(netId);
+        return true;
+      }
+      const body = await response.json();
+      setError(body.msg);
+    } catch {
+      setError("Couldn't reach the Trackr service. Try again in a minute.");
+    }
+    return false;
   }
 
   // Pressing Enter in either field logs in, the same as clicking Login
@@ -110,6 +132,11 @@ export function Login({ onLogin }) {
                     Create Account
                   </button>
                 </div>
+                {error && (
+                  <div className="alert alert-danger mt-3 mb-0" role="alert">
+                    {error}
+                  </div>
+                )}
               </form>
 
               <p className="login-note">
