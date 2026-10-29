@@ -1,3 +1,16 @@
+# Simon Service 10/28/26
+
+Cloned simon-service and deployed it to https://simon.cs260hwtrackr.click with `./deployService.sh -k ~/.ssh/production.pem -h cs260hwtrackr.click -s simon`.
+
+- The repo is two apps now. The React frontend is in the root and the Express backend is in `service/`, each with its own `package.json`.
+- `deployService.sh` builds the React app and copies it into the service's `public/` folder on the server. Express hands those files out with `express.static('public')`, and PM2 keeps `node index.js` running on port 3000 (4000 for the startup).
+- Every endpoint goes under `/api` through `express.Router()`. Anything else gets `index.html`, so React routes like `/play` still work on refresh.
+- `verifyAuth` is middleware placed before an endpoint. It only calls `next()` if the cookie's token belongs to a user, so `/api/scores` returns 401 when you're logged out.
+- Passwords are hashed with bcrypt. The hash stores its own random salt and the cost, so `bcrypt.compare` can check a password without anything else saved.
+- Users and scores are plain arrays in memory, so restarting the service wipes them. The database deliverable fixes that.
+- While developing, `vite.config.js` proxies `/api` from Vite's port 5173 to the service. Both have to be running: F5 for the backend, `npm run dev` for the frontend.
+- The About page calls two third party APIs from the frontend: picsum.photos for the picture and quote.cs260.click for the quote.
+
 # Startup Service Notes 10/28/26
 
 ## In-class: AI Built Login and Create Account
