@@ -13,6 +13,20 @@ Cloned simon-service and deployed it to https://simon.cs260hwtrackr.click with `
 
 # Startup Service Notes 10/28/26
 
+## Session 5: Shared Class Times (10/29/26)
+
+Real students' hours show up for each other now. If one account logs 40 hours on Startup HTML, another account sees that bar on the chart and a higher Class Average.
+
+- No new way to save times was needed. Every user's list is already on the server with `done` and `myHours`, so `GET /api/times` just collects them.
+- It's one request for every assignment, not `/api/times/:id`, because the dashboard needs a Class Average for every row at once.
+- It skips my own hours (`if (user === req.user) continue;`). My page already adds mine from my own list, so they show up right when I save without asking the server again.
+- `times[a.id]` with square brackets looks up a key that's in a variable. `if (!times[a.id]) times[a.id] = [];` starts an empty list the first time an id shows up.
+- `classTimes = {}` in `allTimesFor` and `classAverage` is a default value. Callers that don't pass it yet still work instead of crashing on `undefined[assignment.id]`.
+- The class times are state on both pages, so React draws again when they arrive a moment after the page loads.
+- I typed `setClasTimes` and the build still passed. Vite only checks that the code is valid JavaScript, not that every name exists. It would have failed quietly inside the `.then`, so the times would just never show.
+- The mock classmates and the fake live ones are still in the chart. The live ones only exist in the open tab and keep adding normal-sized times, so averages drift a little between tabs and logins.
+- Testing with curl and two cookie files (`-c a.txt`, `-b b.txt`) is an easy way to act as two users at once.
+
 ## Session 4: Assignments on the Server (10/29/26)
 
 My assignment list is saved on the server under my account now, not in the browser. Two accounts get two separate lists, and logging in from another computer brings mine with it.
@@ -59,7 +73,7 @@ Data lives in memory on the server for now (plain arrays and objects that reset 
 | 2 | **Auth endpoints** (done in class 10/28 by AI) | `POST /api/auth/create`, `POST /api/auth/login`, `DELETE /api/auth/logout`. Passwords hashed with `bcrypt.hash`, checked with `bcrypt.compare`. A `uuid` token goes in an httpOnly cookie. `verifyAuth` middleware blocks anyone without a good token. Test with curl before touching the frontend. | Auth, BCrypt, Endpoints |
 | 3 | **Login page uses the service** (done in class 10/28 by AI) | Login and Create Account `fetch` the auth endpoints and show an error when the Net ID is taken (409) or the password is wrong (401). Logout calls the logout endpoint. Simon: `login/unauthenticated.jsx`, `login/authenticated.jsx`. | Frontend calls, Auth |
 | 4 | **Assignments on the server** (done 10/29) | `GET /api/assignments` and `PUT /api/assignments`, both behind `verifyAuth`, store each user's list on the server. `loadAssignments` and `saveAssignmentList` in `src/utils/assignments.js` switch from `localStorage` to `fetch`, so the dashboard and detail page use the server. | Endpoints, Frontend calls |
-| 5 | **Shared class times** | `POST /api/times/:id` saves my hours when I Mark It Done, and `GET /api/times/:id` returns everyone's hours on that assignment. The chart and stats read from it, so two accounts see each other's times. This is the part of Trackr that actually needs a server. | Endpoints, Frontend calls |
+| 5 | **Shared class times** (done 10/29) | `GET /api/times` collects everyone else's hours from the assignment lists already saved on the server, grouped by assignment id. `loadClassTimes()` feeds the dashboard's Class Average and the assignment page's chart and stats, so two accounts see each other's times. Changed from the first plan of `POST`/`GET /api/times/:id`, since the lists already hold the hours and the dashboard needs every assignment at once. | Endpoints, Frontend calls |
 | 6 | **Settings and sync** | `GET` and `PUT /api/settings` for the iCal link and reminders. `POST /api/sync` moves `syncCanvas()` to the server (still the hard-coded list for now). `DELETE /api/user` for Delete Account. Settings stops using `localStorage`. | Endpoints, Frontend calls |
 | 7 | **Third party API** | The frontend `fetch`es a free public API with CORS and no key and shows it on the dashboard. Pick one that fits Trackr (like upcoming holidays from Nager.Date, or a quote like Simon). Simon: `about/about.jsx`. | Third party |
 | 8 | **Deploy and wrap up** | Copy `deployService.sh` from Simon Service, delete `deployReact.sh`, deploy with `-s startup`, and check it live. README "Service deliverable" checklist and these notes. | All |
