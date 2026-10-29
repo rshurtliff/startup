@@ -62,15 +62,18 @@ export function Assignment() {
   // fills the form with what I saved last time. Runs again whenever the id in
   // the URL changes.
   useEffect(() => {
-    const found = loadAssignments().find((a) => a.id === id) || null;
-    setAssignment(found);
-    setFinished(found ? found.done : false);
-    setHours(found && found.myHours != null ? String(found.myHours) : '');
-    setNote(found && found.myNote ? found.myNote : '');
-    setSaved(false);
+    loadAssignments().then((list) => {
+      const found = list.find((a) => a.id === id) || null;
+      setAssignment(found);
+      setFinished(found ? found.done : false);
+      setHours(found && found.myHours != null ? String(found.myHours) : '');
+      setNote(found && found.myNote ? found.myNote : '');
+      setSaved(false);
+      setLoaded(true);
+    });
     setSyncInfo(loadSyncInfo());
-    setLoaded(true);
   }, [id]);
+
 
   // The last classmate who logged time on this assignment, for the line under
   // the chart. Setting it also redraws the chart, which picks up their time.
@@ -98,7 +101,7 @@ export function Assignment() {
   // assignment in the saved list, so the dashboard's checkbox matches. Hours
   // and the note only count if it's finished, and assignments I added never
   // get hours or a note since nobody else has them.
-  function saveProgress(event) {
+  async function saveProgress(event) {
     event.preventDefault();
     const countsForClass = finished && !isCustom(assignment);
     const updated = {
@@ -107,7 +110,8 @@ export function Assignment() {
       myHours: countsForClass && hours !== '' ? Number(hours) : null,
       myNote: countsForClass && note.trim() ? note.trim() : null,
     };
-    saveAssignmentList(loadAssignments().map((a) => (a.id === updated.id ? updated : a)));
+    const list = await loadAssignments();
+    await saveAssignmentList(list.map((a) => (a.id === updated.id ? updated : a)));
     setAssignment(updated);
     setSaved(true);
   }
