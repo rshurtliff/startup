@@ -1,5 +1,54 @@
 # What's New (for the TA's)
+- Working on the Startup Service deliverable. Trackr has a real backend now for logins, assignment lists, and class times. Still to do: Settings on the server, a third party API, and deploying.
 - Completed Startup React part 2: Reactivity. The whole app works now, with `localStorage`, hard-coded responses, and `setInterval` standing in for the service, database, and WebSocket
+
+# Startup Service deliverable
+https://startup.cs260hwtrackr.click/ (still the React part 2 version until I deploy the service)
+
+Simon Service is deployed at https://simon.cs260hwtrackr.click/
+
+The backend is its own app in `service/`, with its own `package.json`. Everything it saves is kept in memory for now, so restarting it clears all the accounts. The database deliverable fixes that.
+
+## Prerequisites
+- [x] Simon Service is deployed to my server
+- [x] GitHub link is on the home page, in the login page byline (`src/login/login.jsx`) and the footer (`src/app.jsx`)
+- [x] Notes on what I learned are in `notes.md`, under Startup Service Notes
+
+## What I did for Each Rubric Item
+- [x] **10% Create an HTTP service using Node.js and Express**
+
+  `service/index.js` is an Express app on port 4000. It reads JSON bodies with `express.json()`, reads the login cookie with `cookieParser()`, and puts every endpoint under `/api` with `express.Router()`. `vite.config.js` sends `/api` calls from `npm run dev` over to it while I'm developing.
+
+- [ ] **10% Frontend served up using Express static middleware**
+
+  `app.use(express.static('public'))` is in `service/index.js`, and anything that isn't an `/api` call gets `index.html` so React routes like `/dashboard` work on refresh. I'll check this once I deploy with `deployService.sh`.
+
+- [ ] **10% Your frontend calls third party service endpoints**
+
+  Not done yet.
+
+- [x] **20% Your backend provides service endpoints**
+
+  All in `service/index.js`:
+  - `POST /api/auth/create`, `POST /api/auth/login`, `DELETE /api/auth/logout` for accounts
+  - `GET /api/user/me` says who is logged in
+  - `GET /api/assignments` and `PUT /api/assignments` load and save my assignment list. It's saved under my account, so two people get two separate lists, and mine follows me to any computer.
+  - `GET /api/times` collects the hours everyone else logged, grouped by assignment. This is the part of Trackr that needs a server, since it's the only place that sees everyone's times.
+
+- [x] **20% Your frontend calls your service endpoints**
+
+  - **Login and Create Account** (`loginOrCreate()` in `src/login/login.jsx`) call the auth endpoints and show the server's error in a red box, like when a Net ID is already taken or the password is wrong.
+  - **Logout** (`logout()` in `src/app.jsx`) calls the logout endpoint. On page load, `App` calls `/api/user/me` and logs me out if the server doesn't know me anymore.
+  - **Assignments** (`loadAssignments()` and `saveAssignmentList()` in `src/utils/assignments.js`) use `fetch` instead of `localStorage`. The dashboard, the assignment page, and Settings all go through them.
+  - **Class times** (`loadClassTimes()` in `src/utils/assignments.js`) feeds the dashboard's Class Average column and the assignment page's chart, average, median, and longest, so other students' real hours show up next to mine.
+
+- [x] **25% Supports registration, login, logout, and an endpoint that requires an auth token**
+
+  Create Account and Login set an `httpOnly`, `secure`, `sameSite` cookie holding a random token from `uuid`. Logout deletes the token on the server and clears the cookie. `verifyAuth` in `service/index.js` is middleware that only lets a request through if its cookie matches a user, and it guards `/api/user/me`, `/api/assignments`, and `/api/times`. Without a login they send back 401.
+
+- [x] **5% Uses BCrypt to hash passwords**
+
+  `createUser()` in `service/index.js` saves `bcrypt.hash(password, 10)`, never the password itself. Login checks it with `bcrypt.compare`.
 
 # Startup React part 2: Reactivity
 https://startup.cs260hwtrackr.click/
