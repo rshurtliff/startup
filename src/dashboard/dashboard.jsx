@@ -4,7 +4,7 @@ import { ClassTag } from '../components/common/classTag';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon, timeAgo } from '../utils/dates';
-import { classAverage, isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
+import { classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { classes, alerts as mockAlerts } from './mockData';
 import { leadTimeLabels, loadReminders, loadSyncInfo, totalFound } from '../utils/settings';
 import { LiveNotifier } from '../liveNotifier';
@@ -33,11 +33,13 @@ export function Dashboard() {
   // Connected Services card
   const [syncInfo, setSyncInfo] = useState(null);
   const [reminders, setReminders] = useState(null);
+  const [classTimes, setClasTimes] = useState({});
 
   // Runs once after the page first shows up. Assignments come from the server.
   // The sync and reminder settings still come from localStorage until session 6.
   useEffect(() => {
     loadAssignments().then((list) => setAssignments(list));
+    loadClassTimes().then((times) => setClassTimes(times));
     setSyncInfo(loadSyncInfo());
     setReminders(loadReminders());
   }, []);
@@ -150,7 +152,7 @@ export function Dashboard() {
       if (isCustom(a) || isCustom(b)) {
         return isCustom(a) - isCustom(b);
       }
-      return classAverage(a) - classAverage(b);
+      return classAverage(a, classTimes) - classAverage(b, classTimes);
     }
     return a.due.localeCompare(b.due);
   });
@@ -329,7 +331,7 @@ export function Dashboard() {
                       {/* Assignments I added are only mine, so there's no class
                           average to show */}
                       <td className={isCustom(a) ? 'no-average' : ''}>
-                        {isCustom(a) ? 'Only you' : `${classAverage(a).toFixed(1)} hrs`}
+                        {isCustom(a) ? 'Only you' : `${classAverage(a, classTimes).toFixed(1)} hrs`}
                       </td>
                     </tr>
                   );
