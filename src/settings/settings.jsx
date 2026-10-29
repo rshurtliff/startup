@@ -45,20 +45,20 @@ export function Settings({ userName, onLogout }) {
     setLeadTime(reminders.leadTime);
     setDigest(reminders.digest);
 
-    setAssignments(loadAssignments());
+    loadAssignments().then((list) => setAssignments(list));
     setAccountCreated(localStorage.getItem('accountCreated'));
   }, [userName]);
 
   // Runs the fake Canvas sync and saves what it found. Any Canvas assignment
   // that isn't on my dashboard yet gets added. Ones already there keep my
   // checkmarks and hours.
-  function runSync() {
+  async function runSync() {
     const result = syncCanvas(icalUrl);
 
-    const list = loadAssignments();
+    const list = await loadAssignments();
     const newOnes = result.assignments.filter((a) => !list.some((mine) => mine.id === a.id));
     const newList = [...list, ...newOnes];
-    saveAssignmentList(newList);
+    await saveAssignmentList(newList);
     setAssignments(newList);
 
     const info = { syncedAt: result.syncedAt, classes: result.classes };
