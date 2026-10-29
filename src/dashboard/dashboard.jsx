@@ -33,7 +33,9 @@ export function Dashboard() {
   // Connected Services card
   const [syncInfo, setSyncInfo] = useState(null);
   const [reminders, setReminders] = useState(null);
-  const [classTimes, setClasTimes] = useState({});
+
+  // Everyone else's logged hours from the server, for the Class Average column
+  const [classTimes, setClassTimes] = useState({});
 
   // Runs once after the page first shows up. Assignments come from the server.
   // The sync and reminder settings still come from localStorage until session 6.
