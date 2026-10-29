@@ -80,6 +80,18 @@ apiRouter.get('/user/me', verifyAuth, (req, res) => {
   res.send({ netId: req.user.netId, createdAt: req.user.createdAt });
 });
 
+// GetAssignments: the logged-in user's assignment list. Empty until they save one.
+apiRouter.get('/assignments', verifyAuth, (req, res) => {
+  res.send(req.user.assignments || []);
+});
+
+// SaveAssignments: replaces the logged-in user's list with the one sent
+apiRouter.put('/assignments', verifyAuth, (req, res) => {
+  req.user.assignments = req.body;
+  res.send(req.user.assignments);
+});
+
+
 // Default error handler
 app.use(function (err, req, res, next) {
   res.status(500).send({ type: err.name, message: err.message });
