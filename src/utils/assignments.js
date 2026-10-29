@@ -29,6 +29,14 @@ export async function saveAssignmentList(list) {
   });
 }
 
+// Everyone else's logged hours from the server, grouped by assignment id
+export async function loadClassTimes() {
+  const response = await fetch('/api/times');
+  if (!response.ok) {
+    return {};
+  }
+  return await response.json();
+}
 
 // Assignments I add with the form get ids that start with 'custom-'. Nobody
 // else has them, so they can be deleted, don't ask how long they took, and
@@ -37,13 +45,18 @@ export function isCustom(assignment) {
   return assignment.id.startsWith('custom-');
 }
 
-// Everyone's logged hours on an assignment: the class's, plus mine once I've
-// finished it and saved hours. Assignments I added have none.
-export function allTimesFor(assignment) {
+// Everyone's logged hours on an assignment: the mock classmates, the live
+// ones, real users from the server, and mine once I've finished it and saved
+// hours. Assignments I added have none.
+export function allTimesFor(assignment, classTimes = {}) {
   if (isCustom(assignment)) {
     return [];
   }
-  const times = [...classTimesFor(assignment), ...LiveNotifier.timesFor(assignment.id)];
+  const times = [
+    ...classTimesFor(assignment),
+    ...LiveNotifier.timesFor(assignment.id),
+    ...(classTimes[assignment.id] || []),
+  ];
   if (assignment.done && assignment.myHours != null) {
     times.push(assignment.myHours);
   }
@@ -52,7 +65,7 @@ export function allTimesFor(assignment) {
 
 // The class average the dashboard and the assignment page both show, so they
 // always match. It moves when I save my hours.
-export function classAverage(assignment) {
-  const times = allTimesFor(assignment);
+export function classAverage(assignment, classTimes = {}) {
+  const times = allTimesFor(assignment, classTimes);
   return times.reduce((sum, t) => sum + t, 0) / times.length;
 }
