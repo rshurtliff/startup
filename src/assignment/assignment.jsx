@@ -5,7 +5,7 @@ import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { notesById } from './mockData';
 import { formatDue, timeAgo } from '../utils/dates';
 import { loadSyncInfo } from '../utils/settings';
-import { allTimesFor, classAverage, isCustom, loadAssignments, saveAssignmentList } from '../utils/assignments';
+import { allTimesFor, classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { LiveNotifier } from '../liveNotifier';
 import './assignment.css';
 
@@ -51,6 +51,9 @@ export function Assignment() {
   // The last Canvas sync, for the Last synced tile
   const [syncInfo, setSyncInfo] = useState(null);
 
+  // Everyone else's logged hours from the server, for the chart and stats
+  const [classTimes, setClassTimes] = useState({});
+
   // What's in the Mark It Done form. saved shows a "Saved" line after Save
   // until something in the form changes again.
   const [finished, setFinished] = useState(false);
@@ -71,6 +74,7 @@ export function Assignment() {
       setSaved(false);
       setLoaded(true);
     });
+    loadClassTimes().then((times) => setClassTimes(times));
     setSyncInfo(loadSyncInfo());
   }, [id]);
 
@@ -135,12 +139,12 @@ export function Assignment() {
 
   // Everyone's logged times for the chart and stats: the class's, plus mine
   // once I've saved hours on it
-  const times = allTimesFor(assignment);
+  const times = allTimesFor(assignment, classTimes);
   const buckets = makeBuckets(times);
   // The tallest bar sets the chart's scale
   const maxCount = Math.max(...buckets.map((b) => b.count));
   const stats = [
-    { label: 'Average', value: formatHours(classAverage(assignment)) },
+    { label: 'Average', value: formatHours(classAverage(assignment, classTimes)) },
     { label: 'Median', value: formatHours(median(times)) },
     { label: 'Longest', value: formatHours(Math.max(...times)) },
   ];
