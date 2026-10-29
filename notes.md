@@ -13,6 +13,23 @@ Cloned simon-service and deployed it to https://simon.cs260hwtrackr.click with `
 
 # Startup Service Notes 10/28/26
 
+## Session 4: Assignments on the Server (10/29/26)
+
+My assignment list is saved on the server under my account now, not in the browser. Two accounts get two separate lists, and logging in from another computer brings mine with it.
+
+- `GET /api/assignments` sends back my list and `PUT /api/assignments` replaces it. Both go through `verifyAuth`, which puts the logged-in user on `req.user`, so each endpoint only ever touches that user's list.
+- The list is saved right on my user object (`req.user.assignments`). A new user has none, so `|| []` sends an empty list instead of `undefined`.
+- GET means "give me this," PUT means "here's the new version, replace yours." Same address, different method, different endpoint.
+- `fetch` doesn't hand back the answer right away. It hands back a promise. `await` waits for it, but only inside an `async` function. Reading the body with `response.json()` needs its own `await`.
+- An `async` function always returns a promise, even when it looks like it returns a list. Once `loadAssignments` became `async`, every page that called it broke until I updated it.
+- The function passed to `useEffect` can't be `async`, so the effects use `.then((list) => ...)` instead, like Simon's `scores.jsx`. With `{ }` around the arrow function body, several lines can run once the list is ready.
+- `setLoaded(true)` had to move inside the `.then` on the assignment page. Outside, it ran before the server answered and "Assignment not found" flashed.
+- `saveProgress` and `runSync` are my own functions, so they can be `async`. They `await` the save before showing "Saved." or "Synced," so the message means it actually saved.
+- `event.preventDefault()` has to stay before any `await`, or the browser submits the form the old way first.
+- `response.ok` is true for any 200-type answer. If I'm not logged in it's a 401, and `loadAssignments` returns an empty list instead of crashing.
+- When curl got "Cannot POST /api/auth/create," it was a different project (imageupload) still running on port 4000. Only one program can use a port, so my F5 failed. `lsof -iTCP:4000 -sTCP:LISTEN` shows what's using a port.
+- Still to fix: Delete Account only clears `localStorage`, so my list stays on the server. Session 6 adds a delete account endpoint.
+
 ## In-class: AI Built Login and Create Account
 
 The attendance assignment was to have AI add login and create account to my startup, so Claude wrote this one instead of me typing it. It covers plan sessions 1 through 3.
@@ -41,7 +58,7 @@ Data lives in memory on the server for now (plain arrays and objects that reset 
 | 1 | **Service skeleton** (done in class 10/28 by AI) | Make `service/` with its own `package.json` and install `express cookie-parser bcryptjs uuid`. `service/index.js` listens on port 4000, uses `express.json()`, `cookieParser()`, `express.static('public')`, and an `/api` router with one test endpoint. Add `vite.config.js` so `/api` calls from Vite go to port 4000. Run it with the VS Code debugger (F5). Simon: `service/index.js`, `vite.config.js`. | Express, Static |
 | 2 | **Auth endpoints** (done in class 10/28 by AI) | `POST /api/auth/create`, `POST /api/auth/login`, `DELETE /api/auth/logout`. Passwords hashed with `bcrypt.hash`, checked with `bcrypt.compare`. A `uuid` token goes in an httpOnly cookie. `verifyAuth` middleware blocks anyone without a good token. Test with curl before touching the frontend. | Auth, BCrypt, Endpoints |
 | 3 | **Login page uses the service** (done in class 10/28 by AI) | Login and Create Account `fetch` the auth endpoints and show an error when the Net ID is taken (409) or the password is wrong (401). Logout calls the logout endpoint. Simon: `login/unauthenticated.jsx`, `login/authenticated.jsx`. | Frontend calls, Auth |
-| 4 | **Assignments on the server** | `GET /api/assignments` and `PUT /api/assignments`, both behind `verifyAuth`, store each user's list on the server. `loadAssignments` and `saveAssignmentList` in `src/utils/assignments.js` switch from `localStorage` to `fetch`, so the dashboard and detail page use the server. | Endpoints, Frontend calls |
+| 4 | **Assignments on the server** (done 10/29) | `GET /api/assignments` and `PUT /api/assignments`, both behind `verifyAuth`, store each user's list on the server. `loadAssignments` and `saveAssignmentList` in `src/utils/assignments.js` switch from `localStorage` to `fetch`, so the dashboard and detail page use the server. | Endpoints, Frontend calls |
 | 5 | **Shared class times** | `POST /api/times/:id` saves my hours when I Mark It Done, and `GET /api/times/:id` returns everyone's hours on that assignment. The chart and stats read from it, so two accounts see each other's times. This is the part of Trackr that actually needs a server. | Endpoints, Frontend calls |
 | 6 | **Settings and sync** | `GET` and `PUT /api/settings` for the iCal link and reminders. `POST /api/sync` moves `syncCanvas()` to the server (still the hard-coded list for now). `DELETE /api/user` for Delete Account. Settings stops using `localStorage`. | Endpoints, Frontend calls |
 | 7 | **Third party API** | The frontend `fetch`es a free public API with CORS and no key and shows it on the dashboard. Pick one that fits Trackr (like upcoming holidays from Nager.Date, or a quote like Simon). Simon: `about/about.jsx`. | Third party |
