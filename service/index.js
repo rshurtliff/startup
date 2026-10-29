@@ -91,6 +91,23 @@ apiRouter.put('/assignments', verifyAuth, (req, res) => {
   res.send(req.user.assignments);
 });
 
+// GetClassTimes: everyone else's logged hours, grouped by assignment id.
+// My own hours aren't included because my page already adds them.
+apiRouter.get('/times', verifyAuth, (req, res) => {
+  const times = {};
+  for (const user of users) {
+    if (user === req.user) continue;
+    for (const a of user.assignments || []) {
+      if (a.done && a.myHours != null) {
+        if (!times[a.id]) times[a.id] = [];
+        times[a.id].push(a.myHours);
+      }
+    }
+  }
+  res.send(times);
+});
+
+
 
 // Default error handler
 app.use(function (err, req, res, next) {
