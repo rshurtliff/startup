@@ -485,10 +485,10 @@ Milestones to complete CSS deliverable
 Elastic IP addrss and terminate the server after the class. For now, the cost to leave it running is the same as keeping the IP address.
 
 To get into the server run this:
-```ssh -i ~/.ssh/production.pem ubuntu@100.57.209.154```
+```ssh -i ~/.ssh/trackr ubuntu@100.57.209.154```
 
 To push changes to the server, run this from the working directory:
-``` ./deployReact.sh -k ~/.ssh/production.pem -h cs260hwtrackr.click -s startup ```
+``` ./deployService.sh -k ~/.ssh/trackr -h cs260hwtrackr.click -s startup ```
 
 My elastic IP address:
 100.57.209.154
@@ -499,8 +499,10 @@ https://cs260hwtrackr.click/index.html
 Working directory:
 cd Desktop/Fall\ 2026/CS\ 260/startup/
 
-## PEM Key Local Filepath:
-- /Users/ryanshurtliff/.ssh/production.pem
+## SSH Key Local Filepath:
+- /Users/ryanshurtliff/.ssh/trackr (since 10/29/26)
+- The old `production.pem` got committed to this repo on 9/12. I removed it the same day, but it stayed in git history where anyone could download it, so on 10/29 I made a new key and took the old one off the server. Removing a file in a later commit doesn't remove it from history. If a key ever gets committed, replace it.
+- The server also has a key called `cs260` that came with the course's server image. It's not mine.
 
 # CSS Notes:
 
