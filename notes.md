@@ -1,3 +1,32 @@
+# Startup Service Plan 10/28/26
+
+Plan for Startup Service. I type, Claude guides one step at a time.
+
+Rubric: 10% Node/Express service, 10% frontend served by Express static middleware, 10% frontend calls a third party API, 20% backend has service endpoints, 20% frontend calls them, 25% register, login, logout, and an endpoint that needs an auth token, 5% bcrypt for passwords.
+
+The README section has to be named "Service deliverable" with a checklist. Simon Service is already deployed at https://simon.cs260hwtrackr.click, so that prerequisite is done.
+
+Data lives in memory on the server for now (plain arrays and objects that reset when the service restarts). The database deliverable replaces that. The fake WebSocket in `liveNotifier.js` stays fake until the WebSocket deliverable.
+
+| # | Session | What gets built | Rubric |
+|---|---|---|---|
+| 1 | **Service skeleton** | Make `service/` with its own `package.json` and install `express cookie-parser bcryptjs uuid`. `service/index.js` listens on port 4000, uses `express.json()`, `cookieParser()`, `express.static('public')`, and an `/api` router with one test endpoint. Add `vite.config.js` so `/api` calls from Vite go to port 4000. Run it with the VS Code debugger (F5). Simon: `service/index.js`, `vite.config.js`. | Express, Static |
+| 2 | **Auth endpoints** | `POST /api/auth/create`, `POST /api/auth/login`, `DELETE /api/auth/logout`. Passwords hashed with `bcrypt.hash`, checked with `bcrypt.compare`. A `uuid` token goes in an httpOnly cookie. `verifyAuth` middleware blocks anyone without a good token. Test with curl before touching the frontend. | Auth, BCrypt, Endpoints |
+| 3 | **Login page uses the service** | Login and Create Account `fetch` the auth endpoints and show an error when the Net ID is taken (409) or the password is wrong (401). Logout calls the logout endpoint. Simon: `login/unauthenticated.jsx`, `login/authenticated.jsx`. | Frontend calls, Auth |
+| 4 | **Assignments on the server** | `GET /api/assignments` and `PUT /api/assignments`, both behind `verifyAuth`, store each user's list on the server. `loadAssignments` and `saveAssignmentList` in `src/utils/assignments.js` switch from `localStorage` to `fetch`, so the dashboard and detail page use the server. | Endpoints, Frontend calls |
+| 5 | **Shared class times** | `POST /api/times/:id` saves my hours when I Mark It Done, and `GET /api/times/:id` returns everyone's hours on that assignment. The chart and stats read from it, so two accounts see each other's times. This is the part of Trackr that actually needs a server. | Endpoints, Frontend calls |
+| 6 | **Settings and sync** | `GET` and `PUT /api/settings` for the iCal link and reminders. `POST /api/sync` moves `syncCanvas()` to the server (still the hard-coded list for now). `DELETE /api/user` for Delete Account. Settings stops using `localStorage`. | Endpoints, Frontend calls |
+| 7 | **Third party API** | The frontend `fetch`es a free public API with CORS and no key and shows it on the dashboard. Pick one that fits Trackr (like upcoming holidays from Nager.Date, or a quote like Simon). Simon: `about/about.jsx`. | Third party |
+| 8 | **Deploy and wrap up** | Copy `deployService.sh` from Simon Service, delete `deployReact.sh`, deploy with `-s startup`, and check it live. README "Service deliverable" checklist and these notes. | All |
+
+Things to watch for:
+- Commit at the end of every session, and in the middle when it runs long. The rubric wants dozens of commits over several days.
+- Backend packages get installed inside `service/`, frontend ones in the root. Mixing them up is the usual cause of a 502 after deploying.
+- The service runs on port 4000 here, not Simon's 3000. `vite.config.js` has to point at 4000 too.
+- Run two things while developing: the service (F5 on `service/index.js`) and the frontend (`npm run dev`).
+- A `fetch` call is async. Either `await` it or use `.then()`, and check `response.ok` before trusting the body.
+- `trackr-server` (the folder next to startup) was an earlier test. It hashes with `crypto` and sends the token in a header, so it doesn't match the course's bcrypt and cookie method. Follow Simon instead.
+
 # Startup React Phase 2 Notes 10/10/26
 
 ## Sessions 11 and 12: Canvas Sync, Reminders, Account

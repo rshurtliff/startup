@@ -1,9 +1,4 @@
 # What's New (for the TA's)
-- Changed some colors / design choices for the CSS
-- Made the imported font easier to see for the TA's (got docked on CSS, even though I used Inter from Google's font library)
-- Ported to a single-page React page
-- Completed Startup React P1: Routing
-- Fixed my React P1 feedback: lists render with `.map()`, shared pieces are components in `src/components/common/`, the login form uses `useState`, and Logout is a `Nav.Link`
 - Completed Startup React part 2: Reactivity. The whole app works now, with `localStorage`, hard-coded responses, and `setInterval` standing in for the service, database, and WebSocket
 
 # Startup React part 2: Reactivity
