@@ -74,7 +74,6 @@ export function Assignment() {
     setSyncInfo(loadSyncInfo());
   }, [id]);
 
-
   // The last classmate who logged time on this assignment, for the line under
   // the chart. Setting it also redraws the chart, which picks up their time.
   const [lastLive, setLastLive] = useState(null);
