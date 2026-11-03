@@ -24,11 +24,14 @@
   --text: #111a28;
   --text-muted: #566172;
 
-  /* One color per class, used for tags and row accents */
-  --class-cs260: var(--byu-royal);
-  --class-fin401: var(--navy);
-  --class-mcom320: #5aa2de;
-  --class-rela275: #8794a3;
+  /* Class colors, used for tags and row accents. Classes get them in order
+     by course code (classStyle() in src/utils/classes.js). */
+  --class-1: var(--byu-royal);
+  --class-2: var(--navy);
+  --class-3: #5aa2de;
+  --class-4: #8794a3;
+  --class-5: #2e7d8c;
+  --class-6: #4b5ea8;
 
   /* Status colors */
   --due-soon: var(--navy);

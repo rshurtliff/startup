@@ -108,6 +108,14 @@
   text-transform: uppercase;
 }
 
+/* Canvas descriptions can have line breaks, so keep them. Long ones scroll
+   instead of stretching the card. */
+.assignment-desc .desc-text {
+  white-space: pre-line;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
 /* ---------- Bar chart ---------- */
 
 .time-chart {

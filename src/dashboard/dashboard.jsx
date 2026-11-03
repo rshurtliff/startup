@@ -6,7 +6,8 @@ import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon, timeAgo } from '../utils/dates';
 import { classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
-import { classes, alerts as mockAlerts } from './mockData';
+import { alerts as mockAlerts } from './mockData';
+import { classesFrom, classStyle, otherClass } from '../utils/classes';
 import { leadTimeLabels, loadSettings, remindersFrom, syncInfoFrom, totalFound } from '../utils/settings';
 import { getDadJoke } from '../utils/jokes';
 import { LiveNotifier } from '../liveNotifier';
@@ -21,10 +22,16 @@ export function Dashboard() {
   const [classFilter, setClassFilter] = useState('all');
   const [sortBy, setSortBy] = useState('due');
 
-  // What's typed in the Add assignment form
+  // What's typed in the Add assignment form. newClass is '' until I pick one,
+  // which means the first class in the list.
   const [newTitle, setNewTitle] = useState('');
-  const [newClass, setNewClass] = useState('cs260');
+  const [newClass, setNewClass] = useState('');
   const [newDue, setNewDue] = useState('');
+
+  // My classes, worked out from my assignments on every render, for the
+  // Class filter and the colors. The Add form also offers Other.
+  const classes = classesFrom(assignments);
+  const addChoices = [...classes.filter((c) => c.key !== otherClass.key), otherClass];
 
   // The assignment that was just checked off, so the time prompt knows which
   // one it's asking about. null means the prompt is closed.
@@ -92,14 +99,13 @@ export function Dashboard() {
   function addAssignment(event) {
     event.preventDefault();
 
-    const pickedClass = classes.find((c) => c.key === newClass);
+    const pickedClass = addChoices.find((c) => c.key === newClass) || addChoices[0];
     const newAssignment = {
       id: `custom-${Date.now()}`,
       classKey: pickedClass.key,
       classCode: pickedClass.code,
       title: newTitle,
       due: newDue,
-      average: null,
       done: false,
     };
     saveAssignments([...assignments, newAssignment]);
@@ -264,10 +270,10 @@ export function Dashboard() {
                     className="form-select"
                     id="course"
                     name="course"
-                    value={newClass}
+                    value={newClass || addChoices[0].key}
                     onChange={(e) => setNewClass(e.target.value)}
                   >
-                    {classes.map((c) => (
+                    {addChoices.map((c) => (
                       <option key={c.key} value={c.key}>
                         {c.code}
                       </option>
@@ -313,7 +319,7 @@ export function Dashboard() {
                   // Finished work isn't due soon, even if the date is close
                   const dueSoon = !a.done && isDueSoon(a.due);
                   return (
-                    <tr key={a.id} className={`class-${a.classKey}${dueSoon ? ' due-soon' : ''}`}>
+                    <tr key={a.id} className={dueSoon ? 'due-soon' : ''} style={classStyle(a.classKey, classes)}>
                       <td>
                         {/* Flex row so the checkbox and the X line up */}
                         <div className="done-cell">

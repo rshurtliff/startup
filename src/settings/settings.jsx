@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
 import { loadAssignments } from '../utils/assignments';
+import { classStyle } from '../utils/classes';
 import { leadTimeLabels, loadSettings, remindersFrom, saveSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { timeAgo } from '../utils/dates';
 import './settings.css';
@@ -222,7 +223,7 @@ export function Settings({ userName, onLogout }) {
                 <tbody>
                   {syncInfo ? (
                     syncInfo.classes.map((c) => (
-                      <tr key={c.key} className={`class-${c.key}`}>
+                      <tr key={c.key} style={classStyle(c.key, syncInfo.classes)}>
                         <td>
                           <ClassTag code={c.code} />
                         </td>

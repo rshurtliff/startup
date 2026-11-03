@@ -7,6 +7,7 @@ import { getDadJoke } from '../utils/jokes';
 import { notesById } from './mockData';
 import { formatDue, timeAgo } from '../utils/dates';
 import { loadSettings, syncInfoFrom } from '../utils/settings';
+import { classesFrom, classStyle } from '../utils/classes';
 import { allTimesFor, classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { LiveNotifier } from '../liveNotifier';
 import './assignment.css';
@@ -50,6 +51,9 @@ export function Assignment() {
   const [assignment, setAssignment] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
+  // All my classes, so this one gets the same color it has on the dashboard
+  const [classes, setClasses] = useState([]);
+
   // The last Canvas sync, for the Last synced tile
   const [syncInfo, setSyncInfo] = useState(null);
 
@@ -75,6 +79,7 @@ export function Assignment() {
     loadAssignments().then((list) => {
       const found = list.find((a) => a.id === id) || null;
       setAssignment(found);
+      setClasses(classesFrom(list));
       setFinished(found ? found.done : false);
       setHours(found && found.myHours != null ? String(found.myHours) : '');
       setNote(found && found.myNote ? found.myNote : '');
@@ -181,7 +186,7 @@ export function Assignment() {
             the title and course code (SUMMARY), the due date (DTSTART, usually
             a date with no time), the description, and a link back to Canvas.
             Your status and last synced come from Trackr, not Canvas. */}
-        <section className={`card assignment-summary class-${assignment.classKey}`}>
+        <section className="card assignment-summary" style={classStyle(assignment.classKey, classes)}>
           <div className="card-header">
             <p className="course-line">{assignment.classCode}</p>
           </div>
@@ -222,9 +227,9 @@ export function Assignment() {
               <>
                 <div className="assignment-desc">
                   <p className="desc-label">Description from Canvas</p>
-                  <p>View this content in MasteryLS.</p>
+                  <p className="desc-text">{assignment.description || 'No description in Canvas.'}</p>
                 </div>
-                <a className="btn btn-outline-primary" href="https://byu.instructure.com/calendar" target="_blank" rel="noopener noreferrer">
+                <a className="btn btn-outline-primary" href={assignment.url || 'https://byu.instructure.com/calendar'} target="_blank" rel="noopener noreferrer">
                   Open in Canvas
                 </a>
               </>
