@@ -36,8 +36,10 @@
 
 /* ---------- Sign in and how it works ---------- */
 
-/* The sign-in card centered, with the explanation of Trackr underneath */
+/* The sign-in card centered, with the explanation of Trackr underneath.
+   Both use --login-width so the card lines up with the text. */
 .login-layout {
+  --login-width: 44rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -46,7 +48,7 @@
 
 .login-card {
   width: 100%;
-  max-width: 26rem;
+  max-width: var(--login-width);
 }
 
 .login-card .card-body {
@@ -69,7 +71,7 @@
 /* What Trackr is and how to use it. Kept to a readable line length. */
 .about {
   width: 100%;
-  max-width: 44rem;
+  max-width: var(--login-width);
 }
 
 .about h2 {
