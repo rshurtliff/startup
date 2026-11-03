@@ -29,6 +29,7 @@ Trackr reads my actual Canvas calendar now. Claude ported my Python script (`can
 - The fake live classmates only log on my real assignments now. `loadAssignments()` hands the list to `LiveNotifier.setAssignments()`.
 - Live Alerts start with anything due today or tomorrow that isn't done.
 - Tested on my real feed too. Titles like `M04 Curiosity Lab [OPTIONAL] — Ask the League [C S 180-001]` have their own bracket tag, so reading the course from the first `[` gave a class called `OPTIONAL] — Ask the League [C S 180`. The course is now read from the last bracket group, and anything tagged `[OPTIONAL]` is skipped. My Python version had the same bug.
+- The "Nice work" time prompt is a real popup now, using React Bootstrap's `Modal` instead of a `<dialog>` sitting under the table. `show` opens it and `onHide` runs on Escape, the X, or a click outside, which all count as Skip. The assignment is only forgotten in `onExited`, after the fade-out finishes, so the title doesn't disappear halfway through the animation.
 - Never put the iCal link in code, notes, or commits. It's a private link that shows my whole calendar to anyone who has it.
 - Tested with a fake feed served on my laptop that had the tricky cases: a folded title, an escaped comma, an 11:59 PM UTC time, and a class meeting that should be skipped.
 
