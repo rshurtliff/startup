@@ -335,40 +335,20 @@
 
 /* ---------- Time logging prompt ---------- */
 
-/* Shown inline under the table instead of as a real modal, since it is open
-   by default and a modal would cover the page with no way to close it yet */
-dialog.time-log {
-  position: static;
-  display: block;
-  width: 100%;
-  max-width: none;
-  margin: 1.5rem 0 0;
-  padding: 1.25rem 1.5rem;
-  color: var(--text);
-  background-color: #eef5fc;
+/* The popup itself is React Bootstrap's Modal. These just match it to Trackr:
+   a navy title and the BYU royal edge. */
+.modal-content {
   border: 2px solid var(--byu-royal);
   border-radius: var(--radius);
-  animation: pop-in 0.35s ease-out both;
 }
 
-dialog.time-log h2 {
-  margin-bottom: 0.25rem;
+.modal-title {
   font-size: 1.15rem;
+  color: var(--navy);
 }
 
-dialog.time-log p {
+.modal-body p {
   margin-bottom: 0.9rem;
-}
-
-@keyframes pop-in {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 .time-log-form {

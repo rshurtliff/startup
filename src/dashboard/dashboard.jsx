@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Modal from 'react-bootstrap/Modal';
 import { ClassTag } from '../components/common/classTag';
 import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
@@ -33,8 +34,11 @@ export function Dashboard() {
   const addChoices = [...classes.filter((c) => c.key !== otherClass.key), otherClass];
 
   // The assignment that was just checked off, so the time prompt knows which
-  // one it's asking about. null means the prompt is closed.
+  // one it's asking about. promptOpen shows or hides the popup. loggingId is
+  // only cleared after the popup finishes fading out, so its text doesn't
+  // vanish halfway through the fade.
   const [loggingId, setLoggingId] = useState(null);
+  const [promptOpen, setPromptOpen] = useState(false);
   const [loggedHours, setLoggedHours] = useState('1');
 
   // After Save, the prompt stays open to show a dad joke as a reward.
@@ -139,6 +143,7 @@ export function Dashboard() {
       setLoggedHours('1');
       setRewarded(false);
       setLoggingId(id);
+      setPromptOpen(true);
     } else if (loggingId === id) {
       closePrompt();
     }
@@ -157,8 +162,14 @@ export function Dashboard() {
     getDadJoke().then((text) => setJoke(text));
   }
 
-  // Skip and Close both end up here
+  // Skip, Close, Escape, and clicking outside the popup all end up here. The
+  // assignment stays checked off.
   function closePrompt() {
+    setPromptOpen(false);
+  }
+
+  // Runs once the popup has finished fading out
+  function promptClosed() {
     setLoggingId(null);
     setRewarded(false);
   }
@@ -388,49 +399,62 @@ export function Dashboard() {
           </div>
 
           {/* Time logging prompt. Only shows right after a box gets checked, and
-              asks about that assignment. Once the service exists the hours go
-              to the database too. */}
-          {loggingAssignment && !rewarded && (
-            <dialog className="time-log" open>
-              <h2>Nice work</h2>
-              <p>
-                How long did <strong>{loggingAssignment.title}</strong> actually take you? Tell us and get a dad joke.
-              </p>
-              <form className="time-log-form" onSubmit={saveTime}>
-                <label className="form-label" htmlFor="hours">
-                  Time spent
-                </label>
-                <HoursInput
-                  id="hours"
-                  value={loggedHours}
-                  onChange={(e) => setLoggedHours(e.target.value)}
-                  required
-                />
-                <button className="btn btn-primary" type="submit">
-                  Save
-                </button>
-                {/* Skip closes the prompt. The assignment stays checked off,
-                    but there's no joke without a time. */}
-                <button className="btn btn-link" type="button" onClick={closePrompt}>
-                  Skip
-                </button>
-              </form>
-            </dialog>
-          )}
+              asks about that assignment. It's a popup window over the page:
+              React Bootstrap's Modal dims the page behind it and closes on
+              Escape or a click outside. */}
+          <Modal show={promptOpen && !!loggingAssignment} onHide={closePrompt} onExited={promptClosed} centered>
+            {loggingAssignment && !rewarded && (
+              <>
+                <Modal.Header closeButton>
+                  <Modal.Title>Nice work</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>
+                    How long did <strong>{loggingAssignment.title}</strong> actually take you? Tell us and get a dad joke.
+                  </p>
+                  <form className="time-log-form" onSubmit={saveTime}>
+                    <label className="form-label" htmlFor="hours">
+                      Time spent
+                    </label>
+                    <HoursInput
+                      id="hours"
+                      value={loggedHours}
+                      onChange={(e) => setLoggedHours(e.target.value)}
+                      required
+                    />
+                    <button className="btn btn-primary" type="submit">
+                      Save
+                    </button>
+                    {/* Skip closes the prompt. The assignment stays checked off,
+                        but there's no joke without a time. */}
+                    <button className="btn btn-link" type="button" onClick={closePrompt}>
+                      Skip
+                    </button>
+                  </form>
+                </Modal.Body>
+              </>
+            )}
 
-          {/* After Save: thanks, plus the joke from the third party API */}
-          {loggingAssignment && rewarded && (
-            <dialog className="time-log" open>
-              <h2>Thanks!</h2>
-              <p>
-                Your time on <strong>{loggingAssignment.title}</strong> now counts toward the class average.
-              </p>
-              <DadJoke joke={joke} />
-              <button className="btn btn-primary mt-3" type="button" onClick={closePrompt}>
-                Close
-              </button>
-            </dialog>
-          )}
+            {/* After Save: thanks, plus the joke from the third party API */}
+            {loggingAssignment && rewarded && (
+              <>
+                <Modal.Header closeButton>
+                  <Modal.Title>Thanks!</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>
+                    Your time on <strong>{loggingAssignment.title}</strong> now counts toward the class average.
+                  </p>
+                  <DadJoke joke={joke} />
+                </Modal.Body>
+                <Modal.Footer>
+                  <button className="btn btn-primary" type="button" onClick={closePrompt}>
+                    Close
+                  </button>
+                </Modal.Footer>
+              </>
+            )}
+          </Modal>
         </div>
       </section>
 
