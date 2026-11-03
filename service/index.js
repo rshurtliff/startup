@@ -138,6 +138,10 @@ apiRouter.post('/sync', verifyAuth, async (req, res) => {
     res.status(400).send({ msg: 'Save your Canvas link first' });
     return;
   }
+  if (!isSafeFeedUrl(icalUrl)) {
+    res.status(400).send({ msg: 'Use the https:// link from Canvas\'s Calendar Feed button' });
+    return;
+  }
 
   let fromCanvas;
   try {
@@ -205,6 +209,21 @@ async function createUser(netId, password) {
   users.push(user);
 
   return user;
+}
+
+// The server downloads whatever link a user saves, so only allow real https
+// sites by name. That stops a link like http://localhost:4000 or a bare IP
+// address from making my server poke at itself or the network it sits on.
+function isSafeFeedUrl(text) {
+  let url;
+  try {
+    url = new URL(text);
+  } catch {
+    return false;
+  }
+  const host = url.hostname;
+  const isIpAddress = /^[\d.]+$/.test(host) || host.includes(':') || host.startsWith('[');
+  return url.protocol === 'https:' && host !== 'localhost' && !host.endsWith('.localhost') && !isIpAddress;
 }
 
 async function findUser(field, value) {
