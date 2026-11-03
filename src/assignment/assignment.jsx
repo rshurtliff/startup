@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
+import { getDadJoke } from '../utils/jokes';
 import { notesById } from './mockData';
 import { formatDue, timeAgo } from '../utils/dates';
 import { loadSettings, syncInfoFrom } from '../utils/settings';
@@ -61,6 +63,11 @@ export function Assignment() {
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState(false);
 
+  // Saving with my hours earns a dad joke. earnedJoke says whether this save
+  // gets one, and joke is null until it comes back from the joke site.
+  const [earnedJoke, setEarnedJoke] = useState(false);
+  const [joke, setJoke] = useState(null);
+
   // Finds this id in the saved list, the same list the dashboard uses, and
   // fills the form with what I saved last time. Runs again whenever the id in
   // the URL changes.
@@ -117,6 +124,14 @@ export function Assignment() {
     await saveAssignmentList(list.map((a) => (a.id === updated.id ? updated : a)));
     setAssignment(updated);
     setSaved(true);
+
+    // Only reporting a time gets the reward
+    const reportedTime = updated.myHours != null;
+    setEarnedJoke(reportedTime);
+    setJoke(null);
+    if (reportedTime) {
+      getDadJoke().then((text) => setJoke(text));
+    }
   }
 
   // Nothing to show until the effect has looked for the assignment
@@ -335,6 +350,7 @@ export function Assignment() {
                 Save
               </button>
               {saved && <p className="save-note text-center">Saved.</p>}
+              {saved && earnedJoke && <DadJoke joke={joke} />}
             </form>
           </div>
         </section>

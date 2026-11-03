@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
+import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon, timeAgo } from '../utils/dates';
 import { classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { classes, alerts as mockAlerts } from './mockData';
 import { leadTimeLabels, loadSettings, remindersFrom, syncInfoFrom, totalFound } from '../utils/settings';
+import { getDadJoke } from '../utils/jokes';
 import { LiveNotifier } from '../liveNotifier';
 import './dashboard.css';
 
@@ -28,6 +30,12 @@ export function Dashboard() {
   // one it's asking about. null means the prompt is closed.
   const [loggingId, setLoggingId] = useState(null);
   const [loggedHours, setLoggedHours] = useState('1');
+
+  // After Save, the prompt stays open to show a dad joke as a reward.
+  // rewarded switches the prompt from the form to the joke, and joke is null
+  // until it comes back from the joke site.
+  const [rewarded, setRewarded] = useState(false);
+  const [joke, setJoke] = useState(null);
 
   // The Canvas sync and reminder settings from the Settings page, for the
   // Connected Services card
@@ -120,20 +128,30 @@ export function Dashboard() {
 
     if (nowDone && !isCustom(assignment)) {
       setLoggedHours('1');
+      setRewarded(false);
       setLoggingId(id);
     } else if (loggingId === id) {
-      setLoggingId(null);
+      closePrompt();
     }
   }
 
-  // Save on the time prompt. Stores my hours on that assignment as myHours and
-  // closes the prompt. Once the service exists this also goes into the class
-  // average for everyone.
+  // Save on the time prompt. Stores my hours on that assignment as myHours,
+  // which also counts toward the class average for everyone. Then the prompt
+  // shows a dad joke as a thank you.
   function saveTime(event) {
     event.preventDefault();
     const newList = assignments.map((a) => (a.id === loggingId ? { ...a, myHours: Number(loggedHours) } : a));
     saveAssignments(newList);
+
+    setJoke(null);
+    setRewarded(true);
+    getDadJoke().then((text) => setJoke(text));
+  }
+
+  // Skip and Close both end up here
+  function closePrompt() {
     setLoggingId(null);
+    setRewarded(false);
   }
 
   // Placeholder until the service exists. Keeps the forms from reloading the page.
@@ -347,11 +365,11 @@ export function Dashboard() {
           {/* Time logging prompt. Only shows right after a box gets checked, and
               asks about that assignment. Once the service exists the hours go
               to the database too. */}
-          {loggingAssignment && (
+          {loggingAssignment && !rewarded && (
             <dialog className="time-log" open>
               <h2>Nice work</h2>
               <p>
-                How long did <strong>{loggingAssignment.title}</strong> actually take you?
+                How long did <strong>{loggingAssignment.title}</strong> actually take you? Tell us and get a dad joke.
               </p>
               <form className="time-log-form" onSubmit={saveTime}>
                 <label className="form-label" htmlFor="hours">
@@ -366,11 +384,26 @@ export function Dashboard() {
                 <button className="btn btn-primary" type="submit">
                   Save
                 </button>
-                {/* Skip closes the prompt. The assignment stays checked off. */}
-                <button className="btn btn-link" type="button" onClick={() => setLoggingId(null)}>
+                {/* Skip closes the prompt. The assignment stays checked off,
+                    but there's no joke without a time. */}
+                <button className="btn btn-link" type="button" onClick={closePrompt}>
                   Skip
                 </button>
               </form>
+            </dialog>
+          )}
+
+          {/* After Save: thanks, plus the joke from the third party API */}
+          {loggingAssignment && rewarded && (
+            <dialog className="time-log" open>
+              <h2>Thanks!</h2>
+              <p>
+                Your time on <strong>{loggingAssignment.title}</strong> now counts toward the class average.
+              </p>
+              <DadJoke joke={joke} />
+              <button className="btn btn-primary mt-3" type="button" onClick={closePrompt}>
+                Close
+              </button>
             </dialog>
           )}
         </div>

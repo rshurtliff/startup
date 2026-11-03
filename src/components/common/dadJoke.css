@@ -1,0 +1,27 @@
+/* Dad joke reward. Used in the dashboard's time prompt and on the assignment
+   page after Mark It Done. */
+
+.dad-joke {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-left: 4px solid var(--byu-royal);
+  border-radius: var(--radius);
+}
+
+.dad-joke p {
+  margin: 0;
+}
+
+.dad-joke-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.dad-joke-text {
+  margin-top: 0.25rem !important;
+  color: var(--text);
+}
