@@ -4,7 +4,7 @@ import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { notesById } from './mockData';
 import { formatDue, timeAgo } from '../utils/dates';
-import { loadSyncInfo } from '../utils/settings';
+import { loadSettings, syncInfoFrom } from '../utils/settings';
 import { allTimesFor, classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { LiveNotifier } from '../liveNotifier';
 import './assignment.css';
@@ -75,7 +75,7 @@ export function Assignment() {
       setLoaded(true);
     });
     loadClassTimes().then((times) => setClassTimes(times));
-    setSyncInfo(loadSyncInfo());
+    loadSettings().then((settings) => setSyncInfo(syncInfoFrom(settings)));
   }, [id]);
 
   // The last classmate who logged time on this assignment, for the line under

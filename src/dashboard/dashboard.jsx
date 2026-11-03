@@ -6,7 +6,7 @@ import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { formatDue, isDueSoon, timeAgo } from '../utils/dates';
 import { classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { classes, alerts as mockAlerts } from './mockData';
-import { leadTimeLabels, loadReminders, loadSyncInfo, totalFound } from '../utils/settings';
+import { leadTimeLabels, loadSettings, remindersFrom, syncInfoFrom, totalFound } from '../utils/settings';
 import { LiveNotifier } from '../liveNotifier';
 import './dashboard.css';
 
@@ -37,13 +37,15 @@ export function Dashboard() {
   // Everyone else's logged hours from the server, for the Class Average column
   const [classTimes, setClassTimes] = useState({});
 
-  // Runs once after the page first shows up. Assignments come from the server.
-  // The sync and reminder settings still come from localStorage until session 6.
+  // Runs once after the page first shows up. Assignments, class times, and
+  // settings all come from the server.
   useEffect(() => {
     loadAssignments().then((list) => setAssignments(list));
     loadClassTimes().then((times) => setClassTimes(times));
-    setSyncInfo(loadSyncInfo());
-    setReminders(loadReminders());
+    loadSettings().then((settings) => {
+      setSyncInfo(syncInfoFrom(settings));
+      setReminders(remindersFrom(settings));
+    });
   }, []);
 
   // The Live Alerts feed. Starts with the mock alerts, and each classmate who
