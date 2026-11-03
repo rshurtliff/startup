@@ -13,6 +13,23 @@ Cloned simon-service and deployed it to https://simon.cs260hwtrackr.click with `
 
 # Startup Service Notes 10/28/26
 
+## Session 9: Real Canvas Sync (11/3/26)
+
+Trackr reads my actual Canvas calendar now. Claude ported my Python script (`canvas.py`) to the server. The made-up assignments, classes, classmate times, and notes are all gone, so everything on screen is real.
+
+- `service/canvas.js` uses the same rules as `parse_canvas_assignment` in my Python: the title is everything before `[`, and the course is what's inside `[` up to its three-digit number (`[CS 260 Section 001 Fall 2026]` becomes `CS 260`).
+- It reads the feed by hand instead of using a package like Python's `icalendar`. The feed is plain text with one `BEGIN:VEVENT ... END:VEVENT` block per event. Long lines are "folded," continued on the next line after a space, so those get joined back first. Commas and semicolons come escaped as `\,` and `\;`.
+- Canvas writes most due times in UTC, like `20261113T065900Z`. 11:59 PM in Provo is already the next morning in UTC, so taking the date straight from the text would be a day late. It converts to `America/Denver` first. My Python version took `.dt.date()` straight from the UTC time, so it probably had this off-by-one too.
+- Canvas also puts class calendar events in the feed (`UID:event-calendar-event-...`). Only `event-assignment-...` ones count.
+- `POST /api/sync` runs on the server because Canvas blocks other sites from reading the feed (CORS) and the link is private. Canvas decides which assignments exist. Trackr keeps my checkmark, hours, and note on any I already had, and keeps the ones I added myself.
+- The server only syncs `https://` links by hostname. It downloads whatever link a user saves, so without that check someone could point it at `http://localhost:4000` or an internal IP address.
+- Classes come from my assignments now (`classesFrom()` in `src/utils/classes.js`). Colors go by position in the sorted class list, so a class has the same color everywhere. The Add form adds "Other" for things outside Canvas.
+- New accounts start empty with a link to Settings. Charts say "Nobody has logged time on this yet" and the stats say "None yet." The dashboard shows "No times yet" instead of an average of nothing.
+- `Math.max()` of an empty list is `-Infinity`, and dividing by a max of 0 breaks the bar heights. The chart uses `Math.max(1, ...)` so it always has something to divide by.
+- The fake live classmates only log on my real assignments now. `loadAssignments()` hands the list to `LiveNotifier.setAssignments()`.
+- Live Alerts start with anything due today or tomorrow that isn't done.
+- Tested with a fake feed served on my laptop that had the tricky cases: a folded title, an escaped comma, an 11:59 PM UTC time, and a class meeting that should be skipped.
+
 ## Session 8: Deploying the Service (11/3/26)
 
 Trackr is live as a real service at https://startup.cs260hwtrackr.click.
@@ -115,6 +132,7 @@ Data lives in memory on the server for now (plain arrays and objects that reset 
 | 6 | **Settings and sync** (done 11/3 by Claude) | `GET` and `PUT /api/settings` for the iCal link, last sync, and reminders. `PUT /api/user/password` for Change Password and `DELETE /api/user` for Delete Account. Settings, the dashboard, and the assignment page stop using `localStorage`. `syncCanvas()` stays a hard-coded mock on the frontend. | Endpoints, Frontend calls |
 | 7 | **Third party API** (done 11/3 by Claude) | Reporting time earns a random dad joke from icanhazdadjoke.com, fetched from the frontend with `getDadJoke()` in `src/utils/jokes.js`. Shows in the dashboard's time prompt and on the assignment page after Mark It Done. Changed from the holidays or quote idea. | Third party |
 | 8 | **Deploy and wrap up** (done 11/3) | Copied `deployService.sh` from Simon Service, removed `deployReact.sh`, and deployed with `-k ~/.ssh/trackr -s startup`. Checked the live site and every endpoint. README "Service deliverable" checklist is all checked. | All |
+| 9 | **Real Canvas sync** (added 11/3, done by Claude) | Port my Python `canvas.py` to `service/canvas.js`. `POST /api/sync` downloads the saved iCal link, parses it, and merges into my list. Classes and colors come from real data, and all mock assignments, classmates, and notes are removed. SendGrid dropped. | Endpoints, Frontend calls |
 
 Things to watch for:
 - Commit at the end of every session, and in the middle when it runs long. The rubric wants dozens of commits over several days.

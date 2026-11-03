@@ -1,5 +1,6 @@
 # What's New (for the TA's)
 - Completed Startup Service. Trackr has a real backend now for logins, assignment lists, class times, and settings, and it's deployed with `deployService.sh`. Reporting your time earns a dad joke from a third party API.
+- Trackr reads your real Canvas calendar now. Paste your Canvas Calendar Feed link in Settings and click Save and Sync. All the made-up sample assignments and classmates are gone.
 
 
 # Startup Service deliverable
@@ -36,6 +37,7 @@ The backend is its own app in `service/`, with its own `package.json`. Everythin
   - `GET /api/times` collects the hours everyone else logged, grouped by assignment. This is the part of Trackr that needs a server, since it's the only place that sees everyone's times.
   - `GET /api/settings` and `PUT /api/settings` load and save my Canvas link, last sync, and reminder settings. The PUT only changes the parts I send, so each card on Settings saves just its own piece.
   - `PUT /api/user/password` changes my password and `DELETE /api/user` deletes my account along with everything saved on it.
+  - `POST /api/sync` downloads my Canvas calendar feed from the link in my settings and loads every assignment in it. The parsing is in `service/canvas.js`, which I ported from a Python script I wrote earlier. It has to run on the server because Canvas won't let other sites read the feed and the link is private. It keeps my checkmarks and hours on assignments I already had.
 
 - [x] **20% Your frontend calls your service endpoints**
 
@@ -43,6 +45,7 @@ The backend is its own app in `service/`, with its own `package.json`. Everythin
   - **Logout** (`logout()` in `src/app.jsx`) calls the logout endpoint. On page load, `App` calls `/api/user/me` and logs me out if the server doesn't know me anymore.
   - **Assignments** (`loadAssignments()` and `saveAssignmentList()` in `src/utils/assignments.js`) use `fetch` instead of `localStorage`. The dashboard, the assignment page, and Settings all go through them.
   - **Class times** (`loadClassTimes()` in `src/utils/assignments.js`) feeds the dashboard's Class Average column and the assignment page's chart, average, median, and longest, so other students' real hours show up next to mine.
+  - **Canvas sync** (`runSync()` in `src/settings/settings.jsx`) calls `/api/sync` when I click Save and Sync or Sync Now, then fills in the Sync Status table. If Canvas can't be read, the server's message shows in a red box.
   - **Settings** (`loadSettings()` and `saveSettings()` in `src/utils/settings.js`, used in `src/settings/settings.jsx`) save the Canvas link, the sync status, and reminders to my account. The dashboard's Connected Services card and the assignment page's Last synced tile read from them too. Change Password and Delete Account call their endpoints, and "Account created" comes from `/api/user/me`. The only thing left in `localStorage` is my name for the header, the same as Simon.
 
 - [x] **25% Supports registration, login, logout, and an endpoint that requires an auth token**
