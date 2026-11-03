@@ -2,6 +2,7 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const uuid = require('uuid');
+const { getCanvasAssignments } = require('./canvas');
 const app = express();
 
 const authCookieName = 'token';
@@ -126,6 +127,52 @@ apiRouter.put('/user/password', verifyAuth, async (req, res) => {
   }
   req.user.password = await bcrypt.hash(req.body.password, 10);
   res.status(204).end();
+});
+
+// SyncCanvas: downloads my Canvas feed from the link saved in my settings and
+// updates my assignment list. This has to run here, not in the browser: Canvas
+// doesn't allow other sites to read the feed (CORS), and the link is private.
+apiRouter.post('/sync', verifyAuth, async (req, res) => {
+  const icalUrl = req.user.settings ? req.user.settings.icalUrl : '';
+  if (!icalUrl) {
+    res.status(400).send({ msg: 'Save your Canvas link first' });
+    return;
+  }
+
+  let fromCanvas;
+  try {
+    fromCanvas = await getCanvasAssignments(icalUrl);
+  } catch (err) {
+    res.status(502).send({ msg: `Couldn't read your Canvas feed. ${err.message}.` });
+    return;
+  }
+
+  // Canvas decides which assignments exist and what they're called. Trackr
+  // keeps my checkmark, hours, and note on any I already had. Assignments I
+  // added myself stay too.
+  const mine = req.user.assignments || [];
+  const synced = fromCanvas.map((a) => {
+    const old = mine.find((m) => m.id === a.id);
+    return old ? { ...a, done: old.done, myHours: old.myHours, myNote: old.myNote } : { ...a, done: false };
+  });
+  const added = mine.filter((m) => m.id.startsWith('custom-'));
+  req.user.assignments = [...synced, ...added];
+
+  // When it synced and how many it found per class, for the Sync Status table
+  const classes = [];
+  for (const a of fromCanvas) {
+    const c = classes.find((c) => c.key === a.classKey);
+    if (c) {
+      c.found++;
+    } else {
+      classes.push({ key: a.classKey, code: a.classCode, found: 1 });
+    }
+  }
+  classes.sort((a, b) => a.code.localeCompare(b.code));
+  const canvasSync = { syncedAt: new Date().toISOString(), classes: classes };
+  req.user.settings = { ...req.user.settings, canvasSync: canvasSync };
+
+  res.send({ canvasSync: canvasSync, assignments: req.user.assignments });
 });
 
 // DeleteUser: removes my account and everything saved with it, then logs me out
