@@ -121,6 +121,8 @@ export function Assignment() {
     const updated = {
       ...assignment,
       done: finished,
+      // When I finished it. Saving again later keeps the first time.
+      doneAt: finished ? (assignment.done && assignment.doneAt) || new Date().toISOString() : null,
       myHours: countsForClass && hours !== '' ? Number(hours) : null,
       myNote: countsForClass && note.trim() ? note.trim() : null,
     };

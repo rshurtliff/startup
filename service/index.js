@@ -157,7 +157,7 @@ apiRouter.post('/sync', verifyAuth, async (req, res) => {
   const mine = req.user.assignments || [];
   const synced = fromCanvas.map((a) => {
     const old = mine.find((m) => m.id === a.id);
-    return old ? { ...a, done: old.done, myHours: old.myHours, myNote: old.myNote } : { ...a, done: false };
+    return old ? { ...a, done: old.done, doneAt: old.doneAt, myHours: old.myHours, myNote: old.myNote } : { ...a, done: false };
   });
   const added = mine.filter((m) => m.id.startsWith('custom-'));
   req.user.assignments = [...synced, ...added];

@@ -139,7 +139,13 @@ export function Dashboard() {
   function toggleDone(id) {
     const assignment = assignments.find((a) => a.id === id);
     const nowDone = !assignment.done;
-    const newList = assignments.map((a) => (a.id === id ? { ...a, done: nowDone, myHours: nowDone ? a.myHours : null, myNote: nowDone ? a.myNote : null } : a));
+    // doneAt is when I checked it off, so Show completed can find what I
+    // finished recently even if it was overdue
+    const newList = assignments.map((a) =>
+      a.id === id
+        ? { ...a, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null, myHours: nowDone ? a.myHours : null, myNote: nowDone ? a.myNote : null }
+        : a
+    );
     saveAssignments(newList);
 
     if (nowDone && !isCustom(assignment)) {
@@ -187,6 +193,9 @@ export function Dashboard() {
   // Dates are 'YYYY-MM-DD', so comparing them as text puts them in order.
   const today = daysFromToday(0);
   const lastDay = timeframeDays[timeframe] == null ? null : daysFromToday(timeframeDays[timeframe]);
+  // doneAt is a full ISO time like '2026-11-03T15:24:58.166Z', which also
+  // compares correctly as text
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const filtered = assignments.filter((a) => {
     if (classFilter !== 'all' && a.classKey !== classFilter) {
       return false;
@@ -195,8 +204,15 @@ export function Dashboard() {
     if (a.id === loggingId) {
       return true;
     }
-    if (a.done && !showCompleted) {
-      return false;
+    if (a.done) {
+      if (!showCompleted) {
+        return false;
+      }
+      // Anything I finished in the last week shows, whatever its due date.
+      // Otherwise checking off something overdue would make it vanish.
+      if (a.doneAt && a.doneAt >= oneWeekAgo) {
+        return true;
+      }
     }
     // All semester shows everything
     if (lastDay == null) {
