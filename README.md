@@ -1,5 +1,5 @@
 # What's New (for the TA's)
-- Working on the Startup Service deliverable. Trackr has a real backend now for logins, assignment lists, class times, and settings. Still to do: a third party API and deploying.
+- Working on the Startup Service deliverable. Trackr has a real backend now for logins, assignment lists, class times, and settings. Reporting your time now earns a dad joke from a third party API. Still to do: deploying.
 
 
 # Startup Service deliverable
@@ -23,9 +23,9 @@ The backend is its own app in `service/`, with its own `package.json`. Everythin
 
   `app.use(express.static('public'))` is in `service/index.js`, and anything that isn't an `/api` call gets `index.html` so React routes like `/dashboard` work on refresh. I'll check this once I deploy with `deployService.sh`.
 
-- [ ] **10% Your frontend calls third party service endpoints**
+- [x] **10% Your frontend calls third party service endpoints**
 
-  Not done yet.
+  When you report how long an assignment took, Trackr rewards you with a random dad joke from icanhazdadjoke.com. `getDadJoke()` in `src/utils/jokes.js` fetches it straight from the frontend, and the `DadJoke` component (`src/components/common/dadJoke.jsx`) shows it. You'll see it after Save in the dashboard's "Nice work" prompt (`saveTime()` in `src/dashboard/dashboard.jsx`) and after Mark It Done with your hours on the assignment page (`saveProgress()` in `src/assignment/assignment.jsx`). If the joke site is down, you get a backup joke instead.
 
 - [x] **20% Your backend provides service endpoints**
 

@@ -13,6 +13,18 @@ Cloned simon-service and deployed it to https://simon.cs260hwtrackr.click with `
 
 # Startup Service Notes 10/28/26
 
+## Session 7: Dad Joke Reward (11/3/26)
+
+My idea, Claude built it. When I report how long an assignment took, Trackr thanks me with a random dad joke from icanhazdadjoke.com. This is the third party API the rubric wants called from the frontend.
+
+- The API is free, needs no key, and sends `access-control-allow-origin: *`, so the browser lets my page call it directly (CORS). Without that header the browser would block the response.
+- It needs the header `Accept: application/json`. Without it the site sends back a whole HTML page instead of `{ "joke": "..." }`.
+- `getDadJoke()` in `src/utils/jokes.js` does the fetch for both pages. If the site is down or the request fails, it returns a backup joke so the reward never just disappears. `try`/`catch` catches the case where `fetch` can't connect at all, and `response.ok` catches error answers.
+- `DadJoke` in `src/components/common/` shows it. It says "Finding a good one..." while `joke` is still `null`.
+- Dashboard: Save in the "Nice work" prompt no longer closes it. A `rewarded` state switches the prompt to a "Thanks!" view with the joke and a Close button. Skip closes it with no joke, so you have to report a time to earn one.
+- Assignment page: Mark It Done shows the joke under "Saved." only if I saved hours. Changing anything in the form hides it again, since it's tied to `saved`.
+- The plan had holidays or a Simon-style quote. The joke fits better because it rewards the exact thing Trackr needs people to do, which is report their time.
+
 ## Session 6: Settings on the Server (11/3/26)
 
 Claude did this session for me. Everything on Settings is saved on the server now: the Canvas link, the last sync, and the reminder settings. Change Password and Delete Account actually work too.
@@ -89,7 +101,7 @@ Data lives in memory on the server for now (plain arrays and objects that reset 
 | 4 | **Assignments on the server** (done 10/29) | `GET /api/assignments` and `PUT /api/assignments`, both behind `verifyAuth`, store each user's list on the server. `loadAssignments` and `saveAssignmentList` in `src/utils/assignments.js` switch from `localStorage` to `fetch`, so the dashboard and detail page use the server. | Endpoints, Frontend calls |
 | 5 | **Shared class times** (done 10/29) | `GET /api/times` collects everyone else's hours from the assignment lists already saved on the server, grouped by assignment id. `loadClassTimes()` feeds the dashboard's Class Average and the assignment page's chart and stats, so two accounts see each other's times. Changed from the first plan of `POST`/`GET /api/times/:id`, since the lists already hold the hours and the dashboard needs every assignment at once. | Endpoints, Frontend calls |
 | 6 | **Settings and sync** (done 11/3 by Claude) | `GET` and `PUT /api/settings` for the iCal link, last sync, and reminders. `PUT /api/user/password` for Change Password and `DELETE /api/user` for Delete Account. Settings, the dashboard, and the assignment page stop using `localStorage`. `syncCanvas()` stays a hard-coded mock on the frontend. | Endpoints, Frontend calls |
-| 7 | **Third party API** | The frontend `fetch`es a free public API with CORS and no key and shows it on the dashboard. Pick one that fits Trackr (like upcoming holidays from Nager.Date, or a quote like Simon). Simon: `about/about.jsx`. | Third party |
+| 7 | **Third party API** (done 11/3 by Claude) | Reporting time earns a random dad joke from icanhazdadjoke.com, fetched from the frontend with `getDadJoke()` in `src/utils/jokes.js`. Shows in the dashboard's time prompt and on the assignment page after Mark It Done. Changed from the holidays or quote idea. | Third party |
 | 8 | **Deploy and wrap up** | Copy `deployService.sh` from Simon Service, delete `deployReact.sh`, deploy with `-s startup`, and check it live. README "Service deliverable" checklist and these notes. | All |
 
 Things to watch for:
