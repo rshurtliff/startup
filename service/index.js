@@ -107,7 +107,33 @@ apiRouter.get('/times', verifyAuth, (req, res) => {
   res.send(times);
 });
 
+// GetSettings: my Canvas link, last sync, and reminder settings
+apiRouter.get('/settings', verifyAuth, (req, res) => {
+  res.send(req.user.settings || {});
+});
 
+// SaveSettings: merges in whatever was sent, so each card can save just its part
+apiRouter.put('/settings', verifyAuth, (req, res) => {
+  req.user.settings = { ...req.user.settings, ...req.body };
+  res.send(req.user.settings);
+});
+
+// ChangePassword: saves the hash of the new password. Login uses it from now on.
+apiRouter.put('/user/password', verifyAuth, async (req, res) => {
+  if (!req.body.password || req.body.password.length < 8) {
+    res.status(400).send({ msg: 'Password has to be at least 8 characters' });
+    return;
+  }
+  req.user.password = await bcrypt.hash(req.body.password, 10);
+  res.status(204).end();
+});
+
+// DeleteUser: removes my account and everything saved with it, then logs me out
+apiRouter.delete('/user', verifyAuth, (req, res) => {
+  users = users.filter((u) => u !== req.user);
+  res.clearCookie(authCookieName);
+  res.status(204).end();
+});
 
 // Default error handler
 app.use(function (err, req, res, next) {
