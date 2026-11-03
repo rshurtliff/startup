@@ -77,9 +77,8 @@ export function Login({ onLogin }) {
               <h2>Sign in</h2>
             </div>
             <div className="card-body">
-              {/* Login placeholder. React will replace this with a real form that
-                  calls the service, and the service will check the credentials
-                  against the database. */}
+              {/* Login sends the Net ID and password to POST /api/auth/login,
+                  Create Account to POST /api/auth/create */}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label className="form-label" htmlFor="netid">
@@ -125,31 +124,40 @@ export function Login({ onLogin }) {
                   </div>
                 )}
               </form>
-
-              <p className="login-note">
-                Once you are signed in, your assignments load automatically from your Canvas calendar feed. You can
-                also add your own assignments for things Canvas does not track.
-              </p>
             </div>
           </section>
 
-          <section className="features">
-            <h2>What you get</h2>
-            <ul className="feature-list">
-              <li>All of your assignments pulled from Canvas into one list</li>
-              <li>Sort by class, due date, or how much is left to do</li>
-              <li>Check an assignment off and log how long it actually took</li>
-              <li>See how long the assignment took everyone else before you start</li>
-            </ul>
+          <section className="about">
+            <h2>What is Trackr?</h2>
+            <p>
+              Trackr puts every assignment from all of your Canvas classes in one list, and shows how long each one
+              actually takes. When students finish an assignment they log their hours, so before you start you can
+              see what it took everyone else.
+            </p>
 
-            <figure className="sketch">
-              <img
-                src="/designSketch.png"
-                alt="Design sketch showing the login, dashboard, and assignment detail views"
-                width="300"
-              />
-              <figcaption>The three main views of Trackr.</figcaption>
-            </figure>
+            <h2>How to use it</h2>
+            <ol className="how-to">
+              <li>
+                <strong>Create an account</strong> with your BYU Net ID and a password.
+              </li>
+              <li>
+                <strong>Connect Canvas.</strong> In Canvas, open <em>Calendar</em> and click <em>Calendar Feed</em>.
+                Paste that link into Trackr&apos;s Settings and click Save and Sync. Every assignment from every class
+                loads in, and Sync Now pulls in anything new.
+              </li>
+              <li>
+                <strong>Plan your week.</strong> The dashboard starts on what&apos;s due this week. Switch the
+                timeframe, filter by class, or add anything Canvas doesn&apos;t have.
+              </li>
+              <li>
+                <strong>Check it off.</strong> When you finish something, check the box and say how long it took. You
+                get a dad joke for your trouble.
+              </li>
+              <li>
+                <strong>See how long things take.</strong> Open any assignment to see how many hours other students
+                spent on it before you start.
+              </li>
+            </ol>
           </section>
         </div>
       </main>
