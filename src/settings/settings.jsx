@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
 import { syncCanvas } from './mockData';
 import { loadAssignments, saveAssignmentList } from '../utils/assignments';
-import { leadTimeLabels, loadReminders, loadSyncInfo, totalFound } from '../utils/settings';
+import { leadTimeLabels, loadSettings, remindersFrom, saveSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { timeAgo } from '../utils/dates';
 import './settings.css';
 
@@ -31,22 +31,30 @@ export function Settings({ userName, onLogout }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
+  // The server's message if a password change fails
+  const [passwordError, setPasswordError] = useState(null);
+
   // Which card just saved, so it can show a short "Saved" line
   const [savedMessage, setSavedMessage] = useState('');
 
-  // Fills the page with what I saved last time. localStorage stands in for the
-  // database until the service exists.
+  // Fills the page with what I saved last time, all from the server
   useEffect(() => {
-    setIcalUrl(localStorage.getItem('icalUrl') || '');
-    setSyncInfo(loadSyncInfo());
+    loadSettings().then((settings) => {
+      setIcalUrl(settings.icalUrl || '');
+      setSyncInfo(syncInfoFrom(settings));
 
-    const reminders = loadReminders(userName);
-    setEmail(reminders.email);
-    setLeadTime(reminders.leadTime);
-    setDigest(reminders.digest);
+      const reminders = remindersFrom(settings, userName);
+      setEmail(reminders.email);
+      setLeadTime(reminders.leadTime);
+      setDigest(reminders.digest);
+    });
 
     loadAssignments().then((list) => setAssignments(list));
-    setAccountCreated(localStorage.getItem('accountCreated'));
+
+    // When the account was made comes from the server too
+    fetch('/api/user/me')
+      .then((response) => (response.ok ? response.json() : null))
+      .then((me) => setAccountCreated(me ? me.createdAt : null));
   }, [userName]);
 
   // Runs the fake Canvas sync and saves what it found. Any Canvas assignment
@@ -62,50 +70,59 @@ export function Settings({ userName, onLogout }) {
     setAssignments(newList);
 
     const info = { syncedAt: result.syncedAt, classes: result.classes };
-    localStorage.setItem('canvasSync', JSON.stringify(info));
+    await saveSettings({ canvasSync: info });
     setSyncInfo(info);
     setSavedMessage('canvas');
   }
 
   // Save and Sync. Saves the link, then syncs with it.
-  function saveAndSync(event) {
+  async function saveAndSync(event) {
     event.preventDefault();
-    localStorage.setItem('icalUrl', icalUrl);
+    await saveSettings({ icalUrl: icalUrl });
     runSync();
   }
 
   // Remove Link. Forgets the link and the sync status. Assignments that were
   // already loaded stay on the dashboard.
-  function removeLink() {
-    localStorage.removeItem('icalUrl');
-    localStorage.removeItem('canvasSync');
+  async function removeLink() {
+    await saveSettings({ icalUrl: '', canvasSync: null });
     setIcalUrl('');
     setSyncInfo(null);
     setSavedMessage('');
   }
 
-  // Save Reminder Settings. Once the service exists it sends these emails
-  // through SendGrid.
-  function saveReminders(event) {
+  // Save Reminder Settings. The emails themselves will go out through SendGrid.
+  async function saveReminders(event) {
     event.preventDefault();
-    localStorage.setItem('reminders', JSON.stringify({ email, leadTime, digest }));
+    await saveSettings({ reminders: { email, leadTime, digest } });
     setSavedMessage('reminders');
   }
 
-  // Change Password. There's no real password until the login service exists,
-  // so this only checks the two boxes match. It never saves the password,
-  // since a password doesn't belong in localStorage.
-  function changePassword(event) {
+  // Change Password. The server hashes the new one with bcrypt, and login
+  // checks against it from then on.
+  async function changePassword(event) {
     event.preventDefault();
+    setPasswordError(null);
+    const response = await fetch('/api/user/password', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: newPassword }),
+    });
+    if (!response.ok) {
+      const body = await response.json();
+      setPasswordError(body.msg);
+      return;
+    }
     setNewPassword('');
     setConfirmPassword('');
     setChangingPassword(false);
     setSavedMessage('password');
   }
 
-  // Delete Account. Clears everything Trackr saved and logs out.
-  function deleteAccount() {
-    ['assignments', 'icalUrl', 'canvasSync', 'reminders', 'accountCreated'].forEach((key) => localStorage.removeItem(key));
+  // Delete Account. The server removes my account, assignments, and settings,
+  // then App logs me out here too.
+  async function deleteAccount() {
+    await fetch('/api/user', { method: 'DELETE' });
     onLogout();
     navigate('/');
   }
@@ -172,8 +189,8 @@ export function Settings({ userName, onLogout }) {
           </div>
         </section>
 
-        {/* Database placeholder. The last sync is saved in localStorage for now.
-            Once the service exists it comes out of MongoDB. */}
+        {/* The last sync is saved on the server with my other settings. It
+            moves to MongoDB with the database deliverable. */}
         <section className="card">
           <div className="card-header">
             <h2>Sync Status</h2>
@@ -223,8 +240,8 @@ export function Settings({ userName, onLogout }) {
         </section>
 
         {/* Third party service placeholder. These options control the reminder
-            emails the service will send through the SendGrid API. Saved in
-            localStorage for now. */}
+            emails the service will send through the SendGrid API. Saved on
+            the server with my other settings. */}
         <section className="card">
           <div className="card-header">
             <h2>Email Reminders</h2>
@@ -334,6 +351,11 @@ export function Settings({ userName, onLogout }) {
                   <button className="btn btn-primary" type="submit" disabled={!passwordsMatch}>Save Password</button>
                   <button className="btn btn-link" type="button" onClick={() => setChangingPassword(false)}>Cancel</button>
                 </div>
+                {passwordError && (
+                  <div className="alert alert-danger mt-3 mb-0" role="alert">
+                    {passwordError}
+                  </div>
+                )}
               </form>
             )}
 
@@ -372,7 +394,7 @@ export function Settings({ userName, onLogout }) {
               </div>
             )}
             {savedMessage === 'password' && (
-              <p className="save-note">Password updated. It gets saved for real once the login service exists.</p>
+              <p className="save-note">Password updated. Use the new one next time you log in.</p>
             )}
           </div>
         </section>

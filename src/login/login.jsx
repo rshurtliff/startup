@@ -16,11 +16,6 @@ export function Login({ onLogin }) {
   // A returning user goes to their dashboard
   async function loginUser() {
     if (await loginOrCreate('/api/auth/login')) {
-      // Settings shows this as "Account created" until that page reads it
-      // from the service
-      if (!localStorage.getItem('accountCreated')) {
-        localStorage.setItem('accountCreated', new Date().toISOString());
-      }
       navigate('/dashboard');
     }
   }
@@ -29,7 +24,6 @@ export function Login({ onLogin }) {
   // in their Canvas link
   async function createUser() {
     if (await loginOrCreate('/api/auth/create')) {
-      localStorage.setItem('accountCreated', new Date().toISOString());
       navigate('/settings');
     }
   }
