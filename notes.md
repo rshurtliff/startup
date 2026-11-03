@@ -13,6 +13,20 @@ Cloned simon-service and deployed it to https://simon.cs260hwtrackr.click with `
 
 # Startup Service Notes 10/28/26
 
+## Session 6: Settings on the Server (11/3/26)
+
+Claude did this session for me. Everything on Settings is saved on the server now: the Canvas link, the last sync, and the reminder settings. Change Password and Delete Account actually work too.
+
+- `GET /api/settings` sends back my settings and `PUT /api/settings` saves them. They're saved on my user object like my assignments.
+- The PUT merges instead of replacing: `{ ...req.user.settings, ...req.body }`. Each card on Settings sends only its own part, like `{ reminders }`, and everything else stays. The later object wins when both have the same key.
+- `PUT /api/user/password` hashes the new password with bcrypt and saves it over the old hash. Login checks the new one from then on. The server also refuses anything under 8 characters, since the frontend check alone could be skipped with curl.
+- `DELETE /api/user` filters me out of the `users` array. My assignments and settings live on my user object, so they go too. That's why `users` is `let` and not `const`.
+- "Account created" comes from `createdAt` on `/api/user/me` now, so it's the real date the account was made, not the first time I logged in on that browser.
+- `src/utils/settings.js` has `loadSettings()` and `saveSettings()`, plus `syncInfoFrom()` and `remindersFrom()` to pull out the parts each page needs. The dashboard and the assignment page both use them.
+- The only thing left in `localStorage` is the logged-in name for the header, the same as Simon.
+- `syncCanvas()` is still a hard-coded fake. Reading a real Canvas feed would happen on the server later.
+- When testing in the browser, setting a dropdown from outside React doesn't fire `onChange`, so the state never changes. Typing or clicking like a real user does.
+
 ## Session 5: Shared Class Times (10/29/26)
 
 Real students' hours show up for each other now. If one account logs 40 hours on Startup HTML, another account sees that bar on the chart and a higher Class Average.
@@ -74,7 +88,7 @@ Data lives in memory on the server for now (plain arrays and objects that reset 
 | 3 | **Login page uses the service** (done in class 10/28 by AI) | Login and Create Account `fetch` the auth endpoints and show an error when the Net ID is taken (409) or the password is wrong (401). Logout calls the logout endpoint. Simon: `login/unauthenticated.jsx`, `login/authenticated.jsx`. | Frontend calls, Auth |
 | 4 | **Assignments on the server** (done 10/29) | `GET /api/assignments` and `PUT /api/assignments`, both behind `verifyAuth`, store each user's list on the server. `loadAssignments` and `saveAssignmentList` in `src/utils/assignments.js` switch from `localStorage` to `fetch`, so the dashboard and detail page use the server. | Endpoints, Frontend calls |
 | 5 | **Shared class times** (done 10/29) | `GET /api/times` collects everyone else's hours from the assignment lists already saved on the server, grouped by assignment id. `loadClassTimes()` feeds the dashboard's Class Average and the assignment page's chart and stats, so two accounts see each other's times. Changed from the first plan of `POST`/`GET /api/times/:id`, since the lists already hold the hours and the dashboard needs every assignment at once. | Endpoints, Frontend calls |
-| 6 | **Settings and sync** | `GET` and `PUT /api/settings` for the iCal link and reminders. `POST /api/sync` moves `syncCanvas()` to the server (still the hard-coded list for now). `DELETE /api/user` for Delete Account. Settings stops using `localStorage`. | Endpoints, Frontend calls |
+| 6 | **Settings and sync** (done 11/3 by Claude) | `GET` and `PUT /api/settings` for the iCal link, last sync, and reminders. `PUT /api/user/password` for Change Password and `DELETE /api/user` for Delete Account. Settings, the dashboard, and the assignment page stop using `localStorage`. `syncCanvas()` stays a hard-coded mock on the frontend. | Endpoints, Frontend calls |
 | 7 | **Third party API** | The frontend `fetch`es a free public API with CORS and no key and shows it on the dashboard. Pick one that fits Trackr (like upcoming holidays from Nager.Date, or a quote like Simon). Simon: `about/about.jsx`. | Third party |
 | 8 | **Deploy and wrap up** | Copy `deployService.sh` from Simon Service, delete `deployReact.sh`, deploy with `-s startup`, and check it live. README "Service deliverable" checklist and these notes. | All |
 

@@ -1,5 +1,5 @@
 # What's New (for the TA's)
-- Working on the Startup Service deliverable. Trackr has a real backend now for logins, assignment lists, and class times. Still to do: Settings on the server, a third party API, and deploying.
+- Working on the Startup Service deliverable. Trackr has a real backend now for logins, assignment lists, class times, and settings. Still to do: a third party API and deploying.
 
 
 # Startup Service deliverable
@@ -34,6 +34,8 @@ The backend is its own app in `service/`, with its own `package.json`. Everythin
   - `GET /api/user/me` says who is logged in
   - `GET /api/assignments` and `PUT /api/assignments` load and save my assignment list. It's saved under my account, so two people get two separate lists, and mine follows me to any computer.
   - `GET /api/times` collects the hours everyone else logged, grouped by assignment. This is the part of Trackr that needs a server, since it's the only place that sees everyone's times.
+  - `GET /api/settings` and `PUT /api/settings` load and save my Canvas link, last sync, and reminder settings. The PUT only changes the parts I send, so each card on Settings saves just its own piece.
+  - `PUT /api/user/password` changes my password and `DELETE /api/user` deletes my account along with everything saved on it.
 
 - [x] **20% Your frontend calls your service endpoints**
 
@@ -41,14 +43,15 @@ The backend is its own app in `service/`, with its own `package.json`. Everythin
   - **Logout** (`logout()` in `src/app.jsx`) calls the logout endpoint. On page load, `App` calls `/api/user/me` and logs me out if the server doesn't know me anymore.
   - **Assignments** (`loadAssignments()` and `saveAssignmentList()` in `src/utils/assignments.js`) use `fetch` instead of `localStorage`. The dashboard, the assignment page, and Settings all go through them.
   - **Class times** (`loadClassTimes()` in `src/utils/assignments.js`) feeds the dashboard's Class Average column and the assignment page's chart, average, median, and longest, so other students' real hours show up next to mine.
+  - **Settings** (`loadSettings()` and `saveSettings()` in `src/utils/settings.js`, used in `src/settings/settings.jsx`) save the Canvas link, the sync status, and reminders to my account. The dashboard's Connected Services card and the assignment page's Last synced tile read from them too. Change Password and Delete Account call their endpoints, and "Account created" comes from `/api/user/me`. The only thing left in `localStorage` is my name for the header, the same as Simon.
 
 - [x] **25% Supports registration, login, logout, and an endpoint that requires an auth token**
 
-  Create Account and Login set an `httpOnly`, `secure`, `sameSite` cookie holding a random token from `uuid`. Logout deletes the token on the server and clears the cookie. `verifyAuth` in `service/index.js` is middleware that only lets a request through if its cookie matches a user, and it guards `/api/user/me`, `/api/assignments`, and `/api/times`. Without a login they send back 401.
+  Create Account and Login set an `httpOnly`, `secure`, `sameSite` cookie holding a random token from `uuid`. Logout deletes the token on the server and clears the cookie. `verifyAuth` in `service/index.js` is middleware that only lets a request through if its cookie matches a user, and it guards every endpoint except create, login, and logout. Without a login they send back 401.
 
 - [x] **5% Uses BCrypt to hash passwords**
 
-  `createUser()` in `service/index.js` saves `bcrypt.hash(password, 10)`, never the password itself. Login checks it with `bcrypt.compare`.
+  `createUser()` in `service/index.js` saves `bcrypt.hash(password, 10)`, never the password itself. Change Password hashes the new one the same way. Login checks it with `bcrypt.compare`.
 
 # Startup React part 2: Reactivity
 https://startup.cs260hwtrackr.click/
