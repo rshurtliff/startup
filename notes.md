@@ -28,6 +28,8 @@ Trackr reads my actual Canvas calendar now. Claude ported my Python script (`can
 - `Math.max()` of an empty list is `-Infinity`, and dividing by a max of 0 breaks the bar heights. The chart uses `Math.max(1, ...)` so it always has something to divide by.
 - The fake live classmates only log on my real assignments now. `loadAssignments()` hands the list to `LiveNotifier.setAssignments()`.
 - Live Alerts start with anything due today or tomorrow that isn't done.
+- Tested on my real feed too. Titles like `M04 Curiosity Lab [OPTIONAL] — Ask the League [C S 180-001]` have their own bracket tag, so reading the course from the first `[` gave a class called `OPTIONAL] — Ask the League [C S 180`. The course is now read from the last bracket group, and anything tagged `[OPTIONAL]` is skipped. My Python version had the same bug.
+- Never put the iCal link in code, notes, or commits. It's a private link that shows my whole calendar to anyone who has it.
 - Tested with a fake feed served on my laptop that had the tricky cases: a folded title, an escaped comma, an 11:59 PM UTC time, and a class meeting that should be skipped.
 
 ## Session 8: Deploying the Service (11/3/26)

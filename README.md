@@ -37,7 +37,7 @@ The backend is its own app in `service/`, with its own `package.json`. Everythin
   - `GET /api/times` collects the hours everyone else logged, grouped by assignment. This is the part of Trackr that needs a server, since it's the only place that sees everyone's times.
   - `GET /api/settings` and `PUT /api/settings` load and save my Canvas link, last sync, and reminder settings. The PUT only changes the parts I send, so each card on Settings saves just its own piece.
   - `PUT /api/user/password` changes my password and `DELETE /api/user` deletes my account along with everything saved on it.
-  - `POST /api/sync` downloads my Canvas calendar feed from the link in my settings and loads every assignment in it. The parsing is in `service/canvas.js`, which I ported from a Python script I wrote earlier. It has to run on the server because Canvas won't let other sites read the feed and the link is private. It keeps my checkmarks and hours on assignments I already had.
+  - `POST /api/sync` downloads my Canvas calendar feed from the link in my settings and loads every assignment in it. The parsing is in `service/canvas.js`, which I ported from a Python script I wrote earlier. It has to run on the server because Canvas won't let other sites read the feed and the link is private. It keeps my checkmarks and hours on assignments I already had, and skips anything tagged `[OPTIONAL]` in Canvas.
 
 - [x] **20% Your frontend calls your service endpoints**
 
