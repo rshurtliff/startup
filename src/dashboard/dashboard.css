@@ -315,10 +315,22 @@
     content: "Avg ";
   }
 
-  /* "Avg Only you" reads oddly, so assignments I added skip the label */
+  /* "Avg Only you" and "Avg No times yet" read oddly, so those skip the label */
   .assignment-table tbody td.no-average::before {
     content: none;
   }
+
+  /* The "No assignments yet" message spans the whole card */
+  .assignment-table tbody td.empty-row {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+/* No assignments yet, or none in the picked class */
+.assignment-table td.empty-row {
+  color: var(--text-muted);
 }
 
 /* ---------- Time logging prompt ---------- */

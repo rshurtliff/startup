@@ -4,9 +4,8 @@ import { ClassTag } from '../components/common/classTag';
 import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
-import { formatDue, isDueSoon, timeAgo } from '../utils/dates';
+import { daysFromToday, formatDue, isDueSoon, timeAgo } from '../utils/dates';
 import { classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
-import { alerts as mockAlerts } from './mockData';
 import { classesFrom, classStyle, otherClass } from '../utils/classes';
 import { leadTimeLabels, loadSettings, remindersFrom, syncInfoFrom, totalFound } from '../utils/settings';
 import { getDadJoke } from '../utils/jokes';
@@ -55,7 +54,11 @@ export function Dashboard() {
   // Runs once after the page first shows up. Assignments, class times, and
   // settings all come from the server.
   useEffect(() => {
-    loadAssignments().then((list) => setAssignments(list));
+    loadAssignments().then((list) => {
+      setAssignments(list);
+      // Deadline alerts for anything due today or tomorrow that isn't done
+      setAlerts((prev) => [...prev, ...dueAlerts(list)].slice(0, 3));
+    });
     loadClassTimes().then((times) => setClassTimes(times));
     loadSettings().then((settings) => {
       setSyncInfo(syncInfoFrom(settings));
@@ -63,9 +66,9 @@ export function Dashboard() {
     });
   }, []);
 
-  // The Live Alerts feed. Starts with the mock alerts, and each classmate who
-  // logs time gets added to the front. Only the newest three show.
-  const [alerts, setAlerts] = useState(mockAlerts);
+  // The Live Alerts feed. Starts with anything due today or tomorrow, and each
+  // classmate who logs time gets added to the front. Only the newest three show.
+  const [alerts, setAlerts] = useState([]);
 
   // Listens for classmates logging time while the dashboard is open, and stops
   // when I leave it. setAlerts gets a function so it always adds to the
@@ -180,7 +183,10 @@ export function Dashboard() {
       if (isCustom(a) || isCustom(b)) {
         return isCustom(a) - isCustom(b);
       }
-      return classAverage(a, classTimes) - classAverage(b, classTimes);
+      // Ones nobody has logged time on yet go after the rest
+      const avgA = classAverage(a, classTimes);
+      const avgB = classAverage(b, classTimes);
+      return (avgA ?? Infinity) - (avgB ?? Infinity);
     }
     return a.due.localeCompare(b.due);
   });
@@ -315,6 +321,19 @@ export function Dashboard() {
                 </tr>
               </thead>
               <tbody>
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan="5" className="empty-row">
+                      {assignments.length === 0 ? (
+                        <>
+                          No assignments yet. <Link to="/settings">Add your Canvas link</Link> to load them, or add one yourself.
+                        </>
+                      ) : (
+                        'Nothing in this class.'
+                      )}
+                    </td>
+                  </tr>
+                )}
                 {filtered.map((a) => {
                   // Finished work isn't due soon, even if the date is close
                   const dueSoon = !a.done && isDueSoon(a.due);
@@ -358,8 +377,8 @@ export function Dashboard() {
                       </td>
                       {/* Assignments I added are only mine, so there's no class
                           average to show */}
-                      <td className={isCustom(a) ? 'no-average' : ''}>
-                        {isCustom(a) ? 'Only you' : `${classAverage(a, classTimes).toFixed(1)} hrs`}
+                      <td className={isCustom(a) || classAverage(a, classTimes) == null ? 'no-average' : ''}>
+                        {isCustom(a) ? 'Only you' : averageLabel(classAverage(a, classTimes))}
                       </td>
                     </tr>
                   );
@@ -421,6 +440,7 @@ export function Dashboard() {
           <LiveIndicator label="Connected" />
         </div>
         <ul className="alert-feed">
+          {alerts.length === 0 && <li className="alert-activity">Nothing yet. Classmates logging time will show up here.</li>}
           {alerts.map((alert) => (
             <li key={alert.id} className={`alert-${alert.type}`}>
               {alert.text}
@@ -447,4 +467,22 @@ export function Dashboard() {
       </section>
     </main>
   );
+}
+
+// Alerts for my assignments due today or tomorrow that aren't done yet
+function dueAlerts(list) {
+  const today = daysFromToday(0);
+  const tomorrow = daysFromToday(1);
+  return list
+    .filter((a) => !a.done && (a.due === today || a.due === tomorrow))
+    .map((a) => ({
+      id: `due-${a.id}`,
+      type: 'due',
+      text: `Due ${a.due === today ? 'today' : 'tomorrow'}: ${a.classCode} ${a.title}`,
+    }));
+}
+
+// The Class Average column. null means nobody has logged time yet.
+function averageLabel(average) {
+  return average == null ? 'No times yet' : `${average.toFixed(1)} hrs`;
 }

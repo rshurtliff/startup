@@ -39,8 +39,8 @@ export function timeAgo(isoTime) {
   return `${days} day${days === 1 ? '' : 's'} ago`;
 }
 
-// For the mock data: a date n days from today in the same 'YYYY-MM-DD' format,
-// so the sample assignments are always near today when I test.
+// A date n days from today in the same 'YYYY-MM-DD' format. The dashboard
+// uses it to find what's due today and tomorrow.
 export function daysFromToday(n) {
   const date = new Date();
   date.setDate(date.getDate() + n);

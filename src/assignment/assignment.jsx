@@ -4,7 +4,6 @@ import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { getDadJoke } from '../utils/jokes';
-import { notesById } from './mockData';
 import { formatDue, timeAgo } from '../utils/dates';
 import { loadSettings, syncInfoFrom } from '../utils/settings';
 import { classesFrom, classStyle } from '../utils/classes';
@@ -43,7 +42,7 @@ function formatHours(hours) {
 }
 
 export function Assignment() {
-  // The id from the URL, like 'fin401-problem-set-4' from /assignment/fin401-problem-set-4
+  // The id from the URL, like 'event-assignment-123456' from /assignment/event-assignment-123456
   const { id } = useParams();
 
   // The assignment this page shows. loaded turns true once the effect has
@@ -157,22 +156,25 @@ export function Assignment() {
     );
   }
 
-  // Everyone's logged times for the chart and stats: the class's, plus mine
-  // once I've saved hours on it
+  // Everyone's logged times for the chart and stats: other students', plus
+  // mine once I've saved hours on it
   const times = allTimesFor(assignment, classTimes);
   const buckets = makeBuckets(times);
-  // The tallest bar sets the chart's scale
-  const maxCount = Math.max(...buckets.map((b) => b.count));
+  // The tallest bar sets the chart's scale. At least 1, so an empty chart
+  // doesn't divide by zero.
+  const maxCount = Math.max(1, ...buckets.map((b) => b.count));
+  const noTimes = times.length === 0;
   const stats = [
-    { label: 'Average', value: formatHours(classAverage(assignment, classTimes)) },
-    { label: 'Median', value: formatHours(median(times)) },
-    { label: 'Longest', value: formatHours(Math.max(...times)) },
+    { label: 'Average', value: noTimes ? 'None yet' : formatHours(classAverage(assignment, classTimes)) },
+    { label: 'Median', value: noTimes ? 'None yet' : formatHours(median(times)) },
+    { label: 'Longest', value: noTimes ? 'None yet' : formatHours(Math.max(...times)) },
   ];
 
-  // Other students' notes, with mine first once I've saved one
-  const notes = [...(notesById[assignment.id] || [])];
+  // Notes. Only mine for now, since the server only shares other students'
+  // hours, not their notes.
+  const notes = [];
   if (assignment.myNote) {
-    notes.unshift({ name: 'You', hours: assignment.myHours, text: assignment.myNote });
+    notes.push({ name: 'You', hours: assignment.myHours, text: assignment.myNote });
   }
 
   return (
@@ -268,7 +270,9 @@ export function Assignment() {
                   </tbody>
                 </table>
                 <figcaption>
-                  Hours spent by the {times.length} students who have finished this assignment.
+                  {noTimes
+                    ? 'Nobody has logged time on this yet. Finish it and be the first.'
+                    : `Hours spent by the ${times.length} ${times.length === 1 ? 'student' : 'students'} who finished this assignment.`}
                 </figcaption>
               </figure>
 
@@ -363,7 +367,7 @@ export function Assignment() {
         {/* Other students' notes. Assignments I added are only mine, so they have none. */}
         {!isCustom(assignment) && (
           <section className="notes-panel">
-            <h2>Notes From Other Students</h2>
+            <h2>Notes</h2>
 
             {notes.length === 0 && <p>No notes yet.</p>}
             <ul className="note-list">

@@ -72,13 +72,6 @@ export default function App() {
                         </Nav.Link>
                       </Nav.Item>
                       <Nav.Item as="li">
-                        {/* The detail page is a shared template. This link opens a
-                            sample assignment until the dashboard rows link to their own. */}
-                        <Nav.Link as={NavLink} to="/assignment/cs260-startup-html" eventKey="/assignment">
-                          Assignment Detail
-                        </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item as="li">
                         <Nav.Link as={NavLink} to="/settings" eventKey="/settings">
                           Settings
                         </Nav.Link>

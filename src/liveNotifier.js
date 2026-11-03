@@ -1,23 +1,28 @@
-import { assignments as canvasAssignments } from './dashboard/mockData';
-
 // Made-up classmates for the fake events
 const classmates = ['Kate D.', 'Tyler M.', 'Sam R.', 'Josh P.', 'Emma L.', 'Ben W.'];
 
-// Stands in for the WebSocket until the service exists. Components add a
-// handler to hear about classmates logging time, and remove it when they go
-// away. Later, the events come from the server instead of a timer.
+// Stands in for the WebSocket until that deliverable. Components add a handler
+// to hear about classmates logging time, and remove it when they go away.
+// Later, the events come from the server instead of a timer.
 class LiveEventNotifier {
   handlers = [];
 
-  // Hours classmates logged since the app opened, by assignment id. The
-  // server keeps these once it exists.
+  // My real Canvas assignments, so the fake classmates only log time on ones
+  // I actually have. loadAssignments() fills this in.
+  assignments = [];
+
+  // Hours classmates logged since the app opened, by assignment id
   liveTimes = {};
 
   constructor() {
-    // Every 5 seconds a made-up classmate logs time on a random assignment
+    // Every 5 seconds a made-up classmate logs time on one of my assignments,
+    // somewhere between half an hour and 4 hours
     setInterval(() => {
-      const assignment = canvasAssignments[Math.floor(Math.random() * canvasAssignments.length)];
-      const hours = Math.max(0.25, Math.round(assignment.average * (0.5 + Math.random()) * 4) / 4);
+      if (this.assignments.length === 0) {
+        return;
+      }
+      const assignment = this.assignments[Math.floor(Math.random() * this.assignments.length)];
+      const hours = Math.round((0.5 + Math.random() * 3.5) * 4) / 4;
       const name = classmates[Math.floor(Math.random() * classmates.length)];
 
       if (!this.liveTimes[assignment.id]) {
@@ -33,6 +38,10 @@ class LiveEventNotifier {
         classCode: assignment.classCode,
       });
     }, 5000);
+  }
+
+  setAssignments(list) {
+    this.assignments = list;
   }
 
   // The live times for one assignment, or none yet
