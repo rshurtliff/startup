@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './login.css';
 
 export function Login({ onLogin }) {
-  const navigate = useNavigate();
-
   // The inputs are controlled: what you type is kept in state and sent to the
   // service when a button is clicked.
   const [netId, setNetId] = useState('');
@@ -14,24 +11,21 @@ export function Login({ onLogin }) {
   const [error, setError] = useState(null);
 
   // A returning user goes to their dashboard
-  async function loginUser() {
-    if (await loginOrCreate('/api/auth/login')) {
-      navigate('/dashboard');
-    }
+  function loginUser() {
+    loginOrCreate('/api/auth/login', '/dashboard');
   }
 
   // A new user has no assignments yet, so they go to settings first to paste
   // in their Canvas link
-  async function createUser() {
-    if (await loginOrCreate('/api/auth/create')) {
-      navigate('/settings');
-    }
+  function createUser() {
+    loginOrCreate('/api/auth/create', '/settings');
   }
 
   // Both buttons send the Net ID and password to the service. If it says yes,
-  // the service has set the login cookie, so save the name and tell App.
-  // Returns true when it worked.
-  async function loginOrCreate(endpoint) {
+  // the service has set the login cookie, so save the name and tell App, along
+  // with the page to land on. App does the moving, since it sends anyone who
+  // is logged in away from this page anyway.
+  async function loginOrCreate(endpoint, landingPage) {
     setError(null);
     try {
       const response = await fetch(endpoint, {
@@ -43,15 +37,14 @@ export function Login({ onLogin }) {
       });
       if (response.ok) {
         localStorage.setItem('userName', netId);
-        onLogin(netId);
-        return true;
+        onLogin(netId, landingPage);
+        return;
       }
       const body = await response.json();
       setError(body.msg);
     } catch {
       setError("Couldn't reach the Trackr service. Try again in a minute.");
     }
-    return false;
   }
 
   // Pressing Enter in either field logs in, the same as clicking Login

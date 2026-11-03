@@ -14,6 +14,15 @@ import { Settings } from './settings/settings';
 export default function App() {
   const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
 
+  // Where the login page sends me once I'm logged in. Login sets it to
+  // /settings for a brand new account so I can paste my Canvas link first.
+  const [landingPage, setLandingPage] = useState('/dashboard');
+
+  function login(name, page) {
+    setLandingPage(page);
+    setUserName(name);
+  }
+
   // The saved name can outlive the login. The service forgets everyone when it
   // restarts, and the cookie can expire. So on load, ask the service who is
   // logged in, and clear the name if the answer is nobody.
@@ -31,15 +40,16 @@ export default function App() {
   function clearUser() {
     localStorage.removeItem('userName');
     setUserName('');
+    setLandingPage('/dashboard');
   }
 
-  // Tells the service to forget the login token, then clears the name so the
-  // header and nav go back to their logged out look. Clears it even if the
-  // service can't be reached.
+  // Clears the name right away so the header and nav go back to their logged
+  // out look, and the login page doesn't bounce me to the dashboard. Then tells
+  // the service to forget the login token. If the service can't be reached,
+  // I'm still logged out here.
   function logout() {
-    fetch('/api/auth/logout', { method: 'delete' })
-      .catch(() => {})
-      .finally(() => clearUser());
+    clearUser();
+    fetch('/api/auth/logout', { method: 'delete' }).catch(() => {});
   }
 
   return (
@@ -58,12 +68,15 @@ export default function App() {
               <Navbar.Collapse id="main-nav">
                 {/* NavLink adds the active class to the link for the current route */}
                 <Nav as="ul" className="me-auto">
-                  <Nav.Item as="li">
-                    <Nav.Link as={NavLink} to="/" eventKey="/" end>
-                      Login
-                    </Nav.Link>
-                  </Nav.Item>
-                  {/* The rest of the pages only show once someone is logged in */}
+                  {/* Login only shows when logged out, and the other pages
+                      only show once someone is logged in */}
+                  {!userName && (
+                    <Nav.Item as="li">
+                      <Nav.Link as={NavLink} to="/" eventKey="/" end>
+                        Login
+                      </Nav.Link>
+                    </Nav.Item>
+                  )}
                   {userName && (
                     <>
                       <Nav.Item as="li">
@@ -96,9 +109,10 @@ export default function App() {
           </Navbar>
         </header>
 
-        {/* Pages past login redirect to / when nobody is logged in */}
+        {/* Pages past login redirect to / when nobody is logged in, and the
+            login page redirects to the dashboard when someone already is */}
         <Routes>
-          <Route path="/" element={<Login onLogin={(name) => setUserName(name)} />} />
+          <Route path="/" element={userName ? <Navigate to={landingPage} /> : <Login onLogin={login} />} />
           <Route path="/dashboard" element={userName ? <Dashboard /> : <Navigate to="/" />} />
           <Route path="/assignment/:id" element={userName ? <Assignment /> : <Navigate to="/" />} />
           <Route path="/settings" element={userName ? <Settings userName={userName} onLogout={logout} /> : <Navigate to="/" />} />
