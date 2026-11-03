@@ -176,6 +176,17 @@
   font-size: 0.85rem;
 }
 
+/* Show completed sits at the end of the row, lined up with the bottom of the
+   dropdowns */
+.filter-toggle {
+  flex: 0 0 auto;
+  padding-bottom: 0.45rem;
+}
+
+.filter-toggle .form-check {
+  margin-bottom: 0;
+}
+
 /* ---------- Assignment table ---------- */
 
 .assignment-table {

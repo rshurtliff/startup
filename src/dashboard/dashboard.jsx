@@ -18,9 +18,12 @@ export function Dashboard() {
   // or add one. It starts empty and the effect below fills it in.
   const [assignments, setAssignments] = useState([]);
 
-  // Class and Sort by dropdowns
+  // Class, Timeframe, and Sort by dropdowns, and the Show completed switch.
+  // The table starts on what's due this week, with finished work hidden.
   const [classFilter, setClassFilter] = useState('all');
+  const [timeframe, setTimeframe] = useState('week');
   const [sortBy, setSortBy] = useState('due');
+  const [showCompleted, setShowCompleted] = useState(false);
 
   // What's typed in the Add assignment form. newClass is '' until I pick one,
   // which means the first class in the list.
@@ -179,9 +182,32 @@ export function Dashboard() {
     event.preventDefault();
   }
 
-  // The rows to show. Only the ones that match the Class dropdown. This is a
-  // copy, so assignments itself stays whole.
-  const filtered = assignments.filter((a) => classFilter === 'all' || a.classKey === classFilter);
+  // The rows to show, picked by the Class and Timeframe dropdowns and the Show
+  // completed switch. This is a copy, so assignments itself stays whole.
+  // Dates are 'YYYY-MM-DD', so comparing them as text puts them in order.
+  const today = daysFromToday(0);
+  const lastDay = timeframeDays[timeframe] == null ? null : daysFromToday(timeframeDays[timeframe]);
+  const filtered = assignments.filter((a) => {
+    if (classFilter !== 'all' && a.classKey !== classFilter) {
+      return false;
+    }
+    // The one I just checked off stays on screen while the popup asks about it
+    if (a.id === loggingId) {
+      return true;
+    }
+    if (a.done && !showCompleted) {
+      return false;
+    }
+    // All semester shows everything
+    if (lastDay == null) {
+      return true;
+    }
+    if (a.due > lastDay) {
+      return false;
+    }
+    // Past due only shows if it still isn't done, so nothing late slips by
+    return a.due >= today || !a.done;
+  });
 
   // Puts the rows in order based on the Sort by dropdown. Due dates are
   // 'YYYY-MM-DD', so they sort correctly as plain text.
@@ -247,6 +273,18 @@ export function Dashboard() {
               </div>
 
               <div className="filter-field">
+                <label className="form-label" htmlFor="timeframe">
+                  Timeframe
+                </label>
+                <select className="form-select" id="timeframe" name="timeframe" value={timeframe} onChange={(e) => setTimeframe(e.target.value)}>
+                  <option value="week">This week</option>
+                  <option value="twoWeeks">Next 2 weeks</option>
+                  <option value="month">Next month</option>
+                  <option value="semester">All semester</option>
+                </select>
+              </div>
+
+              <div className="filter-field">
                 <label className="form-label" htmlFor="sort">
                   Sort by
                 </label>
@@ -255,6 +293,22 @@ export function Dashboard() {
                   <option value="class">Class</option>
                   <option value="time">Estimated time</option>
                 </select>
+              </div>
+
+              <div className="filter-toggle">
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="show-completed"
+                    checked={showCompleted}
+                    onChange={(e) => setShowCompleted(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="show-completed">
+                    Show completed
+                  </label>
+                </div>
               </div>
             </form>
 
@@ -340,7 +394,7 @@ export function Dashboard() {
                           No assignments yet. <Link to="/settings">Add your Canvas link</Link> to load them, or add one yourself.
                         </>
                       ) : (
-                        'Nothing in this class.'
+                        'Nothing to show. Try a longer timeframe or turn on Show completed.'
                       )}
                     </td>
                   </tr>
@@ -510,3 +564,12 @@ function dueAlerts(list) {
 function averageLabel(average) {
   return average == null ? 'No times yet' : `${average.toFixed(1)} hrs`;
 }
+
+// How far ahead each Timeframe option looks, in days from today. Past due work
+// that isn't done shows no matter what. null means no limit.
+const timeframeDays = {
+  week: 7,
+  twoWeeks: 14,
+  month: 30,
+  semester: null,
+};
