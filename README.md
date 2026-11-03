@@ -1,9 +1,9 @@
 # What's New (for the TA's)
-- Working on the Startup Service deliverable. Trackr has a real backend now for logins, assignment lists, class times, and settings. Reporting your time now earns a dad joke from a third party API. Still to do: deploying.
+- Completed Startup Service. Trackr has a real backend now for logins, assignment lists, class times, and settings, and it's deployed with `deployService.sh`. Reporting your time earns a dad joke from a third party API.
 
 
 # Startup Service deliverable
-https://startup.cs260hwtrackr.click/ (still the React part 2 version until I deploy the service)
+https://startup.cs260hwtrackr.click/
 
 Simon Service is deployed at https://simon.cs260hwtrackr.click/
 
@@ -19,9 +19,9 @@ The backend is its own app in `service/`, with its own `package.json`. Everythin
 
   `service/index.js` is an Express app on port 4000. It reads JSON bodies with `express.json()`, reads the login cookie with `cookieParser()`, and puts every endpoint under `/api` with `express.Router()`. `vite.config.js` sends `/api` calls from `npm run dev` over to it while I'm developing.
 
-- [ ] **10% Frontend served up using Express static middleware**
+- [x] **10% Frontend served up using Express static middleware**
 
-  `app.use(express.static('public'))` is in `service/index.js`, and anything that isn't an `/api` call gets `index.html` so React routes like `/dashboard` work on refresh. I'll check this once I deploy with `deployService.sh`.
+  `app.use(express.static('public'))` is in `service/index.js`. `deployService.sh` builds the React app into `public/` next to `index.js` on my server, so the same Express app on port 4000 hands out the website and answers the `/api` calls. Anything that isn't an `/api` call or a file gets `index.html`, so refreshing on a route like `/dashboard` still works.
 
 - [x] **10% Your frontend calls third party service endpoints**
 

@@ -13,6 +13,18 @@ Cloned simon-service and deployed it to https://simon.cs260hwtrackr.click with `
 
 # Startup Service Notes 10/28/26
 
+## Session 8: Deploying the Service (11/3/26)
+
+Trackr is live as a real service at https://startup.cs260hwtrackr.click.
+
+- `deployReact.sh` only copied the built React files. `deployService.sh` (copied from Simon Service) builds React into `public/`, copies `service/index.js` and `package.json` next to it, wipes `services/startup` on the server, copies the new build up, runs `npm install` there, and restarts it with `pm2 restart startup`.
+- On my laptop it's two programs: Vite on 5173/5174 and Express on 4000, with `vite.config.js` forwarding `/api`. On the server it's one: Caddy sends everything for `startup.` to port 4000, and my Express app answers both `/api` calls and the website through `express.static('public')`.
+- `fetch('/api/...')` has no domain in it, so the frontend code didn't change at all. The browser just asks whatever site the page came from.
+- Before this, port 4000 on the server was running a placeholder `index.js` from the course's server image, and my React deploys only swapped its `public/` folder.
+- Deploy with the new key: `./deployService.sh -k ~/.ssh/trackr -h cs260hwtrackr.click -s startup`.
+- Over plain SSH (`ssh ... 'pm2 describe startup'`), `pm2` says "command not found" because a one-off command doesn't load the login shell's setup. Log in first, then run it.
+- The live server keeps users in memory too, so every deploy or restart wipes the accounts until the database deliverable.
+
 ## Session 7: Dad Joke Reward (11/3/26)
 
 My idea, Claude built it. When I report how long an assignment took, Trackr thanks me with a random dad joke from icanhazdadjoke.com. This is the third party API the rubric wants called from the frontend.
@@ -102,7 +114,7 @@ Data lives in memory on the server for now (plain arrays and objects that reset 
 | 5 | **Shared class times** (done 10/29) | `GET /api/times` collects everyone else's hours from the assignment lists already saved on the server, grouped by assignment id. `loadClassTimes()` feeds the dashboard's Class Average and the assignment page's chart and stats, so two accounts see each other's times. Changed from the first plan of `POST`/`GET /api/times/:id`, since the lists already hold the hours and the dashboard needs every assignment at once. | Endpoints, Frontend calls |
 | 6 | **Settings and sync** (done 11/3 by Claude) | `GET` and `PUT /api/settings` for the iCal link, last sync, and reminders. `PUT /api/user/password` for Change Password and `DELETE /api/user` for Delete Account. Settings, the dashboard, and the assignment page stop using `localStorage`. `syncCanvas()` stays a hard-coded mock on the frontend. | Endpoints, Frontend calls |
 | 7 | **Third party API** (done 11/3 by Claude) | Reporting time earns a random dad joke from icanhazdadjoke.com, fetched from the frontend with `getDadJoke()` in `src/utils/jokes.js`. Shows in the dashboard's time prompt and on the assignment page after Mark It Done. Changed from the holidays or quote idea. | Third party |
-| 8 | **Deploy and wrap up** | Copy `deployService.sh` from Simon Service, delete `deployReact.sh`, deploy with `-s startup`, and check it live. README "Service deliverable" checklist and these notes. | All |
+| 8 | **Deploy and wrap up** (done 11/3) | Copied `deployService.sh` from Simon Service, removed `deployReact.sh`, and deployed with `-k ~/.ssh/trackr -s startup`. Checked the live site and every endpoint. README "Service deliverable" checklist is all checked. | All |
 
 Things to watch for:
 - Commit at the end of every session, and in the middle when it runs long. The rubric wants dozens of commits over several days.
