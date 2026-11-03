@@ -60,9 +60,13 @@ function readEvents(text) {
   return events;
 }
 
-// Same rules as parse_canvas_assignment in canvas.py: the title is everything
-// before "[", and the course is what's inside "[" up to its 3 digit number.
-// Returns null for anything that isn't a Canvas assignment.
+// Based on parse_canvas_assignment in canvas.py, with one fix. The course is
+// always the LAST bracket group, like "[C S 180-001]", and it's cut off after
+// its 3 digit number ("C S 180"). The title is everything before that. Reading
+// from the first "[" broke on titles with their own tag, like
+// "M04 Curiosity Lab [OPTIONAL] — Ask the League [C S 180-001]".
+// Returns null for anything that isn't a Canvas assignment, and for anything
+// tagged [OPTIONAL].
 function parseCanvasAssignment(event) {
   const uid = event.UID ? event.UID.value : '';
   // Canvas also puts class calendar events in the feed. Only keep assignments.
@@ -70,17 +74,22 @@ function parseCanvasAssignment(event) {
     return null;
   }
 
-  const summary = unescape(event.SUMMARY ? event.SUMMARY.value : '');
-  const titleMatch = summary.match(/(.*?)\[/);
-  const courseMatch = summary.match(/\[(.*?\d{3})/);
-  if (!titleMatch || !courseMatch || !event.DTSTART) {
+  const summary = unescape(event.SUMMARY ? event.SUMMARY.value : '').trim();
+  if (/\[optional\]/i.test(summary)) {
+    return null;
+  }
+
+  // "[...]" at the very end, with no brackets inside it
+  const lastBracket = summary.match(/^(.*)\[([^\[\]]*)\]$/);
+  const courseMatch = lastBracket ? lastBracket[2].match(/^(.*?\d{3})/) : null;
+  if (!courseMatch || !event.DTSTART) {
     return null;
   }
 
   const classCode = courseMatch[1].trim();
   return {
     id: uid,
-    title: titleMatch[1].trim(),
+    title: lastBracket[1].trim(),
     classCode: classCode,
     classKey: classCode.toLowerCase().replace(/[^a-z0-9]/g, ''),
     due: dueDate(event.DTSTART),
