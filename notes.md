@@ -30,6 +30,8 @@ Trackr reads my actual Canvas calendar now. Claude ported my Python script (`can
 - Live Alerts start with anything due today or tomorrow that isn't done.
 - Tested on my real feed too. Titles like `M04 Curiosity Lab [OPTIONAL] — Ask the League [C S 180-001]` have their own bracket tag, so reading the course from the first `[` gave a class called `OPTIONAL] — Ask the League [C S 180`. The course is now read from the last bracket group, and anything tagged `[OPTIONAL]` is skipped. My Python version had the same bug.
 - The "Nice work" time prompt is a real popup now, using React Bootstrap's `Modal` instead of a `<dialog>` sitting under the table. `show` opens it and `onHide` runs on Escape, the X, or a click outside, which all count as Skip. The assignment is only forgotten in `onExited`, after the fade-out finishes, so the title doesn't disappear halfway through the animation.
+- The dashboard has a Timeframe dropdown (This week, Next 2 weeks, Next month, All semester) and a Show completed switch. It starts on this week with finished work hidden, like the `plan_through()` default of 7 days in my Python version. Overdue work that isn't done always shows, so nothing late slips by. The one I just checked off stays on screen until the popup closes, so it doesn't vanish out from under me.
+- Dates are 'YYYY-MM-DD' text, so `a.due > lastDay` compares them correctly without turning them into Date objects.
 - Never put the iCal link in code, notes, or commits. It's a private link that shows my whole calendar to anyone who has it.
 - Tested with a fake feed served on my laptop that had the tricky cases: a folded title, an escaped comma, an 11:59 PM UTC time, and a class meeting that should be skipped.
 
