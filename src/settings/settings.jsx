@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
-import { syncCanvas } from './mockData';
-import { loadAssignments, saveAssignmentList } from '../utils/assignments';
+import { loadAssignments } from '../utils/assignments';
 import { leadTimeLabels, loadSettings, remindersFrom, saveSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { timeAgo } from '../utils/dates';
 import './settings.css';
@@ -34,6 +33,10 @@ export function Settings({ userName, onLogout }) {
   // The server's message if a password change fails
   const [passwordError, setPasswordError] = useState(null);
 
+  // While a Canvas sync is running, and the server's message if it fails
+  const [syncing, setSyncing] = useState(false);
+  const [syncError, setSyncError] = useState(null);
+
   // Which card just saved, so it can show a short "Saved" line
   const [savedMessage, setSavedMessage] = useState('');
 
@@ -57,22 +60,27 @@ export function Settings({ userName, onLogout }) {
       .then((me) => setAccountCreated(me ? me.createdAt : null));
   }, [userName]);
 
-  // Runs the fake Canvas sync and saves what it found. Any Canvas assignment
-  // that isn't on my dashboard yet gets added. Ones already there keep my
-  // checkmarks and hours.
+  // Asks the server to read my Canvas feed. The server downloads it, adds or
+  // updates every assignment in it, keeps my checkmarks and hours, and sends
+  // back the new list and what it found per class.
   async function runSync() {
-    const result = syncCanvas(icalUrl);
-
-    const list = await loadAssignments();
-    const newOnes = result.assignments.filter((a) => !list.some((mine) => mine.id === a.id));
-    const newList = [...list, ...newOnes];
-    await saveAssignmentList(newList);
-    setAssignments(newList);
-
-    const info = { syncedAt: result.syncedAt, classes: result.classes };
-    await saveSettings({ canvasSync: info });
-    setSyncInfo(info);
-    setSavedMessage('canvas');
+    setSyncError(null);
+    setSyncing(true);
+    try {
+      const response = await fetch('/api/sync', { method: 'POST' });
+      const body = await response.json();
+      if (!response.ok) {
+        setSyncError(body.msg);
+        return;
+      }
+      setAssignments(body.assignments);
+      setSyncInfo(body.canvasSync);
+      setSavedMessage('canvas');
+    } catch {
+      setSyncError("Couldn't reach the Trackr service. Try again in a minute.");
+    } finally {
+      setSyncing(false);
+    }
   }
 
   // Save and Sync. Saves the link, then syncs with it.
@@ -135,10 +143,9 @@ export function Settings({ userName, onLogout }) {
   return (
     <main className="container">
       <div className="settings-grid">
-        {/* Third party service placeholder. syncCanvas() in mockData.js returns
-            what the real sync will: once the service exists it fetches this
-            URL from Canvas, parses the iCal feed, and writes the assignments
-            it finds into the database. */}
+        {/* Save and Sync saves this link, then POST /api/sync has the server
+            download the feed from Canvas, parse it (service/canvas.js), and
+            update my assignment list. */}
         <section className="card">
           <div className="card-header">
             <h2>Canvas Calendar Link</h2>
@@ -168,12 +175,19 @@ export function Settings({ userName, onLogout }) {
                 />
               </div>
               <div className="button-row">
-                <button className="btn btn-primary" type="submit">Save and Sync</button>
-                <button className="btn btn-outline-danger" type="button" onClick={removeLink} disabled={!syncInfo}>
+                <button className="btn btn-primary" type="submit" disabled={syncing}>
+                  {syncing ? 'Syncing...' : 'Save and Sync'}
+                </button>
+                <button className="btn btn-outline-danger" type="button" onClick={removeLink} disabled={!syncInfo || syncing}>
                   Remove Link
                 </button>
               </div>
               {savedMessage === 'canvas' && <p className="save-note">Saved and synced.</p>}
+              {syncError && (
+                <div className="alert alert-danger mt-3 mb-0" role="alert">
+                  {syncError}
+                </div>
+              )}
             </form>
 
             <h3>Where to find it</h3>
@@ -232,7 +246,7 @@ export function Settings({ userName, onLogout }) {
                   : 'Nothing loaded yet.'}
               </p>
               {/* Syncs again with the saved link. Needs a link first. */}
-              <button className="btn btn-outline-primary" type="button" onClick={runSync} disabled={!syncInfo}>
+              <button className="btn btn-outline-primary" type="button" onClick={runSync} disabled={!syncInfo || syncing}>
                 Sync Now
               </button>
             </div>
