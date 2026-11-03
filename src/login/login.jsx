@@ -147,7 +147,6 @@ export function Login({ onLogin }) {
               <li>Sort by class, due date, or how much is left to do</li>
               <li>Check an assignment off and log how long it actually took</li>
               <li>See how long the assignment took everyone else before you start</li>
-              <li>Email reminders as a deadline gets close</li>
             </ul>
 
             <figure className="sketch">

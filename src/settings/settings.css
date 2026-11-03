@@ -1,7 +1,7 @@
 /* Settings view. Imported by src/settings/settings.jsx. */
 
-/* Two columns on large screens. Cards land in source order:
-   Canvas link beside sync status, reminders beside account. */
+/* Two columns on large screens. The Canvas link card is the tall one, so it
+   takes the whole left side, and sync status and account stack on the right. */
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -12,6 +12,10 @@
 @media (min-width: 992px) {
   .settings-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-grid > :first-child {
+    grid-row: span 2;
   }
 }
 

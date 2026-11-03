@@ -108,7 +108,7 @@ apiRouter.get('/times', verifyAuth, (req, res) => {
   res.send(times);
 });
 
-// GetSettings: my Canvas link, last sync, and reminder settings
+// GetSettings: my Canvas link and last sync
 apiRouter.get('/settings', verifyAuth, (req, res) => {
   res.send(req.user.settings || {});
 });

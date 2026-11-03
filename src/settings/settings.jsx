@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
 import { loadAssignments } from '../utils/assignments';
 import { classStyle } from '../utils/classes';
-import { leadTimeLabels, loadSettings, remindersFrom, saveSettings, syncInfoFrom, totalFound } from '../utils/settings';
+import { loadSettings, saveSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { timeAgo } from '../utils/dates';
 import './settings.css';
 
@@ -16,11 +16,6 @@ export function Settings({ userName, onLogout }) {
   // The last sync: when it ran and how many assignments it found per class.
   // null means it has never synced.
   const [syncInfo, setSyncInfo] = useState(null);
-
-  // The Email Reminders form
-  const [email, setEmail] = useState('');
-  const [leadTime, setLeadTime] = useState('24');
-  const [digest, setDigest] = useState(true);
 
   // The Account card: my assignments for the totals, when the account was
   // made, and the Change Password and Delete Account forms
@@ -47,10 +42,6 @@ export function Settings({ userName, onLogout }) {
       setIcalUrl(settings.icalUrl || '');
       setSyncInfo(syncInfoFrom(settings));
 
-      const reminders = remindersFrom(settings, userName);
-      setEmail(reminders.email);
-      setLeadTime(reminders.leadTime);
-      setDigest(reminders.digest);
     });
 
     loadAssignments().then((list) => setAssignments(list));
@@ -98,13 +89,6 @@ export function Settings({ userName, onLogout }) {
     setIcalUrl('');
     setSyncInfo(null);
     setSavedMessage('');
-  }
-
-  // Save Reminder Settings. The emails themselves will go out through SendGrid.
-  async function saveReminders(event) {
-    event.preventDefault();
-    await saveSettings({ reminders: { email, leadTime, digest } });
-    setSavedMessage('reminders');
   }
 
   // Change Password. The server hashes the new one with bcrypt, and login
@@ -251,70 +235,6 @@ export function Settings({ userName, onLogout }) {
                 Sync Now
               </button>
             </div>
-          </div>
-        </section>
-
-        {/* Third party service placeholder. These options control the reminder
-            emails the service will send through the SendGrid API. Saved on
-            the server with my other settings. */}
-        <section className="card">
-          <div className="card-header">
-            <h2>Email Reminders</h2>
-          </div>
-          <div className="card-body">
-            <form onSubmit={saveReminders}>
-              <div className="mb-3">
-                <label className="form-label" htmlFor="email">Send reminders to</label>
-                <input
-                  className="form-control"
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setSavedMessage('');
-                  }}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label" htmlFor="lead-time">Remind me</label>
-                <select
-                  className="form-select"
-                  id="lead-time"
-                  name="lead-time"
-                  value={leadTime}
-                  onChange={(e) => {
-                    setLeadTime(e.target.value);
-                    setSavedMessage('');
-                  }}
-                >
-                  {Object.entries(leadTimeLabels).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label} before it is due
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-check form-switch mb-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="digest"
-                  name="digest"
-                  checked={digest}
-                  onChange={(e) => {
-                    setDigest(e.target.checked);
-                    setSavedMessage('');
-                  }}
-                />
-                <label className="form-check-label" htmlFor="digest">Also send me a summary every Sunday night</label>
-              </div>
-              <button className="btn btn-primary" type="submit">Save Reminder Settings</button>
-              {savedMessage === 'reminders' && <p className="save-note">Reminder settings saved.</p>}
-            </form>
           </div>
         </section>
 

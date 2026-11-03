@@ -8,7 +8,7 @@ import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
 import { daysFromToday, formatDue, isDueSoon, timeAgo } from '../utils/dates';
 import { classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { classesFrom, classStyle, otherClass } from '../utils/classes';
-import { leadTimeLabels, loadSettings, remindersFrom, syncInfoFrom, totalFound } from '../utils/settings';
+import { loadSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { getDadJoke } from '../utils/jokes';
 import { LiveNotifier } from '../liveNotifier';
 import './dashboard.css';
@@ -50,10 +50,8 @@ export function Dashboard() {
   const [rewarded, setRewarded] = useState(false);
   const [joke, setJoke] = useState(null);
 
-  // The Canvas sync and reminder settings from the Settings page, for the
-  // Connected Services card
+  // The last Canvas sync from the Settings page, for the Connected Services card
   const [syncInfo, setSyncInfo] = useState(null);
-  const [reminders, setReminders] = useState(null);
 
   // Everyone else's logged hours from the server, for the Class Average column
   const [classTimes, setClassTimes] = useState({});
@@ -67,10 +65,7 @@ export function Dashboard() {
       setAlerts((prev) => [...prev, ...dueAlerts(list)].slice(0, 3));
     });
     loadClassTimes().then((times) => setClassTimes(times));
-    loadSettings().then((settings) => {
-      setSyncInfo(syncInfoFrom(settings));
-      setReminders(remindersFrom(settings));
-    });
+    loadSettings().then((settings) => setSyncInfo(syncInfoFrom(settings)));
   }, []);
 
   // The Live Alerts feed. Starts with anything due today or tomorrow, and each
@@ -244,7 +239,7 @@ export function Dashboard() {
     return a.due.localeCompare(b.due);
   });
 
-  // What the Connected Services card says about Canvas and SendGrid
+  // What the Connected Services card says about Canvas
   const services = [
     {
       name: 'Canvas iCal feed',
@@ -252,11 +247,6 @@ export function Dashboard() {
       status: syncInfo
         ? `last synced ${timeAgo(syncInfo.syncedAt)}, ${totalFound(syncInfo)} assignments loaded`
         : 'not connected yet, add your link in Settings',
-    },
-    {
-      name: 'SendGrid email reminders',
-      on: true,
-      status: reminders ? `on, sent ${leadTimeLabels[reminders.leadTime]} before each deadline` : '',
     },
   ];
 
