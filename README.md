@@ -1,6 +1,29 @@
 # What's New (for the TA's)
 - Completed Startup Service. Trackr has a real backend now for logins, assignment lists, class times, and settings, and it's deployed with `deployService.sh`. Reporting your time earns a dad joke from a third party API.
 - Trackr reads your real Canvas calendar now. Paste your Canvas Calendar Feed link in Settings and click Save and Sync. All the made-up sample assignments and classmates are gone.
+- Working on the DB deliverable. Accounts, assignments, and settings are moving from memory into MongoDB.
+
+
+# DB Deliverable
+https://startup.cs260hwtrackr.click/
+
+Simon DB is deployed at https://simon.cs260hwtrackr.click/ using my own `dbConfig.json`.
+
+In progress. Everything still lives in memory on the server until this is done.
+
+## Prerequisites
+- [x] Simon DB is deployed to my server with my `dbConfig.json` credentials
+- [x] GitHub link is on the home page, in the login page byline (`src/login/login.jsx`) and the footer (`src/app.jsx`)
+- [ ] Notes on what I learned are in `notes.md`, under Startup DB Notes
+
+## What I did for Each Rubric Item
+- [ ] **50% Stores application data in MongoDB**
+
+  Coming soon.
+
+- [ ] **50% Stores and retrieves credentials in MongoDB**
+
+  Coming soon.
 
 
 # Startup Service deliverable

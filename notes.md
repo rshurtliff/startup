@@ -1,3 +1,40 @@
+# Startup DB Plan 11/3/26
+
+Plan for Startup DB. I type, Claude guides one step at a time.
+
+Rubric: 50% stores application data in MongoDB, 50% stores and retrieves credentials in MongoDB. Prerequisites: Simon DB deployed with my dbConfig.json (done 11/3, https://simon.cs260hwtrackr.click), GitHub link on the home page, README notes, and enough commits over several days.
+
+The README section has to be named "DB Deliverable" with a checklist.
+
+Already done: `mongodb` is installed in `service/`, `service/dbConfig.json` has my Atlas login and is in `.gitignore`, and Atlas Network Access lets my server connect (Simon DB proved it).
+
+Right now everything lives in the `users` array in `service/index.js`: accounts, tokens, assignment lists, and settings. All of it moves to three collections in a `trackr` database:
+
+| Collection | One document per | Holds |
+|---|---|---|
+| `user` | account | `netId`, bcrypt `password`, login `token`, `createdAt` |
+| `assignment` | assignment | `netId` (whose it is) plus everything the list has now: `id`, `title`, `classCode`, `due`, `done`, `doneAt`, `myHours`, `myNote` |
+| `settings` | account | `netId`, `icalUrl`, `canvasSync` |
+
+One document per assignment, not one big list, so class times can be a real Mongo query (`find` everyone else's finished assignments) instead of a loop over every user.
+
+| # | Session | What gets built | Rubric |
+|---|---|---|---|
+| 1 | **Connect** | New `service/database.js`, like Simon DB's: build the `mongodb+srv://` address from `dbConfig.json`, open the `trackr` database and the three collections, and ping on startup so a bad password or blocked network crashes right away. `index.js` requires it. Simon DB: `service/database.js`. | Both |
+| 2 | **Credentials in Mongo** | `getUser`, `getUserByToken`, `addUser`, `updateUser`, and `clearToken` in `database.js`. Create Account, Login, Logout, `verifyAuth`, Get Me, Change Password, and Delete Account use them instead of the array. Passwords stay bcrypt hashes. Test: log in, restart the server, still logged in. Simon DB: `service/index.js`. | Credentials |
+| 3 | **Assignments in Mongo** | `getAssignments(netId)` and `saveAssignments(netId, list)`. Saving replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync merge use them. | App data |
+| 4 | **Class times from Mongo** | `getClassTimes(netId)` finds every finished assignment with hours whose `netId` isn't mine (`$ne`), and `/api/times` groups them by assignment id. Same answer as now, but from a query. | App data |
+| 5 | **Settings in Mongo** | `getSettings(netId)` and `updateSettings(netId, changes)` with `$set` and `upsert`, so the first save creates the document. Settings endpoints and sync use them. Delete Account removes my documents from all three collections. | App data |
+| 6 | **Test, deploy, wrap up** | Restart and redeploy and check everything survives. Look at the documents in the Atlas console. Delete the `users` array. Deploy with `-k ~/.ssh/trackr -s startup`. README "DB Deliverable" checklist and these notes. | All |
+
+Things to watch for:
+- Every database call is async, so the endpoints need `async` and `await`. A missing `await` hands back a promise instead of the data, and the bug can be quiet.
+- Mongo adds an `_id` to every document. Leave it out when sending assignments back (`projection: { _id: 0 }`) so the frontend's list looks the same as it does now.
+- `verifyAuth` sets `req.user` from the database now. Changing `req.user` no longer saves anything, so every change needs an explicit `updateUser` or `updateSettings` call.
+- Never print the connection URL in a log. It has the password in it. Simon DB's error message does, so I won't copy that line.
+- Never commit `dbConfig.json`. It's in `.gitignore`, and `deployService.sh` still copies it to the server.
+- Commit after every step, and spread the work over a few days.
+
 # Simon DB 11/3/26
 
 Cloned simon-db, put my `dbConfig.json` in `service/` next to `database.js`, and deployed it to https://simon.cs260hwtrackr.click with `./deployService.sh -k ~/.ssh/trackr -h cs260hwtrackr.click -s simon`. It replaced Simon Service on that subdomain.
