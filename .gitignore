@@ -5,3 +5,6 @@ simon-css/
 node_modules
 dist
 build
+
+# Database login. Never commit this.
+dbConfig.json
