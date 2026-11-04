@@ -1,3 +1,15 @@
+# Simon DB 11/3/26
+
+Cloned simon-db, put my `dbConfig.json` in `service/` next to `database.js`, and deployed it to https://simon.cs260hwtrackr.click with `./deployService.sh -k ~/.ssh/trackr -h cs260hwtrackr.click -s simon`. It replaced Simon Service on that subdomain.
+
+- `database.js` connects with `MongoClient` using `mongodb+srv://user:password@hostname` built from `dbConfig.json`, then uses database `simon` with collections `user` and `score`. Mongo makes both the first time something is inserted.
+- It pings the database when it starts. If that fails, it exits, so a bad password or blocked network shows up as a crash in `pm2 logs simon` (and a 502) right away instead of later.
+- `dbConfig.json` is in `.gitignore`, but `deployService.sh` still copies it to the server because it copies `service/*.json`. That's how the password gets to production without ever being on GitHub.
+- Atlas Network Access has to allow my server, or the deployed app can't connect. Mine does, since a test account made on the live site showed up in Atlas.
+- Users and scores survive restarts and deploys now, since they live in Atlas, not in an array in `index.js`.
+- `pm2 logs simon --lines 20 --nostream` shows the last log lines without staying open.
+- Careful: the course's error message prints the whole connection URL, which includes the password. Don't paste those logs anywhere.
+
 # Simon Service 10/28/26
 
 Cloned simon-service and deployed it to https://simon.cs260hwtrackr.click with `./deployService.sh -k ~/.ssh/production.pem -h cs260hwtrackr.click -s simon`.
