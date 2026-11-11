@@ -1,5 +1,21 @@
 # Startup DB Notes 11/10/26
 
+## Sessions 3 and 4: Assignments and Class Times in Mongo (11/10/26)
+
+Claude did these together. `/api/times` read from the temporary assignment object, so moving assignments without moving class times would have broken the averages.
+
+- Each assignment is its own document in the `assignment` collection, with my `netId` added so Mongo knows whose it is.
+- `find(filter, options)` returns a cursor, not an array. `.toArray()` reads it all in. `findOne` didn't need that because it returns one document.
+- A projection picks which fields come back. `{ projection: { _id: 0, netId: 0 } }` leaves out Mongo's `_id` and my `netId` tag, so the frontend gets the exact same list it got before the database. `{ _id: 0, id: 1, myHours: 1 }` means only those two fields.
+- Saving the list is `deleteMany({ netId })` then `insertMany(docs)`. Simpler than working out which ones changed, and the frontend always sends the whole list anyway.
+- `saveAssignments` drops any `_id` or `netId` the browser sends and adds my real `netId` last. Tested: saving an item with `netId: 'zz-s3b'` still landed under my account.
+- `({ _id, netId: ignored, ...assignment }) => ...` destructures in the arrow's parameter: it pulls `_id` and `netId` out and keeps everything else in `assignment`. `netId: ignored` renames it so it doesn't clash with the real `netId` variable.
+- `PUT /api/assignments` checks `Array.isArray(req.body)` first, so sending one object instead of a list can't wipe my list.
+- Class times are one query: `{ netId: { $ne: netId }, done: true, myHours: { $ne: null } }`. `$ne` is "not equal." `myHours: { $ne: null }` also skips documents with no `myHours` at all. The endpoint just groups the results by assignment id.
+- An index on `netId` in the assignment collection, since every lookup filters by it.
+- Delete Account now deletes my assignment documents too.
+- Tested with two accounts: the list survived a restart, B saw A's finished hours and A didn't see its own, and a real Canvas sync kept a checkmark, hours, and an added assignment through a second sync. Both accounts and all their assignments were gone from Atlas after deleting.
+
 ## Session 2: Credentials in Mongo (11/10/26)
 
 Claude did this session. Accounts and login tokens are in the `user` collection now, so logging in survives a server restart. The `users` array is gone.
@@ -48,8 +64,8 @@ One document per assignment, not one big list, so class times can be a real Mong
 |---|---|---|---|
 | 1 | **Connect** (done 11/10 by Claude) | New `service/database.js`, like Simon DB's: build the `mongodb+srv://` address from `dbConfig.json`, open the `trackr` database and the three collections, and ping on startup so a bad password or blocked network crashes right away. `index.js` requires it. Simon DB: `service/database.js`. | Both |
 | 2 | **Credentials in Mongo** (done 11/10 by Claude) | `getUser`, `getUserByToken`, `addUser`, `updateUser`, and `clearToken` in `database.js`. Create Account, Login, Logout, `verifyAuth`, Get Me, Change Password, and Delete Account use them instead of the array. Passwords stay bcrypt hashes. Test: log in, restart the server, still logged in. Simon DB: `service/index.js`. | Credentials |
-| 3 | **Assignments in Mongo** | `getAssignments(netId)` and `saveAssignments(netId, list)`. Saving replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync merge use them. | App data |
-| 4 | **Class times from Mongo** | `getClassTimes(netId)` finds every finished assignment with hours whose `netId` isn't mine (`$ne`), and `/api/times` groups them by assignment id. Same answer as now, but from a query. | App data |
+| 3 | **Assignments in Mongo** (done 11/10 by Claude) | `getAssignments(netId)` and `saveAssignments(netId, list)`. Saving replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync merge use them. | App data |
+| 4 | **Class times from Mongo** (done 11/10 with session 3) | `getClassTimes(netId)` finds every finished assignment with hours whose `netId` isn't mine (`$ne`), and `/api/times` groups them by assignment id. Same answer as now, but from a query. | App data |
 | 5 | **Settings in Mongo** | `getSettings(netId)` and `updateSettings(netId, changes)` with `$set` and `upsert`, so the first save creates the document. Settings endpoints and sync use them. Delete Account removes my documents from all three collections. | App data |
 | 6 | **Test, deploy, wrap up** | Restart and redeploy and check everything survives. Look at the documents in the Atlas console. Delete the `users` array. Deploy with `-k ~/.ssh/trackr -s startup`. README "DB Deliverable" checklist and these notes. | All |
 

@@ -1,7 +1,7 @@
 # What's New (for the TA's)
 - Completed Startup Service. Trackr has a real backend now for logins, assignment lists, class times, and settings, and it's deployed with `deployService.sh`. Reporting your time earns a dad joke from a third party API.
 - Trackr reads your real Canvas calendar now. Paste your Canvas Calendar Feed link in Settings and click Save and Sync. All the made-up sample assignments and classmates are gone.
-- Working on the DB deliverable. Accounts and logins are in MongoDB now, so they survive restarts and deploys. Assignments and settings are next.
+- Working on the DB deliverable. Accounts, logins, assignments, and class times are in MongoDB now, so they survive restarts and deploys. Settings are next.
 
 
 # DB Deliverable
@@ -9,7 +9,7 @@ https://startup.cs260hwtrackr.click/
 
 Simon DB is deployed at https://simon.cs260hwtrackr.click/ using my own `dbConfig.json`.
 
-In progress. Accounts are in MongoDB. Assignments and settings are still in memory until the next sessions.
+In progress. Accounts, assignments, and class times are in MongoDB. Settings are still in memory until the next session.
 
 ## Prerequisites
 - [x] Simon DB is deployed to my server with my `dbConfig.json` credentials
@@ -19,7 +19,9 @@ In progress. Accounts are in MongoDB. Assignments and settings are still in memo
 ## What I did for Each Rubric Item
 - [ ] **50% Stores application data in MongoDB**
 
-  Coming soon.
+  In progress. Assignments and class times are done, settings are next.
+  - **Assignments** live in the `assignment` collection, one document per assignment, tagged with the owner's `netId`. `getAssignments` in `service/database.js` reads mine with `find`, and `saveAssignments` replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync (`POST /api/sync`) use them, so checkmarks, hours, and notes survive restarts and deploys.
+  - **Class times** (`GET /api/times`) are one MongoDB query, `getClassTimes`: every finished assignment with hours that isn't mine (`netId: { $ne: ... }`, `myHours: { $ne: null }`).
 
 - [x] **50% Stores and retrieves credentials in MongoDB**
 
