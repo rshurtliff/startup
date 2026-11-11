@@ -20,6 +20,8 @@ const settingsCollection = db.collection('settings');
     // No two accounts can share a Net ID, even if two people hit Create
     // Account at the same moment. Does nothing if the index already exists.
     await userCollection.createIndexes([{ key: { netId: 1 }, unique: true }]);
+    // Every assignment lookup filters by whose it is, so index that too
+    await assignmentCollection.createIndexes([{ key: { netId: 1 } }]);
     console.log(`Connected to database at ${config.hostname}`);
   } catch (ex) {
     console.log(`Unable to connect to database because ${ex.message}`);
@@ -63,6 +65,44 @@ async function deleteUser(netId) {
   await userCollection.deleteOne({ netId: netId });
 }
 
+// ---------- Assignments (application data) ----------
+// One document per assignment, tagged with whose it is:
+//   { netId, id, title, classCode, classKey, due, done, doneAt, myHours, myNote, ... }
+
+// The frontend never sees Mongo's _id or the netId tag, so the list looks
+// exactly like it did before the database
+const hideDbFields = { projection: { _id: 0, netId: 0 } };
+
+function getAssignments(netId) {
+  return assignmentCollection.find({ netId: netId }, hideDbFields).toArray();
+}
+
+// Replaces my whole list: delete what I had, then insert the new list.
+// Anything the browser sent as _id or netId is dropped, so nobody can save
+// assignments under someone else's Net ID.
+async function saveAssignments(netId, list) {
+  await assignmentCollection.deleteMany({ netId: netId });
+  if (list.length > 0) {
+    const docs = list.map(({ _id, netId: ignored, ...assignment }) => ({ ...assignment, netId: netId }));
+    await assignmentCollection.insertMany(docs);
+  }
+}
+
+async function deleteAssignments(netId) {
+  await assignmentCollection.deleteMany({ netId: netId });
+}
+
+// Everyone else's finished assignments that have hours, for the class times.
+// $ne means "not equal": not mine, and myHours isn't null or missing.
+function getClassTimes(netId) {
+  return assignmentCollection
+    .find(
+      { netId: { $ne: netId }, done: true, myHours: { $ne: null } },
+      { projection: { _id: 0, id: 1, myHours: 1 } }
+    )
+    .toArray();
+}
+
 module.exports = {
   getUser,
   getUserByToken,
@@ -70,4 +110,8 @@ module.exports = {
   updateUser,
   clearToken,
   deleteUser,
+  getAssignments,
+  saveAssignments,
+  deleteAssignments,
+  getClassTimes,
 };

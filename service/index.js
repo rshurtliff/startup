@@ -10,9 +10,8 @@ const app = express();
 
 const authCookieName = 'token';
 
-// Accounts are in MongoDB now. Assignment lists and settings are still kept
-// in memory, by Net ID, until sessions 3 and 5 move them into MongoDB too.
-const assignmentsByNetId = {};
+// Accounts and assignments are in MongoDB now. Settings are still kept in
+// memory, by Net ID, until session 5 moves them into MongoDB too.
 const settingsByNetId = {};
 
 // The port comes from the command line when PM2 starts it on the server.
@@ -88,28 +87,28 @@ apiRouter.get('/user/me', verifyAuth, (req, res) => {
 });
 
 // GetAssignments: the logged-in user's assignment list. Empty until they save one.
-apiRouter.get('/assignments', verifyAuth, (req, res) => {
-  res.send(assignmentsByNetId[req.user.netId] || []);
+apiRouter.get('/assignments', verifyAuth, async (req, res) => {
+  res.send(await DB.getAssignments(req.user.netId));
 });
 
 // SaveAssignments: replaces the logged-in user's list with the one sent
-apiRouter.put('/assignments', verifyAuth, (req, res) => {
-  assignmentsByNetId[req.user.netId] = req.body;
+apiRouter.put('/assignments', verifyAuth, async (req, res) => {
+  if (!Array.isArray(req.body)) {
+    res.status(400).send({ msg: 'Send the whole assignment list' });
+    return;
+  }
+  await DB.saveAssignments(req.user.netId, req.body);
   res.send(req.body);
 });
 
 // GetClassTimes: everyone else's logged hours, grouped by assignment id.
 // My own hours aren't included because my page already adds them.
-apiRouter.get('/times', verifyAuth, (req, res) => {
+// The database finds the finished ones with hours; this just groups them.
+apiRouter.get('/times', verifyAuth, async (req, res) => {
   const times = {};
-  for (const [netId, list] of Object.entries(assignmentsByNetId)) {
-    if (netId === req.user.netId) continue;
-    for (const a of list) {
-      if (a.done && a.myHours != null) {
-        if (!times[a.id]) times[a.id] = [];
-        times[a.id].push(a.myHours);
-      }
-    }
+  for (const a of await DB.getClassTimes(req.user.netId)) {
+    if (!times[a.id]) times[a.id] = [];
+    times[a.id].push(a.myHours);
   }
   res.send(times);
 });
@@ -164,13 +163,14 @@ apiRouter.post('/sync', verifyAuth, async (req, res) => {
   // Canvas decides which assignments exist and what they're called. Trackr
   // keeps my checkmark, hours, and note on any I already had. Assignments I
   // added myself stay too.
-  const mine = assignmentsByNetId[netId] || [];
+  const mine = await DB.getAssignments(netId);
   const synced = fromCanvas.map((a) => {
     const old = mine.find((m) => m.id === a.id);
     return old ? { ...a, done: old.done, doneAt: old.doneAt, myHours: old.myHours, myNote: old.myNote } : { ...a, done: false };
   });
   const added = mine.filter((m) => m.id.startsWith('custom-'));
-  assignmentsByNetId[netId] = [...synced, ...added];
+  const newList = [...synced, ...added];
+  await DB.saveAssignments(netId, newList);
 
   // When it synced and how many it found per class, for the Sync Status table
   const classes = [];
@@ -186,14 +186,14 @@ apiRouter.post('/sync', verifyAuth, async (req, res) => {
   const canvasSync = { syncedAt: new Date().toISOString(), classes: classes };
   settingsByNetId[netId] = { ...settings, canvasSync: canvasSync };
 
-  res.send({ canvasSync: canvasSync, assignments: assignmentsByNetId[netId] });
+  res.send({ canvasSync: canvasSync, assignments: newList });
 });
 
 // DeleteUser: removes my account and everything saved with it, then logs me out
 apiRouter.delete('/user', verifyAuth, async (req, res) => {
   const netId = req.user.netId;
   await DB.deleteUser(netId);
-  delete assignmentsByNetId[netId];
+  await DB.deleteAssignments(netId);
   delete settingsByNetId[netId];
   res.clearCookie(authCookieName);
   res.status(204).end();
