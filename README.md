@@ -1,7 +1,7 @@
 # What's New (for the TA's)
 - Completed Startup Service. Trackr has a real backend now for logins, assignment lists, class times, and settings, and it's deployed with `deployService.sh`. Reporting your time earns a dad joke from a third party API.
 - Trackr reads your real Canvas calendar now. Paste your Canvas Calendar Feed link in Settings and click Save and Sync. All the made-up sample assignments and classmates are gone.
-- Working on the DB deliverable. Accounts, assignments, and settings are moving from memory into MongoDB.
+- Working on the DB deliverable. Accounts and logins are in MongoDB now, so they survive restarts and deploys. Assignments and settings are next.
 
 
 # DB Deliverable
@@ -9,21 +9,25 @@ https://startup.cs260hwtrackr.click/
 
 Simon DB is deployed at https://simon.cs260hwtrackr.click/ using my own `dbConfig.json`.
 
-In progress. Everything still lives in memory on the server until this is done.
+In progress. Accounts are in MongoDB. Assignments and settings are still in memory until the next sessions.
 
 ## Prerequisites
 - [x] Simon DB is deployed to my server with my `dbConfig.json` credentials
 - [x] GitHub link is on the home page, in the login page byline (`src/login/login.jsx`) and the footer (`src/app.jsx`)
-- [ ] Notes on what I learned are in `notes.md`, under Startup DB Notes
+- [x] Notes on what I learned are in `notes.md`, under Startup DB Notes
 
 ## What I did for Each Rubric Item
 - [ ] **50% Stores application data in MongoDB**
 
   Coming soon.
 
-- [ ] **50% Stores and retrieves credentials in MongoDB**
+- [x] **50% Stores and retrieves credentials in MongoDB**
 
-  Coming soon.
+  Accounts live in the `user` collection of my `trackr` database on Atlas. `service/database.js` connects using `dbConfig.json` (which is in `.gitignore`) and has the functions `index.js` calls: `getUser`, `getUserByToken`, `addUser`, `updateUser`, `clearToken`, and `deleteUser`.
+  - **Create Account** (`POST /api/auth/create`) hashes the password with bcrypt and saves `{ netId, password, token, createdAt }` with `insertOne`. A unique index on `netId` means two accounts can never share a Net ID.
+  - **Login** (`POST /api/auth/login`) finds the user with `findOne`, checks the password with `bcrypt.compare`, and saves a new login token with `updateOne`.
+  - **verifyAuth** looks up the cookie's token in MongoDB on every request that needs a login. Because tokens are saved in the database, you stay logged in when the server restarts or I redeploy.
+  - **Logout** removes the token with `$unset`, **Change Password** saves a new hash, and **Delete Account** removes the document.
 
 
 # Startup Service deliverable

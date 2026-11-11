@@ -1,5 +1,18 @@
 # Startup DB Notes 11/10/26
 
+## Session 2: Credentials in Mongo (11/10/26)
+
+Claude did this session. Accounts and login tokens are in the `user` collection now, so logging in survives a server restart. The `users` array is gone.
+
+- `database.js` has one small function per job: `getUser`, `getUserByToken`, `addUser`, `updateUser`, `clearToken`, `deleteUser`. `index.js` only calls those.
+- `findOne` returns one document or `null`. `insertOne` saves a new one. `updateOne(filter, { $set: changes })` changes just those fields. `$unset: { token: 1 }` removes the field entirely. `deleteOne` removes the document.
+- Every one of those is async, so every endpoint that uses them needed `await`. A missing `await` hands back a promise, which is always "truthy," so a check like `if (await DB.getUser(...))` would pass for a user who doesn't exist if the `await` were missing.
+- Big gotcha: `findOne({ token: undefined })` matches documents that don't have a token at all, which is every logged out user. So with no cookie, verifyAuth could have logged someone in as a random logged out user. `getUserByToken` returns `null` right away when there's no token.
+- `req.user` is a copy now. With the array, changing `user.token = ...` changed the real thing. Now nothing saves unless I call `DB.updateUser`.
+- A unique index on `netId` (`createIndexes([{ key: { netId: 1 }, unique: true }])`) makes Mongo itself refuse a second account with the same Net ID.
+- Assignments and settings were stored on the user object. Since `req.user` is a fresh copy each request, they'd have been lost, so they moved to temporary objects keyed by Net ID (`assignmentsByNetId`, `settingsByNetId`) until sessions 3 and 5.
+- Tested: create, duplicate, wrong password, new token on login, old token stops working, change password, logout, delete. Restarted the server between steps and stayed logged in. In Atlas, a logged out user has only `_id`, `netId`, `password` (a bcrypt hash), and `createdAt`.
+
 ## Session 1: Connect (11/10/26)
 
 Claude did this session. `service/database.js` connects to my Atlas cluster when the server starts. Nothing is stored there yet.
@@ -34,7 +47,7 @@ One document per assignment, not one big list, so class times can be a real Mong
 | # | Session | What gets built | Rubric |
 |---|---|---|---|
 | 1 | **Connect** (done 11/10 by Claude) | New `service/database.js`, like Simon DB's: build the `mongodb+srv://` address from `dbConfig.json`, open the `trackr` database and the three collections, and ping on startup so a bad password or blocked network crashes right away. `index.js` requires it. Simon DB: `service/database.js`. | Both |
-| 2 | **Credentials in Mongo** | `getUser`, `getUserByToken`, `addUser`, `updateUser`, and `clearToken` in `database.js`. Create Account, Login, Logout, `verifyAuth`, Get Me, Change Password, and Delete Account use them instead of the array. Passwords stay bcrypt hashes. Test: log in, restart the server, still logged in. Simon DB: `service/index.js`. | Credentials |
+| 2 | **Credentials in Mongo** (done 11/10 by Claude) | `getUser`, `getUserByToken`, `addUser`, `updateUser`, and `clearToken` in `database.js`. Create Account, Login, Logout, `verifyAuth`, Get Me, Change Password, and Delete Account use them instead of the array. Passwords stay bcrypt hashes. Test: log in, restart the server, still logged in. Simon DB: `service/index.js`. | Credentials |
 | 3 | **Assignments in Mongo** | `getAssignments(netId)` and `saveAssignments(netId, list)`. Saving replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync merge use them. | App data |
 | 4 | **Class times from Mongo** | `getClassTimes(netId)` finds every finished assignment with hours whose `netId` isn't mine (`$ne`), and `/api/times` groups them by assignment id. Same answer as now, but from a query. | App data |
 | 5 | **Settings in Mongo** | `getSettings(netId)` and `updateSettings(netId, changes)` with `$set` and `upsert`, so the first save creates the document. Settings endpoints and sync use them. Delete Account removes my documents from all three collections. | App data |
