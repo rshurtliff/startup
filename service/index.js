@@ -3,16 +3,17 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const uuid = require('uuid');
 const { getCanvasAssignments } = require('./canvas');
-// Connects to MongoDB as soon as it's loaded. Later sessions call DB.getUser()
-// and friends instead of using the users array.
+// Connects to MongoDB as soon as it's loaded. All the database code is in
+// database.js, so this file just calls DB.getUser() and friends.
 const DB = require('./database.js');
 const app = express();
 
 const authCookieName = 'token';
 
-// Users are kept in memory for now, so they go away whenever the service
-// restarts. The database deliverable replaces this.
-let users = [];
+// Accounts are in MongoDB now. Assignment lists and settings are still kept
+// in memory, by Net ID, until sessions 3 and 5 move them into MongoDB too.
+const assignmentsByNetId = {};
+const settingsByNetId = {};
 
 // The port comes from the command line when PM2 starts it on the server.
 // Startup services use 4000.
@@ -33,7 +34,7 @@ app.use(`/api`, apiRouter);
 
 // Create Account: 409 if the Net ID is taken, otherwise make the user and log them in
 apiRouter.post('/auth/create', async (req, res) => {
-  if (await findUser('netId', req.body.netId)) {
+  if (await DB.getUser(req.body.netId)) {
     res.status(409).send({ msg: 'That Net ID already has an account' });
   } else {
     const user = await createUser(req.body.netId, req.body.password);
@@ -45,11 +46,12 @@ apiRouter.post('/auth/create', async (req, res) => {
 
 // Login: check the password against the saved hash and hand out a new token
 apiRouter.post('/auth/login', async (req, res) => {
-  const user = await findUser('netId', req.body.netId);
+  const user = await DB.getUser(req.body.netId);
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
-      user.token = uuid.v4();
-      setAuthCookie(res, user.token);
+      const token = uuid.v4();
+      await DB.updateUser(user.netId, { token: token });
+      setAuthCookie(res, token);
       res.send({ netId: user.netId });
       return;
     }
@@ -59,18 +61,19 @@ apiRouter.post('/auth/login', async (req, res) => {
 
 // Logout: forget the token so the cookie stops working
 apiRouter.delete('/auth/logout', async (req, res) => {
-  const user = await findUser('token', req.cookies[authCookieName]);
+  const user = await DB.getUserByToken(req.cookies[authCookieName]);
   if (user) {
-    delete user.token;
+    await DB.clearToken(user.netId);
   }
   res.clearCookie(authCookieName);
   res.status(204).end();
 });
 
 // Middleware for endpoints that need a login. Lets the request through only
-// if the cookie's token belongs to a user, and saves that user on req.
+// if the cookie's token belongs to a user in the database, and saves that
+// user on req. req.user is a copy, so changing it doesn't save anything.
 const verifyAuth = async (req, res, next) => {
-  const user = await findUser('token', req.cookies[authCookieName]);
+  const user = await DB.getUserByToken(req.cookies[authCookieName]);
   if (user) {
     req.user = user;
     next();
@@ -86,22 +89,22 @@ apiRouter.get('/user/me', verifyAuth, (req, res) => {
 
 // GetAssignments: the logged-in user's assignment list. Empty until they save one.
 apiRouter.get('/assignments', verifyAuth, (req, res) => {
-  res.send(req.user.assignments || []);
+  res.send(assignmentsByNetId[req.user.netId] || []);
 });
 
 // SaveAssignments: replaces the logged-in user's list with the one sent
 apiRouter.put('/assignments', verifyAuth, (req, res) => {
-  req.user.assignments = req.body;
-  res.send(req.user.assignments);
+  assignmentsByNetId[req.user.netId] = req.body;
+  res.send(req.body);
 });
 
 // GetClassTimes: everyone else's logged hours, grouped by assignment id.
 // My own hours aren't included because my page already adds them.
 apiRouter.get('/times', verifyAuth, (req, res) => {
   const times = {};
-  for (const user of users) {
-    if (user === req.user) continue;
-    for (const a of user.assignments || []) {
+  for (const [netId, list] of Object.entries(assignmentsByNetId)) {
+    if (netId === req.user.netId) continue;
+    for (const a of list) {
       if (a.done && a.myHours != null) {
         if (!times[a.id]) times[a.id] = [];
         times[a.id].push(a.myHours);
@@ -113,13 +116,14 @@ apiRouter.get('/times', verifyAuth, (req, res) => {
 
 // GetSettings: my Canvas link and last sync
 apiRouter.get('/settings', verifyAuth, (req, res) => {
-  res.send(req.user.settings || {});
+  res.send(settingsByNetId[req.user.netId] || {});
 });
 
 // SaveSettings: merges in whatever was sent, so each card can save just its part
 apiRouter.put('/settings', verifyAuth, (req, res) => {
-  req.user.settings = { ...req.user.settings, ...req.body };
-  res.send(req.user.settings);
+  const netId = req.user.netId;
+  settingsByNetId[netId] = { ...settingsByNetId[netId], ...req.body };
+  res.send(settingsByNetId[netId]);
 });
 
 // ChangePassword: saves the hash of the new password. Login uses it from now on.
@@ -128,7 +132,8 @@ apiRouter.put('/user/password', verifyAuth, async (req, res) => {
     res.status(400).send({ msg: 'Password has to be at least 8 characters' });
     return;
   }
-  req.user.password = await bcrypt.hash(req.body.password, 10);
+  const passwordHash = await bcrypt.hash(req.body.password, 10);
+  await DB.updateUser(req.user.netId, { password: passwordHash });
   res.status(204).end();
 });
 
@@ -136,7 +141,9 @@ apiRouter.put('/user/password', verifyAuth, async (req, res) => {
 // updates my assignment list. This has to run here, not in the browser: Canvas
 // doesn't allow other sites to read the feed (CORS), and the link is private.
 apiRouter.post('/sync', verifyAuth, async (req, res) => {
-  const icalUrl = req.user.settings ? req.user.settings.icalUrl : '';
+  const netId = req.user.netId;
+  const settings = settingsByNetId[netId] || {};
+  const icalUrl = settings.icalUrl || '';
   if (!icalUrl) {
     res.status(400).send({ msg: 'Save your Canvas link first' });
     return;
@@ -157,13 +164,13 @@ apiRouter.post('/sync', verifyAuth, async (req, res) => {
   // Canvas decides which assignments exist and what they're called. Trackr
   // keeps my checkmark, hours, and note on any I already had. Assignments I
   // added myself stay too.
-  const mine = req.user.assignments || [];
+  const mine = assignmentsByNetId[netId] || [];
   const synced = fromCanvas.map((a) => {
     const old = mine.find((m) => m.id === a.id);
     return old ? { ...a, done: old.done, doneAt: old.doneAt, myHours: old.myHours, myNote: old.myNote } : { ...a, done: false };
   });
   const added = mine.filter((m) => m.id.startsWith('custom-'));
-  req.user.assignments = [...synced, ...added];
+  assignmentsByNetId[netId] = [...synced, ...added];
 
   // When it synced and how many it found per class, for the Sync Status table
   const classes = [];
@@ -177,14 +184,17 @@ apiRouter.post('/sync', verifyAuth, async (req, res) => {
   }
   classes.sort((a, b) => a.code.localeCompare(b.code));
   const canvasSync = { syncedAt: new Date().toISOString(), classes: classes };
-  req.user.settings = { ...req.user.settings, canvasSync: canvasSync };
+  settingsByNetId[netId] = { ...settings, canvasSync: canvasSync };
 
-  res.send({ canvasSync: canvasSync, assignments: req.user.assignments });
+  res.send({ canvasSync: canvasSync, assignments: assignmentsByNetId[netId] });
 });
 
 // DeleteUser: removes my account and everything saved with it, then logs me out
-apiRouter.delete('/user', verifyAuth, (req, res) => {
-  users = users.filter((u) => u !== req.user);
+apiRouter.delete('/user', verifyAuth, async (req, res) => {
+  const netId = req.user.netId;
+  await DB.deleteUser(netId);
+  delete assignmentsByNetId[netId];
+  delete settingsByNetId[netId];
   res.clearCookie(authCookieName);
   res.status(204).end();
 });
@@ -209,7 +219,7 @@ async function createUser(netId, password) {
     token: uuid.v4(),
     createdAt: new Date().toISOString(),
   };
-  users.push(user);
+  await DB.addUser(user);
 
   return user;
 }
@@ -227,12 +237,6 @@ function isSafeFeedUrl(text) {
   const host = url.hostname;
   const isIpAddress = /^[\d.]+$/.test(host) || host.includes(':') || host.startsWith('[');
   return url.protocol === 'https:' && host !== 'localhost' && !host.endsWith('.localhost') && !isIpAddress;
-}
-
-async function findUser(field, value) {
-  if (!value) return null;
-
-  return users.find((u) => u[field] === value);
 }
 
 // httpOnly keeps JavaScript from reading the cookie, secure means HTTPS only,
