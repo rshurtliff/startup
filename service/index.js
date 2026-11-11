@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const uuid = require('uuid');
 const { getCanvasAssignments } = require('./canvas');
+// Connects to MongoDB as soon as it's loaded. Later sessions call DB.getUser()
+// and friends instead of using the users array.
+const DB = require('./database.js');
 const app = express();
 
 const authCookieName = 'token';
