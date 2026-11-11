@@ -1,3 +1,16 @@
+# Startup DB Notes 11/10/26
+
+## Session 1: Connect (11/10/26)
+
+Claude did this session. `service/database.js` connects to my Atlas cluster when the server starts. Nothing is stored there yet.
+
+- All the database code lives in `database.js`, like Simon DB. `index.js` loads it with `const DB = require('./database.js')` and will call functions like `DB.getUser()` without knowing anything about MongoDB.
+- The connection address is `mongodb+srv://user:password@hostname`, built from `dbConfig.json` so the password is never in my code.
+- `client.db('trackr')` picks my database. It doesn't exist until the first thing is saved, and my Simon data is in a separate `simon` database on the same cluster.
+- Just requiring a file runs its top-level code. That's how the ping happens: `index.js` requires `database.js`, and the `(async function testConnection() { ... })()` at the bottom runs right then. The `()` at the end calls the function the moment it's defined.
+- If the ping fails, `process.exit(1)` stops the server. Tested with a wrong password on a copy: it printed "bad auth : authentication failed" and exited, without printing the password.
+- Simon DB's error message prints the whole `url`, which includes the password. Mine leaves it out.
+
 # Startup DB Plan 11/3/26
 
 Plan for Startup DB. I type, Claude guides one step at a time.
@@ -20,7 +33,7 @@ One document per assignment, not one big list, so class times can be a real Mong
 
 | # | Session | What gets built | Rubric |
 |---|---|---|---|
-| 1 | **Connect** | New `service/database.js`, like Simon DB's: build the `mongodb+srv://` address from `dbConfig.json`, open the `trackr` database and the three collections, and ping on startup so a bad password or blocked network crashes right away. `index.js` requires it. Simon DB: `service/database.js`. | Both |
+| 1 | **Connect** (done 11/10 by Claude) | New `service/database.js`, like Simon DB's: build the `mongodb+srv://` address from `dbConfig.json`, open the `trackr` database and the three collections, and ping on startup so a bad password or blocked network crashes right away. `index.js` requires it. Simon DB: `service/database.js`. | Both |
 | 2 | **Credentials in Mongo** | `getUser`, `getUserByToken`, `addUser`, `updateUser`, and `clearToken` in `database.js`. Create Account, Login, Logout, `verifyAuth`, Get Me, Change Password, and Delete Account use them instead of the array. Passwords stay bcrypt hashes. Test: log in, restart the server, still logged in. Simon DB: `service/index.js`. | Credentials |
 | 3 | **Assignments in Mongo** | `getAssignments(netId)` and `saveAssignments(netId, list)`. Saving replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync merge use them. | App data |
 | 4 | **Class times from Mongo** | `getClassTimes(netId)` finds every finished assignment with hours whose `netId` isn't mine (`$ne`), and `/api/times` groups them by assignment id. Same answer as now, but from a query. | App data |
