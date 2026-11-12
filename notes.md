@@ -7,7 +7,7 @@ Claude did this session. The DB version of Trackr is live.
 - The first deploy timed out. The server had frozen: it only has 416 MB of RAM and no swap, and the kernel log showed it ran out of memory twice that night. Rebooting from the EC2 console fixed it. The process it killed both times was `fwupd`, Ubuntu's firmware updater. Moving to MongoDB doesn't change memory much, since the data was tiny. The apps themselves and Ubuntu's background tools are what use it. If it freezes again, reboot it from the console.
 - While it was down I checked it wasn't someone using my old leaked key: every login was from my IP, no cron jobs, and only my `trackr` key and the course `cs260` key are allowed.
 - Tested live: made an account, saved an assignment and a setting, ran `pm2 restart startup`, and everything was still there, including my login. Then deleted it and Atlas was empty.
-- My old account was in memory, so the deploy wiped it. I made it again once, and from now on deploys keep it.
+- My old account was in memory, so the deploy wiped it. I have to make it again once, and from now on deploys keep it.
 - `deployService.sh` copies `dbConfig.json` to the server even though it isn't in git, so the server can log in to Atlas.
 
 ## Session 5: Settings in Mongo (11/11/26)
