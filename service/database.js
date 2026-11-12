@@ -22,6 +22,8 @@ const settingsCollection = db.collection('settings');
     await userCollection.createIndexes([{ key: { netId: 1 }, unique: true }]);
     // Every assignment lookup filters by whose it is, so index that too
     await assignmentCollection.createIndexes([{ key: { netId: 1 } }]);
+    // One settings document per person
+    await settingsCollection.createIndexes([{ key: { netId: 1 }, unique: true }]);
     console.log(`Connected to database at ${config.hostname}`);
   } catch (ex) {
     console.log(`Unable to connect to database because ${ex.message}`);
@@ -103,6 +105,29 @@ function getClassTimes(netId) {
     .toArray();
 }
 
+// ---------- Settings (application data) ----------
+// One document per person: { netId, icalUrl, canvasSync: { syncedAt, classes } }
+
+// My settings, or {} if I haven't saved any yet
+async function getSettings(netId) {
+  const settings = await settingsCollection.findOne({ netId: netId }, hideDbFields);
+  return settings || {};
+}
+
+// Saves just the fields sent and leaves the rest alone. upsert means "insert
+// if there's no document yet", so the first save creates it.
+async function updateSettings(netId, changes) {
+  const { _id, netId: ignored, ...fields } = changes;
+  if (Object.keys(fields).length > 0) {
+    await settingsCollection.updateOne({ netId: netId }, { $set: fields }, { upsert: true });
+  }
+  return getSettings(netId);
+}
+
+async function deleteSettings(netId) {
+  await settingsCollection.deleteOne({ netId: netId });
+}
+
 module.exports = {
   getUser,
   getUserByToken,
@@ -114,4 +139,7 @@ module.exports = {
   saveAssignments,
   deleteAssignments,
   getClassTimes,
+  getSettings,
+  updateSettings,
+  deleteSettings,
 };

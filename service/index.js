@@ -10,10 +10,6 @@ const app = express();
 
 const authCookieName = 'token';
 
-// Accounts and assignments are in MongoDB now. Settings are still kept in
-// memory, by Net ID, until session 5 moves them into MongoDB too.
-const settingsByNetId = {};
-
 // The port comes from the command line when PM2 starts it on the server.
 // Startup services use 4000.
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
@@ -114,15 +110,17 @@ apiRouter.get('/times', verifyAuth, async (req, res) => {
 });
 
 // GetSettings: my Canvas link and last sync
-apiRouter.get('/settings', verifyAuth, (req, res) => {
-  res.send(settingsByNetId[req.user.netId] || {});
+apiRouter.get('/settings', verifyAuth, async (req, res) => {
+  res.send(await DB.getSettings(req.user.netId));
 });
 
 // SaveSettings: merges in whatever was sent, so each card can save just its part
-apiRouter.put('/settings', verifyAuth, (req, res) => {
-  const netId = req.user.netId;
-  settingsByNetId[netId] = { ...settingsByNetId[netId], ...req.body };
-  res.send(settingsByNetId[netId]);
+apiRouter.put('/settings', verifyAuth, async (req, res) => {
+  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+    res.status(400).send({ msg: 'Send the settings to change' });
+    return;
+  }
+  res.send(await DB.updateSettings(req.user.netId, req.body));
 });
 
 // ChangePassword: saves the hash of the new password. Login uses it from now on.
@@ -141,7 +139,7 @@ apiRouter.put('/user/password', verifyAuth, async (req, res) => {
 // doesn't allow other sites to read the feed (CORS), and the link is private.
 apiRouter.post('/sync', verifyAuth, async (req, res) => {
   const netId = req.user.netId;
-  const settings = settingsByNetId[netId] || {};
+  const settings = await DB.getSettings(netId);
   const icalUrl = settings.icalUrl || '';
   if (!icalUrl) {
     res.status(400).send({ msg: 'Save your Canvas link first' });
@@ -184,7 +182,7 @@ apiRouter.post('/sync', verifyAuth, async (req, res) => {
   }
   classes.sort((a, b) => a.code.localeCompare(b.code));
   const canvasSync = { syncedAt: new Date().toISOString(), classes: classes };
-  settingsByNetId[netId] = { ...settings, canvasSync: canvasSync };
+  await DB.updateSettings(netId, { canvasSync: canvasSync });
 
   res.send({ canvasSync: canvasSync, assignments: newList });
 });
@@ -194,7 +192,7 @@ apiRouter.delete('/user', verifyAuth, async (req, res) => {
   const netId = req.user.netId;
   await DB.deleteUser(netId);
   await DB.deleteAssignments(netId);
-  delete settingsByNetId[netId];
+  await DB.deleteSettings(netId);
   res.clearCookie(authCookieName);
   res.status(204).end();
 });
