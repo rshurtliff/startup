@@ -1,5 +1,15 @@
 # Startup DB Notes 11/10/26
 
+## Session 6: Deploy and Wrap Up (11/11/26)
+
+Claude did this session. The DB version of Trackr is live.
+
+- The first deploy timed out. The server had frozen: it only has 416 MB of RAM and no swap, and the kernel log showed it ran out of memory twice that night. Rebooting from the EC2 console fixed it. The process it killed both times was `fwupd`, Ubuntu's firmware updater. Moving to MongoDB doesn't change memory much, since the data was tiny. The apps themselves and Ubuntu's background tools are what use it. If it freezes again, reboot it from the console.
+- While it was down I checked it wasn't someone using my old leaked key: every login was from my IP, no cron jobs, and only my `trackr` key and the course `cs260` key are allowed.
+- Tested live: made an account, saved an assignment and a setting, ran `pm2 restart startup`, and everything was still there, including my login. Then deleted it and Atlas was empty.
+- My old account was in memory, so the deploy wiped it. I made it again once, and from now on deploys keep it.
+- `deployService.sh` copies `dbConfig.json` to the server even though it isn't in git, so the server can log in to Atlas.
+
 ## Session 5: Settings in Mongo (11/11/26)
 
 Claude did this session. My Canvas link and last sync are in the `settings` collection now, so nothing Trackr saves lives in memory anymore. `settingsByNetId` is gone.
@@ -82,7 +92,7 @@ One document per assignment, not one big list, so class times can be a real Mong
 | 3 | **Assignments in Mongo** (done 11/10 by Claude) | `getAssignments(netId)` and `saveAssignments(netId, list)`. Saving replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync merge use them. | App data |
 | 4 | **Class times from Mongo** (done 11/10 with session 3) | `getClassTimes(netId)` finds every finished assignment with hours whose `netId` isn't mine (`$ne`), and `/api/times` groups them by assignment id. Same answer as now, but from a query. | App data |
 | 5 | **Settings in Mongo** (done 11/11 by Claude) | `getSettings(netId)` and `updateSettings(netId, changes)` with `$set` and `upsert`, so the first save creates the document. Settings endpoints and sync use them. Delete Account removes my documents from all three collections. | App data |
-| 6 | **Test, deploy, wrap up** | Restart and redeploy and check everything survives. Look at the documents in the Atlas console. Delete the `users` array. Deploy with `-k ~/.ssh/trackr -s startup`. README "DB Deliverable" checklist and these notes. | All |
+| 6 | **Test, deploy, wrap up** (done 11/11 by Claude) | Restart and redeploy and check everything survives. Look at the documents in the Atlas console. Delete the `users` array. Deploy with `-k ~/.ssh/trackr -s startup`. README "DB Deliverable" checklist and these notes. | All |
 
 Things to watch for:
 - Every database call is async, so the endpoints need `async` and `await`. A missing `await` hands back a promise instead of the data, and the bug can be quiet.
