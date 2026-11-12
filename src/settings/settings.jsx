@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
-import { loadAssignments } from '../utils/assignments';
+import { loadAssignments, saveAssignmentList } from '../utils/assignments';
 import { classStyle } from '../utils/classes';
 import { loadSettings, saveSettings, syncInfoFrom, totalFound } from '../utils/settings';
-import { timeAgo } from '../utils/dates';
+import { daysFromToday, timeAgo } from '../utils/dates';
 import './settings.css';
 
 export function Settings({ userName, onLogout }) {
@@ -25,6 +25,7 @@ export function Settings({ userName, onLogout }) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [confirmingCatchUp, setConfirmingCatchUp] = useState(false);
 
   // The server's message if a password change fails
   const [passwordError, setPasswordError] = useState(null);
@@ -118,6 +119,26 @@ export function Settings({ userName, onLogout }) {
     await fetch('/api/user', { method: 'DELETE' });
     onLogout();
     navigate('/');
+  }
+
+  // Everything due before today that isn't checked off. Due today doesn't
+  // count, since it might still be in progress. Dates are 'YYYY-MM-DD', so
+  // comparing them as text puts them in order.
+  const today = daysFromToday(0);
+  const pastDue = assignments.filter((a) => !a.done && a.due < today);
+
+  // Mark Past Due Done. Checks off every past due assignment at once, for
+  // catching up after the first sync. No hours are saved, so they don't
+  // change anyone's class times. doneAt is the due date, not now, so Show
+  // completed doesn't fill up with all of them as "finished this week."
+  async function markPastDueDone() {
+    const newList = assignments.map((a) =>
+      !a.done && a.due < today ? { ...a, done: true, doneAt: a.due, myHours: null, myNote: null } : a
+    );
+    setAssignments(newList);
+    setConfirmingCatchUp(false);
+    await saveAssignmentList(newList);
+    setSavedMessage('catchup');
   }
 
   // Totals for the Account card, worked out from my saved assignments
@@ -235,6 +256,46 @@ export function Settings({ userName, onLogout }) {
                 Sync Now
               </button>
             </div>
+
+            {/* Mark Past Due Done asks first, since undoing it means
+                unchecking each one by hand */}
+            <h3>Catch up</h3>
+            {confirmingCatchUp ? (
+              <div className="catchup-confirm">
+                <p>
+                  Check off {pastDue.length === 1 ? 'the 1 past due assignment' : `all ${pastDue.length} past due assignments`}? No hours
+                  are saved for them.
+                </p>
+                <div className="button-row">
+                  <button className="btn btn-primary" type="button" onClick={markPastDueDone}>
+                    Yes, check them off
+                  </button>
+                  <button className="btn btn-link" type="button" onClick={() => setConfirmingCatchUp(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="sync-footer">
+                <p>
+                  {pastDue.length === 0
+                    ? 'Nothing past due.'
+                    : `${pastDue.length} past due ${pastDue.length === 1 ? 'assignment isn’t' : 'assignments aren’t'} checked off.`}
+                </p>
+                <button
+                  className="btn btn-outline-primary"
+                  type="button"
+                  onClick={() => {
+                    setConfirmingCatchUp(true);
+                    setSavedMessage('');
+                  }}
+                  disabled={pastDue.length === 0}
+                >
+                  Mark Past Due Done
+                </button>
+              </div>
+            )}
+            {savedMessage === 'catchup' && <p className="save-note">Past due assignments checked off.</p>}
           </div>
         </section>
 

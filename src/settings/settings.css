@@ -147,6 +147,15 @@
 
 /* Change Password form and the Delete Account check open in the Account card */
 .account-form,
+/* Mark Past Due Done asks here before checking everything off */
+.catchup-confirm {
+  margin-top: 1rem;
+}
+
+.catchup-confirm p {
+  font-size: 0.9rem;
+}
+
 .delete-confirm {
   margin-bottom: 0.5rem;
 }
