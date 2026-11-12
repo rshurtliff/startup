@@ -1,5 +1,20 @@
 # Startup DB Notes 11/10/26
 
+## Session 5: Settings in Mongo (11/11/26)
+
+Claude did this session. My Canvas link and last sync are in the `settings` collection now, so nothing Trackr saves lives in memory anymore. `settingsByNetId` is gone.
+
+- One settings document per person, with a unique index on `netId` like the `user` collection.
+- `getSettings` is `findOne` with the same projection as assignments, and returns `{}` if I haven't saved anything yet, so the Settings page works for a brand new account.
+- `updateSettings` is `updateOne({ netId }, { $set: fields }, { upsert: true })`. `$set` only changes the fields sent, so saving the Canvas link doesn't erase the last sync and the sync doesn't erase the link. That's the same merge `{ ...old, ...req.body }` did before, but Mongo does it.
+- `upsert` means update, or insert if there's no document yet. Without it the first save would match nothing and quietly do nothing.
+- `$set: {}` is an error in Mongo, so an empty save skips the update and just returns what I have.
+- Same trick as assignments: `_id` and `netId` are pulled out of what the browser sends, so nobody can write to someone else's settings.
+- `PUT /api/settings` returns 400 unless the body is an object (not an array).
+- Sync reads my link with `getSettings` and saves just `{ canvasSync }` with `updateSettings`.
+- Delete Account now removes my documents from all three collections.
+- Tested: new account gets `{}`, saving the link then another field kept both, an injected `netId` was ignored, an array got 400, a real sync saved the class counts, and after a restart the link and sync were still there and Sync Now still worked. After deleting, Atlas had 0 test users, assignments, and settings.
+
 ## Sessions 3 and 4: Assignments and Class Times in Mongo (11/10/26)
 
 Claude did these together. `/api/times` read from the temporary assignment object, so moving assignments without moving class times would have broken the averages.
@@ -66,7 +81,7 @@ One document per assignment, not one big list, so class times can be a real Mong
 | 2 | **Credentials in Mongo** (done 11/10 by Claude) | `getUser`, `getUserByToken`, `addUser`, `updateUser`, and `clearToken` in `database.js`. Create Account, Login, Logout, `verifyAuth`, Get Me, Change Password, and Delete Account use them instead of the array. Passwords stay bcrypt hashes. Test: log in, restart the server, still logged in. Simon DB: `service/index.js`. | Credentials |
 | 3 | **Assignments in Mongo** (done 11/10 by Claude) | `getAssignments(netId)` and `saveAssignments(netId, list)`. Saving replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync merge use them. | App data |
 | 4 | **Class times from Mongo** (done 11/10 with session 3) | `getClassTimes(netId)` finds every finished assignment with hours whose `netId` isn't mine (`$ne`), and `/api/times` groups them by assignment id. Same answer as now, but from a query. | App data |
-| 5 | **Settings in Mongo** | `getSettings(netId)` and `updateSettings(netId, changes)` with `$set` and `upsert`, so the first save creates the document. Settings endpoints and sync use them. Delete Account removes my documents from all three collections. | App data |
+| 5 | **Settings in Mongo** (done 11/11 by Claude) | `getSettings(netId)` and `updateSettings(netId, changes)` with `$set` and `upsert`, so the first save creates the document. Settings endpoints and sync use them. Delete Account removes my documents from all three collections. | App data |
 | 6 | **Test, deploy, wrap up** | Restart and redeploy and check everything survives. Look at the documents in the Atlas console. Delete the `users` array. Deploy with `-k ~/.ssh/trackr -s startup`. README "DB Deliverable" checklist and these notes. | All |
 
 Things to watch for:
