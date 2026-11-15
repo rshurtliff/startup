@@ -1,8 +1,11 @@
-const { WebSocketServer } = require('ws');
+const { WebSocketServer, WebSocket } = require('ws');
 const DB = require('./database.js');
 
 // Same cookie the login endpoints set in index.js
 const authCookieName = 'token';
+
+// Made in peerProxy(). Up here so the send functions below can reach it.
+let socketServer = null;
 
 // Pulls one cookie out of the request's raw Cookie header, which looks like
 // "token=abc123; other=xyz". Express's cookieParser only runs on normal
@@ -25,7 +28,7 @@ function readCookie(req, name) {
 function peerProxy(httpServer) {
   // noServer means I decide when to accept a connection, in the upgrade
   // handler below, instead of ws accepting everything on its own
-  const socketServer = new WebSocketServer({ noServer: true });
+  socketServer = new WebSocketServer({ noServer: true });
 
   httpServer.on('upgrade', async (req, socket, head) => {
     // Only /ws gets a WebSocket. Anything else asking to upgrade is dropped.
@@ -80,4 +83,28 @@ function peerProxy(httpServer) {
   }, 10000);
 }
 
-module.exports = { peerProxy };
+// Sends a message to every open socket that belongs to one of these Net IDs.
+// One person can have a few sockets open (a laptop tab and a phone), so it
+// checks them all. Only the message goes out, never whose socket it is.
+function sendToUsers(netIds, message) {
+  if (!socketServer || netIds.length === 0) return;
+  const text = JSON.stringify(message);
+  socketServer.clients.forEach((ws) => {
+    if (ws.readyState === WebSocket.OPEN && netIds.includes(ws.netId)) {
+      ws.send(text);
+    }
+  });
+}
+
+// Closes every socket a user has open. Used on logout and account delete, so a
+// tab that's still open stops getting updates once the login is gone.
+function closeUserSockets(netId) {
+  if (!socketServer) return;
+  socketServer.clients.forEach((ws) => {
+    if (ws.netId === netId) {
+      ws.close();
+    }
+  });
+}
+
+module.exports = { peerProxy, sendToUsers, closeUserSockets };
