@@ -1,5 +1,20 @@
 # Startup WebSocket Notes 11/14/26
 
+## Session 2: Frontend Connects (11/14/26)
+
+Claude did this session. The browser opens a real WebSocket when I log in, and the Live pills show whether it's actually connected. The made-up classmates and their 5 second timer are gone, so Live Alerts stays empty until session 3 has the server send real updates.
+
+- `src/liveNotifier.js` is now one `LiveConnection` object shared by the whole app. Pages still call `addHandler` and `removeHandler` like before, so they barely changed.
+- The address is `${protocol}://${window.location.host}/ws`, with `wss` on https and `ws` on http. `host` includes the port, so in development it goes to Vite on 5173, which passes it to the service on 4000.
+- Browser WebSocket events: `onopen`, `onmessage` (`message.data` is the text the server sent, so `JSON.parse` it), and `onclose`. There's no `onerror` handling because a failed connection always ends in `onclose` anyway.
+- Reconnecting: if the connection closes while I still want it (`wanted` is true), it waits and tries again. The wait starts at 1 second and doubles each time, up to 30 seconds, so a server that's down doesn't get hit over and over. That's called exponential backoff. A successful connect resets it to 1 second.
+- `disconnect()` sets `wanted` to false first, so its own `close()` doesn't trigger a reconnect.
+- `App` connects in a `useEffect` that watches `userName`: logged in means connect, logged out means disconnect.
+- Status: the connection keeps `status` ('off', 'connecting', 'connected', 'reconnecting') and tells status handlers when it changes. `useLiveStatus()` in `liveIndicator.jsx` is my own React hook: it keeps the status in state and subscribes in a `useEffect`, so any component that calls it redraws when the connection changes. A custom hook is just a function starting with `use` that calls other hooks.
+- `LiveIndicator` uses it: a pulsing blue dot and "Live"/"Connected" when connected, a grey still dot and "Connecting" when not.
+- The pages' handlers now check `event.type === 'classTime'`, since the server also sends `{ type: 'connected' }`.
+- Tested in the browser: logged in and it said Connected, stopped the server and it switched to Connecting, started the server again and it went back to Connected without a refresh.
+
 ## Session 1: Backend Listens (11/14/26)
 
 Claude did this session. The service accepts WebSocket connections at `/ws`, but only from people who are logged in. It's deployed, and it works over `wss://` through Caddy with no Caddy changes.
@@ -32,7 +47,7 @@ Classmates stay anonymous. Messages never include a Net ID, just "A classmate."
 | # | Session | What gets built | Rubric |
 |---|---|---|---|
 | 1 | **Backend listens** (done 11/14 by Claude) | `npm install ws` in `service/`. New `service/peerProxy.js`, like Simon's: a `WebSocketServer` on the same HTTP server as Express (`const httpServer = app.listen(...)`), at `/ws`. Unlike Simon, it checks the login cookie on connect and refuses anyone not logged in, then remembers whose socket it is. Ping/pong every 10 seconds to drop dead connections. Add the `/ws` proxy with `ws: true` to `vite.config.js`. Test from the browser console. | Backend listens |
-| 2 | **Frontend connects** | Rewrite `src/liveNotifier.js` as a real WebSocket client: `ws://` locally, `wss://` on the server, reconnects if the connection drops, and keeps the same `addHandler`/`removeHandler` the pages already use. Connects after login and closes on logout. The Live and Connected pills show the real connection state instead of always saying connected. | Frontend connects |
+| 2 | **Frontend connects** (done 11/14 by Claude, and the fake classmates are already gone) | Rewrite `src/liveNotifier.js` as a real WebSocket client: `ws://` locally, `wss://` on the server, reconnects if the connection drops, and keeps the same `addHandler`/`removeHandler` the pages already use. Connects after login and closes on logout. The Live and Connected pills show the real connection state instead of always saying connected. | Frontend connects |
 | 3 | **Send the data** | When `PUT /api/assignments` saves, the server compares the old list to the new one. For each assignment whose hours changed, it finds everyone else who has that assignment (`getOwners` in `database.js`) and sends their sockets `{ type: 'classTime', assignmentId, classCode, title, hours }`. Assignments I added myself (`custom-`) never get sent. | Data sent |
 | 4 | **Show it** | Dashboard: the message goes into Live Alerts, and the class averages reload. Assignment page: if it's the one I'm looking at, reload `/api/times` so the chart and stats redraw, and the line under the chart says what just changed. | Displayed |
 | 5 | **No more fakes** | Delete the made-up classmates and the timer. Share classmates' notes on the assignment page (anonymous, like the hours), since that section only shows mine right now. Leave `custom-` assignments out of `/api/times` on the server too. Fix old comments that still say "placeholder" or "once the service exists." If I log in as someone else in another tab, the first tab notices and reloads instead of saving as the wrong person. | Fully functional |

@@ -22,7 +22,10 @@ In progress.
 
   `service/peerProxy.js` adds a WebSocket server (the `ws` package) to the same HTTP server Express runs on, at `/ws`. It's started at the bottom of `service/index.js` with `peerProxy(httpServer)`. Before accepting a connection it checks the login cookie against MongoDB, the same way `verifyAuth` does, so only logged in users can connect and the server knows whose connection is whose. It pings every connection every 10 seconds and closes ones that stop answering. `vite.config.js` proxies `/ws` to the service while debugging.
 
-- [ ] **20% Frontend makes WebSocket connection**
+- [x] **20% Frontend makes WebSocket connection**
+
+  `src/liveNotifier.js` opens one WebSocket to `/ws` (`wss://` on the live site) when you log in, from a `useEffect` in `src/app.jsx`, and closes it when you log out. If the connection drops it reconnects on its own, waiting a little longer after each failed try. The Live and Connected pills on the dashboard and assignment pages (`src/components/common/liveIndicator.jsx`) show the real connection state: a pulsing dot when connected, grey "Connecting" when not. The made-up classmates that used to fake live updates are gone.
+
 - [ ] **20% Data sent over WebSocket connection**
 - [ ] **20% WebSocket data displayed in the application interface**
 - [ ] **20% The application is fully functional. There are no mocks or placeholder features.**
