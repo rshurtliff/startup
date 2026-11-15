@@ -31,6 +31,17 @@
   }
 }
 
+/* Not connected: grey, and the dot stops pulsing */
+.live-indicator.live-off {
+  color: var(--text-muted);
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.live-off .live-dot {
+  background-color: var(--text-muted);
+  animation: none;
+}
+
 .ws-status {
   margin: 0.75rem 0 0;
   font-size: 0.85rem;

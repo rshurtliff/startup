@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import { ClassTag } from '../components/common/classTag';
 import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
-import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
+import { LiveIndicator, LiveNote, useLiveStatus } from '../components/common/liveIndicator';
 import { daysFromToday, formatDue, isDueSoon, timeAgo } from '../utils/dates';
 import { classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { classesFrom, classStyle, otherClass } from '../utils/classes';
@@ -71,6 +71,9 @@ export function Dashboard() {
   // The Live Alerts feed. Starts with anything due today or tomorrow, and each
   // classmate who logs time gets added to the front. Only the newest three show.
   const [alerts, setAlerts] = useState([]);
+
+  // Whether the WebSocket is connected right now, for the line under Live Alerts
+  const liveStatus = useLiveStatus();
 
   // Listens for classmates logging time while the dashboard is open, and stops
   // when I leave it. setAlerts gets a function so it always adds to the
@@ -534,7 +537,11 @@ export function Dashboard() {
             </li>
           ))}
         </ul>
-        <LiveNote>WebSocket connected. Alerts appear as they happen.</LiveNote>
+        <LiveNote>
+          {liveStatus === 'connected'
+            ? 'Connected. Alerts appear as they happen.'
+            : 'Connecting to Trackr. Alerts will appear once it connects.'}
+        </LiveNote>
       </section>
 
       <section className="card services-card">

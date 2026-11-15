@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
-import { LiveIndicator, LiveNote } from '../components/common/liveIndicator';
+import { LiveIndicator, LiveNote, useLiveStatus } from '../components/common/liveIndicator';
 import { getDadJoke } from '../utils/jokes';
 import { formatDue, timeAgo } from '../utils/dates';
 import { loadSettings, syncInfoFrom } from '../utils/settings';
@@ -92,6 +92,9 @@ export function Assignment() {
   // The last classmate who logged time on this assignment, for the line under
   // the chart. Setting it also redraws the chart, which picks up their time.
   const [lastLive, setLastLive] = useState(null);
+
+  // Whether the WebSocket is connected right now, for the line under the chart
+  const liveStatus = useLiveStatus();
 
   // Listens for classmates logging time while this page is open. The function
   // it returns is the cleanup: React runs it when I leave the page or the id
@@ -287,9 +290,11 @@ export function Assignment() {
               </ul>
 
               <LiveNote>
-                {lastLive
-                  ? `Updating live. ${lastLive.name} just logged ${lastLive.hours} hours.`
-                  : 'Updating live. Waiting for classmates to log time.'}
+                {liveStatus !== 'connected'
+                  ? 'Connecting to Trackr. The chart will update live once it connects.'
+                  : lastLive
+                    ? `Updating live. ${lastLive.name} just logged ${lastLive.hours} hours.`
+                    : 'Updating live. Waiting for classmates to log time.'}
               </LiveNote>
             </div>
           </section>
