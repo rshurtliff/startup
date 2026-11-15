@@ -10,6 +10,7 @@ import { Login } from './login/login';
 import { Dashboard } from './dashboard/dashboard';
 import { Assignment } from './assignment/assignment';
 import { Settings } from './settings/settings';
+import { LiveNotifier } from './liveNotifier';
 
 export default function App() {
   const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
@@ -36,6 +37,16 @@ export default function App() {
       // Service unreachable. Keep the name and let later calls sort it out.
     });
   }, []);
+
+  // The live connection is open whenever someone is logged in. The server only
+  // lets logged in users connect, and logging out closes it.
+  useEffect(() => {
+    if (userName) {
+      LiveNotifier.connect();
+    } else {
+      LiveNotifier.disconnect();
+    }
+  }, [userName]);
 
   function clearUser() {
     localStorage.removeItem('userName');
