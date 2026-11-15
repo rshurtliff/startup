@@ -1,3 +1,22 @@
+# Startup WebSocket Notes 11/14/26
+
+## Session 1: Backend Listens (11/14/26)
+
+Claude did this session. The service accepts WebSocket connections at `/ws`, but only from people who are logged in. It's deployed, and it works over `wss://` through Caddy with no Caddy changes.
+
+- `npm install ws` in `service/`. `ws` is the WebSocket package Simon uses.
+- `app.listen()` returns the HTTP server. `peerProxy(httpServer)` attaches the WebSocket to that same server, so `/api` and `/ws` share port 4000.
+- A WebSocket starts as a normal HTTP request with `Upgrade: websocket`. Node fires an `upgrade` event on the HTTP server for it, and Express never sees it.
+- Simon uses `new WebSocketServer({ server })`, which accepts everyone. Mine uses `{ noServer: true }` and handles `upgrade` itself, so it can check first:
+  - The path has to be `/ws`, or the connection is dropped.
+  - The `token` cookie has to belong to a user (`DB.getUserByToken`, same as `verifyAuth`). If not, it writes `401 Unauthorized` straight onto the raw socket and closes it.
+  - Then `handleUpgrade` finishes the switch and I save `ws.netId`, so later the server knows whose socket is whose.
+- The browser sends cookies with the upgrade request automatically since it's the same site. `cookieParser` doesn't run on upgrades, so `readCookie` splits the `Cookie` header by hand.
+- On connect the server sends `{ type: 'connected' }`, so I can see it working.
+- Ping/pong: every 10 seconds the server pings every socket and marks it not alive. The browser answers pings automatically, which marks it alive again. One that didn't answer since the last ping gets `terminate()`d.
+- `vite.config.js` has a `/ws` proxy with `ws: true`, so the dev server passes WebSocket upgrades to port 4000 like it does `/api`.
+- Tested locally, through Vite, and on the live site: no cookie and a bad token got 401, logged in got `{"type":"connected"}`, a wrong path got hung up on, and `/api` still worked.
+
 # Startup WebSocket Plan 11/14/26
 
 Last deliverable. After this Trackr should be ready to ship: no fake data anywhere.
@@ -12,7 +31,7 @@ Classmates stay anonymous. Messages never include a Net ID, just "A classmate."
 
 | # | Session | What gets built | Rubric |
 |---|---|---|---|
-| 1 | **Backend listens** | `npm install ws` in `service/`. New `service/peerProxy.js`, like Simon's: a `WebSocketServer` on the same HTTP server as Express (`const httpServer = app.listen(...)`), at `/ws`. Unlike Simon, it checks the login cookie on connect and refuses anyone not logged in, then remembers whose socket it is. Ping/pong every 10 seconds to drop dead connections. Add the `/ws` proxy with `ws: true` to `vite.config.js`. Test from the browser console. | Backend listens |
+| 1 | **Backend listens** (done 11/14 by Claude) | `npm install ws` in `service/`. New `service/peerProxy.js`, like Simon's: a `WebSocketServer` on the same HTTP server as Express (`const httpServer = app.listen(...)`), at `/ws`. Unlike Simon, it checks the login cookie on connect and refuses anyone not logged in, then remembers whose socket it is. Ping/pong every 10 seconds to drop dead connections. Add the `/ws` proxy with `ws: true` to `vite.config.js`. Test from the browser console. | Backend listens |
 | 2 | **Frontend connects** | Rewrite `src/liveNotifier.js` as a real WebSocket client: `ws://` locally, `wss://` on the server, reconnects if the connection drops, and keeps the same `addHandler`/`removeHandler` the pages already use. Connects after login and closes on logout. The Live and Connected pills show the real connection state instead of always saying connected. | Frontend connects |
 | 3 | **Send the data** | When `PUT /api/assignments` saves, the server compares the old list to the new one. For each assignment whose hours changed, it finds everyone else who has that assignment (`getOwners` in `database.js`) and sends their sockets `{ type: 'classTime', assignmentId, classCode, title, hours }`. Assignments I added myself (`custom-`) never get sent. | Data sent |
 | 4 | **Show it** | Dashboard: the message goes into Live Alerts, and the class averages reload. Assignment page: if it's the one I'm looking at, reload `/api/times` so the chart and stats redraw, and the line under the chart says what just changed. | Displayed |
