@@ -7,7 +7,7 @@ const { getCanvasAssignments } = require('./canvas');
 // database.js, so this file just calls DB.getUser() and friends.
 const DB = require('./database.js');
 // The WebSocket server. It shares the HTTP server at the bottom of this file.
-const { peerProxy } = require('./peerProxy.js');
+const { peerProxy, sendToUsers, closeUserSockets } = require('./peerProxy.js');
 const app = express();
 
 const authCookieName = 'token';
@@ -95,9 +95,43 @@ apiRouter.put('/assignments', verifyAuth, async (req, res) => {
     res.status(400).send({ msg: 'Send the whole assignment list' });
     return;
   }
-  await DB.saveAssignments(req.user.netId, req.body);
+  const netId = req.user.netId;
+  const oldList = await DB.getAssignments(netId);
+  await DB.saveAssignments(netId, req.body);
   res.send(req.body);
+
+  // The save is done, so the browser already has its answer. Now tell
+  // classmates about any hours that are new in this save.
+  try {
+    await sendNewHours(netId, oldList, req.body);
+  } catch (err) {
+    console.log(`Couldn't send live hours: ${err.message}`);
+  }
 });
+
+// Compares my list before and after a save. For every assignment where I just
+// logged hours (newly finished with hours, or the hours changed), it sends a
+// classTime message to everyone else who has that assignment. The message has
+// the hours but not my Net ID, so classmates stay anonymous. Assignments I
+// added myself (custom-) are only mine, so they're never sent.
+async function sendNewHours(netId, oldList, newList) {
+  for (const a of newList) {
+    if (!a || typeof a.id !== 'string' || a.id.startsWith('custom-')) continue;
+    if (!a.done || typeof a.myHours !== 'number') continue;
+
+    const old = oldList.find((o) => o.id === a.id);
+    if (old && old.done && old.myHours === a.myHours) continue;
+
+    const owners = await DB.getOwners(a.id, netId);
+    sendToUsers(owners, {
+      type: 'classTime',
+      assignmentId: a.id,
+      classCode: a.classCode,
+      title: a.title,
+      hours: a.myHours,
+    });
+  }
+}
 
 // GetClassTimes: everyone else's logged hours, grouped by assignment id.
 // My own hours aren't included because my page already adds them.
