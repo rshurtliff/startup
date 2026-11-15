@@ -1,52 +1,91 @@
-// Made-up classmates for the fake events
-const classmates = ['Kate D.', 'Tyler M.', 'Sam R.', 'Josh P.', 'Emma L.', 'Ben W.'];
+// The one WebSocket connection to the Trackr service. App connects it when I
+// log in and closes it when I log out. Pages add a handler to hear what the
+// server sends, and remove it when they go away.
+class LiveConnection {
+  socket = null;
 
-// Stands in for the WebSocket until that deliverable. Components add a handler
-// to hear about classmates logging time, and remove it when they go away.
-// Later, the events come from the server instead of a timer.
-class LiveEventNotifier {
+  // Functions that get every message the server sends
   handlers = [];
 
-  // My real Canvas assignments, so the fake classmates only log time on ones
-  // I actually have. loadAssignments() fills this in.
-  assignments = [];
+  // Functions that hear when the connection state changes, so the Live pills
+  // can show whether it's really connected
+  statusHandlers = [];
 
-  // Hours classmates logged since the app opened, by assignment id
-  liveTimes = {};
+  // 'off' (logged out), 'connecting', 'connected', or 'reconnecting'
+  status = 'off';
 
-  constructor() {
-    // Every 5 seconds a made-up classmate logs time on one of my assignments,
-    // somewhere between half an hour and 4 hours
-    setInterval(() => {
-      if (this.assignments.length === 0) {
+  // Whether I want to be connected. A close while this is true was a drop,
+  // so try again. A close after disconnect() was on purpose.
+  wanted = false;
+
+  // How long to wait before trying again. Doubles after each failed try, up
+  // to 30 seconds, so a server that's down doesn't get hammered.
+  retryDelay = 1000;
+  retryTimer = null;
+
+  connect() {
+    this.wanted = true;
+    if (!this.socket) {
+      this.open();
+    }
+  }
+
+  disconnect() {
+    this.wanted = false;
+    clearTimeout(this.retryTimer);
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+    this.setStatus('off');
+  }
+
+  open() {
+    // ws:// on localhost, wss:// on the real site, the same way http and https
+    // pair up. window.location.host includes the port, so in development this
+    // goes to Vite, which passes it to the service.
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
+    this.socket = socket;
+    if (this.status !== 'reconnecting') {
+      this.setStatus('connecting');
+    }
+
+    socket.onopen = () => {
+      this.retryDelay = 1000;
+      this.setStatus('connected');
+    };
+
+    // Every message is JSON with a type, like { type: 'connected' }
+    socket.onmessage = (message) => {
+      let event;
+      try {
+        event = JSON.parse(message.data);
+      } catch {
         return;
       }
-      const assignment = this.assignments[Math.floor(Math.random() * this.assignments.length)];
-      const hours = Math.round((0.5 + Math.random() * 3.5) * 4) / 4;
-      const name = classmates[Math.floor(Math.random() * classmates.length)];
+      this.handlers.forEach((handler) => handler(event));
+    };
 
-      if (!this.liveTimes[assignment.id]) {
-        this.liveTimes[assignment.id] = [];
+    // Also runs when the server turns the connection down, like a 401 after
+    // the login expired. Either way, wait and try again if I still want it.
+    socket.onclose = () => {
+      if (this.socket !== socket) {
+        return;
       }
-      this.liveTimes[assignment.id].push(hours);
-
-      this.broadcast({
-        name,
-        hours,
-        assignmentId: assignment.id,
-        title: assignment.title,
-        classCode: assignment.classCode,
-      });
-    }, 5000);
+      this.socket = null;
+      if (!this.wanted) {
+        return;
+      }
+      this.setStatus('reconnecting');
+      this.retryTimer = setTimeout(() => this.open(), this.retryDelay);
+      this.retryDelay = Math.min(this.retryDelay * 2, 30000);
+    };
   }
 
-  setAssignments(list) {
-    this.assignments = list;
-  }
-
-  // The live times for one assignment, or none yet
-  timesFor(id) {
-    return this.liveTimes[id] || [];
+  setStatus(status) {
+    this.status = status;
+    this.statusHandlers.forEach((handler) => handler(status));
   }
 
   addHandler(handler) {
@@ -57,10 +96,13 @@ class LiveEventNotifier {
     this.handlers = this.handlers.filter((h) => h !== handler);
   }
 
-  // Sends one event to every handler that's listening
-  broadcast(event) {
-    this.handlers.forEach((handler) => handler(event));
+  addStatusHandler(handler) {
+    this.statusHandlers.push(handler);
+  }
+
+  removeStatusHandler(handler) {
+    this.statusHandlers = this.statusHandlers.filter((h) => h !== handler);
   }
 }
 
-export const LiveNotifier = new LiveEventNotifier();
+export const LiveNotifier = new LiveConnection();

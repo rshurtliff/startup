@@ -77,6 +77,9 @@ export function Dashboard() {
   // current list, not the one from when this effect first ran.
   useEffect(() => {
     function handleLiveEvent(event) {
+      if (event.type !== 'classTime') {
+        return;
+      }
       const alert = {
         id: Date.now(),
         type: 'activity',

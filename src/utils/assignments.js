@@ -1,5 +1,3 @@
-import { LiveNotifier } from '../liveNotifier';
-
 // The assignment list is saved on the server under whoever is logged in. The
 // dashboard, the assignment page, and settings all read and write this list.
 
@@ -10,10 +8,7 @@ export async function loadAssignments() {
   if (!response.ok) {
     return [];
   }
-  const list = await response.json();
-  // The fake live classmates only log time on assignments I actually have
-  LiveNotifier.setAssignments(list.filter((a) => !isCustom(a)));
-  return list;
+  return await response.json();
 }
 
 // Replaces my whole list on the server
@@ -41,14 +36,13 @@ export function isCustom(assignment) {
   return assignment.id.startsWith('custom-');
 }
 
-// Everyone's logged hours on an assignment: real users from the server, the
-// live ones, and mine once I've finished it and saved hours. Assignments I
-// added have none.
+// Everyone's logged hours on an assignment: other students' from the server,
+// and mine once I've finished it and saved hours. Assignments I added have none.
 export function allTimesFor(assignment, classTimes = {}) {
   if (isCustom(assignment)) {
     return [];
   }
-  const times = [...(classTimes[assignment.id] || []), ...LiveNotifier.timesFor(assignment.id)];
+  const times = [...(classTimes[assignment.id] || [])];
   if (assignment.done && assignment.myHours != null) {
     times.push(assignment.myHours);
   }

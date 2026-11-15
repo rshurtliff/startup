@@ -100,7 +100,7 @@ export function Assignment() {
     setLastLive(null);
 
     function handleLiveEvent(event) {
-      if (event.assignmentId === id) {
+      if (event.type === 'classTime' && event.assignmentId === id) {
         setLastLive(event);
       }
     }
