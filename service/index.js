@@ -6,6 +6,8 @@ const { getCanvasAssignments } = require('./canvas');
 // Connects to MongoDB as soon as it's loaded. All the database code is in
 // database.js, so this file just calls DB.getUser() and friends.
 const DB = require('./database.js');
+// The WebSocket server. It shares the HTTP server at the bottom of this file.
+const { peerProxy } = require('./peerProxy.js');
 const app = express();
 
 const authCookieName = 'token';
@@ -248,6 +250,9 @@ function setAuthCookie(res, authToken) {
   });
 }
 
-app.listen(port, () => {
+// app.listen returns the HTTP server, so the WebSocket can share its port
+const httpServer = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+
+peerProxy(httpServer);
