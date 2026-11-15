@@ -1,5 +1,18 @@
 # Startup WebSocket Notes 11/14/26
 
+## Session 3: Send the Data (11/15/26)
+
+Claude did this session. When I save hours, the server sends them over the WebSocket to everyone else who has that assignment. The pages don't show it nicely yet (that's session 4), but the data really goes out.
+
+- `PUT /api/assignments` reads my list before saving it, so it can compare old and new. It answers the browser first, then sends, so a slow send never slows down my save.
+- `sendNewHours` sends for an assignment only when it's done, has a number of hours, and those hours are new: it wasn't done before, or the hours changed. Saving the same list again sends nothing. `custom-` assignments are skipped since nobody else has them.
+- `getOwners(assignmentId, exceptNetId)` in `database.js` uses `distinct('netId', ...)`, which gives back each Net ID once instead of whole documents.
+- `sendToUsers(netIds, message)` in `peerProxy.js` loops over `socketServer.clients` and sends to the ones whose `ws.netId` is in the list. One person can have more than one tab or device open, so it checks every socket. It only sends to sockets that are `OPEN`.
+- The message is `{ type: 'classTime', assignmentId, classCode, title, hours }`. No Net ID, so classmates stay anonymous.
+- `closeUserSockets(netId)` closes a user's sockets on logout and account delete, so a tab left open stops getting updates once the login is gone.
+- `socketServer` moved up to the top of `peerProxy.js` so those two functions can reach it.
+- Tested locally with three test accounts. A and B had the same assignment, C didn't. A logging 3 hours reached B and not C or A. Saving the same thing again sent nothing. Changing to 4.5 hours sent again. Hours on a custom assignment sent nothing. B logging out closed B's socket. Then I deleted all three accounts.
+
 ## Session 2: Frontend Connects (11/14/26)
 
 Claude did this session. The browser opens a real WebSocket when I log in, and the Live pills show whether it's actually connected. The made-up classmates and their 5 second timer are gone, so Live Alerts stays empty until session 3 has the server send real updates.
@@ -48,7 +61,7 @@ Classmates stay anonymous. Messages never include a Net ID, just "A classmate."
 |---|---|---|---|
 | 1 | **Backend listens** (done 11/14 by Claude) | `npm install ws` in `service/`. New `service/peerProxy.js`, like Simon's: a `WebSocketServer` on the same HTTP server as Express (`const httpServer = app.listen(...)`), at `/ws`. Unlike Simon, it checks the login cookie on connect and refuses anyone not logged in, then remembers whose socket it is. Ping/pong every 10 seconds to drop dead connections. Add the `/ws` proxy with `ws: true` to `vite.config.js`. Test from the browser console. | Backend listens |
 | 2 | **Frontend connects** (done 11/14 by Claude, and the fake classmates are already gone) | Rewrite `src/liveNotifier.js` as a real WebSocket client: `ws://` locally, `wss://` on the server, reconnects if the connection drops, and keeps the same `addHandler`/`removeHandler` the pages already use. Connects after login and closes on logout. The Live and Connected pills show the real connection state instead of always saying connected. | Frontend connects |
-| 3 | **Send the data** | When `PUT /api/assignments` saves, the server compares the old list to the new one. For each assignment whose hours changed, it finds everyone else who has that assignment (`getOwners` in `database.js`) and sends their sockets `{ type: 'classTime', assignmentId, classCode, title, hours }`. Assignments I added myself (`custom-`) never get sent. | Data sent |
+| 3 | **Send the data** (done 11/15 by Claude) | When `PUT /api/assignments` saves, the server compares the old list to the new one. For each assignment whose hours changed, it finds everyone else who has that assignment (`getOwners` in `database.js`) and sends their sockets `{ type: 'classTime', assignmentId, classCode, title, hours }`. Assignments I added myself (`custom-`) never get sent. | Data sent |
 | 4 | **Show it** | Dashboard: the message goes into Live Alerts, and the class averages reload. Assignment page: if it's the one I'm looking at, reload `/api/times` so the chart and stats redraw, and the line under the chart says what just changed. | Displayed |
 | 5 | **No more fakes** | Delete the made-up classmates and the timer. Share classmates' notes on the assignment page (anonymous, like the hours), since that section only shows mine right now. Leave `custom-` assignments out of `/api/times` on the server too. Fix old comments that still say "placeholder" or "once the service exists." If I log in as someone else in another tab, the first tab notices and reloads instead of saving as the wrong person. | Fully functional |
 | 6 | **Test, deploy, ship** | Two accounts in two windows on the live site: save hours in one and watch the other update. Check it on my phone. Deploy with `-k ~/.ssh/trackr -s startup`. Final README checklist and What's New, these notes, push, and turn in the URL. | All |

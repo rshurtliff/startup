@@ -26,7 +26,10 @@ In progress.
 
   `src/liveNotifier.js` opens one WebSocket to `/ws` (`wss://` on the live site) when you log in, from a `useEffect` in `src/app.jsx`, and closes it when you log out. If the connection drops it reconnects on its own, waiting a little longer after each failed try. The Live and Connected pills on the dashboard and assignment pages (`src/components/common/liveIndicator.jsx`) show the real connection state: a pulsing dot when connected, grey "Connecting" when not. The made-up classmates that used to fake live updates are gone.
 
-- [ ] **20% Data sent over WebSocket connection**
+- [x] **20% Data sent over WebSocket connection**
+
+  When I save hours on an assignment, `PUT /api/assignments` in `service/index.js` compares my old list to the new one (`sendNewHours`). For each assignment where the hours are new, `getOwners` in `service/database.js` finds everyone else who has that assignment, and `sendToUsers` in `service/peerProxy.js` sends their open connections `{ type: 'classTime', assignmentId, classCode, title, hours }`. It never sends my Net ID, so I stay anonymous, and assignments I added myself are never sent. Logging out closes that login's connections.
+
 - [ ] **20% WebSocket data displayed in the application interface**
 - [ ] **20% The application is fully functional. There are no mocks or placeholder features.**
 
