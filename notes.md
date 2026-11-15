@@ -1,3 +1,16 @@
+# Simon WebSocket 11/14/26
+
+Claude deployed it to https://simon.cs260hwtrackr.click with my `dbConfig.json`. Players see each other's games start and end live.
+
+- A WebSocket starts as a normal HTTP request with `Upgrade: websocket`. The server answers `101 Switching Protocols`, and from then on the same connection stays open and either side can send at any time. With `fetch`, only the browser can start a conversation.
+- `service/peerProxy.js` attaches a `WebSocketServer` from the `ws` package to the same HTTP server Express uses, so `/api` and `/ws` share port 3000 (4000 for my startup).
+- The server is just a relay: when one client sends a message, it forwards it to every other open client (`client !== socket && client.readyState === WebSocket.OPEN`).
+- Every 10 seconds the server pings each client. A client that didn't answer the last ping with a pong gets `terminate()`d, so dead connections from closed laptops don't pile up.
+- `src/play/gameNotifier.js` opens the socket with `ws://` on localhost and `wss://` on the real site, the same way `http` vs `https` works. Caddy passes the upgrade through without any config change.
+- In dev, `vite.config.js` needs a `/ws` proxy with `ws: true`, like the `/api` one.
+- Bug in the class code: `removeHandler` calls `this.handlers.filter(...)` but never saves the result, so handlers are never removed. My `liveNotifier.js` assigns it back, so it doesn't have this problem.
+- For my startup: the fake `LiveNotifier` timer gets replaced by a socket. When someone saves hours, the server sends them out and every open dashboard and assignment page updates without a refresh.
+
 # Startup DB Notes 11/10/26
 
 ## Session 6: Deploy and Wrap Up (11/11/26)
