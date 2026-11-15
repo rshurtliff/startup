@@ -61,6 +61,8 @@ apiRouter.delete('/auth/logout', async (req, res) => {
   const user = await DB.getUserByToken(req.cookies[authCookieName]);
   if (user) {
     await DB.clearToken(user.netId);
+    // Any tab still open on this login stops getting live updates
+    closeUserSockets(user.netId);
   }
   res.clearCookie(authCookieName);
   res.status(204).end();
@@ -229,6 +231,7 @@ apiRouter.delete('/user', verifyAuth, async (req, res) => {
   await DB.deleteUser(netId);
   await DB.deleteAssignments(netId);
   await DB.deleteSettings(netId);
+  closeUserSockets(netId);
   res.clearCookie(authCookieName);
   res.status(204).end();
 });
