@@ -1,7 +1,28 @@
 # What's New (for the TA's)
+- Working on the WebSocket deliverable. When a classmate logs hours on an assignment you have, you'll see it live.
 - Completed Startup Service. Trackr has a real backend now for logins, assignment lists, class times, and settings, and it's deployed with `deployService.sh`. Reporting your time earns a dad joke from a third party API.
 - Trackr reads your real Canvas calendar now. Paste your Canvas Calendar Feed link in Settings and click Save and Sync. All the made-up sample assignments and classmates are gone.
 - Completed the DB deliverable. Accounts, logins, assignments, class times, and settings are all in MongoDB now, so they survive restarts and deploys.
+
+
+# WebSocket Deliverable
+https://startup.cs260hwtrackr.click/
+
+Simon WebSocket is deployed at https://simon.cs260hwtrackr.click/
+
+In progress.
+
+## Prerequisites
+- [x] Simon WebSocket is deployed to my server
+- [x] GitHub link is on the home page, in the login page byline (`src/login/login.jsx`) and the footer (`src/app.jsx`)
+- [ ] Notes on what I learned are in `notes.md`, under Startup WebSocket Notes
+
+## What I did for Each Rubric Item
+- [ ] **20% Backend listens for WebSocket connection**
+- [ ] **20% Frontend makes WebSocket connection**
+- [ ] **20% Data sent over WebSocket connection**
+- [ ] **20% WebSocket data displayed in the application interface**
+- [ ] **20% The application is fully functional. There are no mocks or placeholder features.**
 
 
 # DB Deliverable

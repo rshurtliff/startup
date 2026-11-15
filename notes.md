@@ -1,3 +1,30 @@
+# Startup WebSocket Plan 11/14/26
+
+Last deliverable. After this Trackr should be ready to ship: no fake data anywhere.
+
+Rubric (20% each): backend listens for WebSocket connections, frontend makes a WebSocket connection, data is sent over it, the data is shown in the app, and the app is fully functional with no mocks or placeholders. Prerequisites: Simon WebSocket deployed (done 11/14, https://simon.cs260hwtrackr.click), GitHub link on the home page, README notes, and lots of commits over several days.
+
+The README section has to be named "WebSocket Deliverable" with a checklist.
+
+What the WebSocket is for: when someone saves hours on an assignment, everyone else who has that assignment and has Trackr open sees it right away. Their dashboard's Live Alerts gets "A classmate just logged 2 hours on C S 260 Startup DB," and if they're on that assignment's page, the chart and stats redraw. Right now `src/liveNotifier.js` fakes this with made-up classmates on a 5 second timer, and that has to go.
+
+Classmates stay anonymous. Messages never include a Net ID, just "A classmate."
+
+| # | Session | What gets built | Rubric |
+|---|---|---|---|
+| 1 | **Backend listens** | `npm install ws` in `service/`. New `service/peerProxy.js`, like Simon's: a `WebSocketServer` on the same HTTP server as Express (`const httpServer = app.listen(...)`), at `/ws`. Unlike Simon, it checks the login cookie on connect and refuses anyone not logged in, then remembers whose socket it is. Ping/pong every 10 seconds to drop dead connections. Add the `/ws` proxy with `ws: true` to `vite.config.js`. Test from the browser console. | Backend listens |
+| 2 | **Frontend connects** | Rewrite `src/liveNotifier.js` as a real WebSocket client: `ws://` locally, `wss://` on the server, reconnects if the connection drops, and keeps the same `addHandler`/`removeHandler` the pages already use. Connects after login and closes on logout. The Live and Connected pills show the real connection state instead of always saying connected. | Frontend connects |
+| 3 | **Send the data** | When `PUT /api/assignments` saves, the server compares the old list to the new one. For each assignment whose hours changed, it finds everyone else who has that assignment (`getOwners` in `database.js`) and sends their sockets `{ type: 'classTime', assignmentId, classCode, title, hours }`. Assignments I added myself (`custom-`) never get sent. | Data sent |
+| 4 | **Show it** | Dashboard: the message goes into Live Alerts, and the class averages reload. Assignment page: if it's the one I'm looking at, reload `/api/times` so the chart and stats redraw, and the line under the chart says what just changed. | Displayed |
+| 5 | **No more fakes** | Delete the made-up classmates and the timer. Share classmates' notes on the assignment page (anonymous, like the hours), since that section only shows mine right now. Leave `custom-` assignments out of `/api/times` on the server too. Fix old comments that still say "placeholder" or "once the service exists." If I log in as someone else in another tab, the first tab notices and reloads instead of saving as the wrong person. | Fully functional |
+| 6 | **Test, deploy, ship** | Two accounts in two windows on the live site: save hours in one and watch the other update. Check it on my phone. Deploy with `-k ~/.ssh/trackr -s startup`. Final README checklist and What's New, these notes, push, and turn in the URL. | All |
+
+Things to watch for:
+- The browser sends the login cookie with the WebSocket upgrade request, since it's the same site. That's how the server knows who connected, so no Net ID ever has to be sent over the socket.
+- Caddy already passes WebSocket upgrades through (Simon WebSocket proved it), so the server needs no config change.
+- The server has very little memory. One socket per open tab is tiny, but the ping/pong cleanup matters so closed tabs don't pile up.
+- Commit after every step, and spread the work over a few days.
+
 # Simon WebSocket 11/14/26
 
 Claude deployed it to https://simon.cs260hwtrackr.click with my `dbConfig.json`. Players see each other's games start and end live.
