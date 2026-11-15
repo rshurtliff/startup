@@ -105,6 +105,13 @@ function getClassTimes(netId) {
     .toArray();
 }
 
+// Everyone except me who has this assignment in their list, so the server
+// knows whose sockets to tell when I log hours on it. distinct gives each
+// Net ID once, even if somehow they had it twice.
+function getOwners(assignmentId, exceptNetId) {
+  return assignmentCollection.distinct('netId', { id: assignmentId, netId: { $ne: exceptNetId } });
+}
+
 // ---------- Settings (application data) ----------
 // One document per person: { netId, icalUrl, canvasSync: { syncedAt, classes } }
 
@@ -139,6 +146,7 @@ module.exports = {
   saveAssignments,
   deleteAssignments,
   getClassTimes,
+  getOwners,
   getSettings,
   updateSettings,
   deleteSettings,
