@@ -49,6 +49,23 @@ export default function App() {
     }
   }, [userName]);
 
+  // Every tab shares one login cookie. If I log out or log in as someone else
+  // in another tab, this tab would keep showing the old person's list and
+  // could save it under the new login. The browser fires a storage event in
+  // every other tab when localStorage changes, so when the saved name changes,
+  // reload and start over as whoever is logged in now.
+  useEffect(() => {
+    function handleStorage(event) {
+      if (event.key === 'userName' || event.key === null) {
+        window.location.reload();
+      }
+    }
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
   function clearUser() {
     localStorage.removeItem('userName');
     setUserName('');
