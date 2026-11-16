@@ -1,5 +1,18 @@
 # Startup WebSocket Notes 11/14/26
 
+## Session 5: No More Fakes (11/15/26)
+
+Claude did this session. Nothing in the app is made up or waiting on a later deliverable anymore.
+
+- Classmates' notes: `GET /api/notes/:id` returns everyone else's notes on one assignment as `{ hours, text }`, newest first, with no Net ID. The Notes section shows mine first, then each one as "A classmate spent 3 hours." Before this it only showed mine.
+- Notes update live. If someone only changes their note, the server sends `{ type: 'classNote', assignmentId }`. The assignment page reloads its notes on that, on `classTime`, and on reconnect. The dashboard ignores `classNote`, so editing a note doesn't make a new "logged hours" alert.
+- `sendNewHours` is now `sendLiveUpdates`, since it sends notes too.
+- `getClassTimes` and `getClassNotes` leave out `custom-` ids. Before, if two people added assignments by hand, their times could get counted together. `$not: /^custom-/` is a regular expression meaning "doesn't start with custom-."
+- `$nin: [null, '']` means "not in this list," so empty notes don't show up.
+- Fixed comments that still said "placeholder," "once the service exists," "moves to MongoDB," and "the service forgets everyone when it restarts." The dashboard's `handleSubmit` isn't a placeholder: the filter bar is a form, and it just stops Enter from reloading the page.
+- Other tabs: every tab shares one login cookie. If I logged in as someone else in tab 2, tab 1 would keep showing the old list and could save it under the new login. Now `App` listens for the `storage` event, which the browser fires in every other tab when localStorage changes. When `userName` changes, the tab reloads and starts over as whoever is logged in now.
+- Tested: B's class times left out A's custom assignment with 7 hours. A saving hours and a note sent `classTime`, changing only the note sent `classNote`, and saving the same thing sent nothing. B got A's note with no name, custom notes came back empty, and A didn't get their own note back. In the browser, B's assignment page showed A's changed note without a refresh. Logging out in a second tab sent the first tab back to the login page. Deleted both test accounts after.
+
 ## Session 4: Show It (11/15/26)
 
 Claude did this session. What the server sends now shows up on the page without a refresh.
@@ -75,7 +88,7 @@ Classmates stay anonymous. Messages never include a Net ID, just "A classmate."
 | 2 | **Frontend connects** (done 11/14 by Claude, and the fake classmates are already gone) | Rewrite `src/liveNotifier.js` as a real WebSocket client: `ws://` locally, `wss://` on the server, reconnects if the connection drops, and keeps the same `addHandler`/`removeHandler` the pages already use. Connects after login and closes on logout. The Live and Connected pills show the real connection state instead of always saying connected. | Frontend connects |
 | 3 | **Send the data** (done 11/15 by Claude) | When `PUT /api/assignments` saves, the server compares the old list to the new one. For each assignment whose hours changed, it finds everyone else who has that assignment (`getOwners` in `database.js`) and sends their sockets `{ type: 'classTime', assignmentId, classCode, title, hours }`. Assignments I added myself (`custom-`) never get sent. | Data sent |
 | 4 | **Show it** (done 11/15 by Claude) | Dashboard: the message goes into Live Alerts, and the class averages reload. Assignment page: if it's the one I'm looking at, reload `/api/times` so the chart and stats redraw, and the line under the chart says what just changed. | Displayed |
-| 5 | **No more fakes** | Delete the made-up classmates and the timer. Share classmates' notes on the assignment page (anonymous, like the hours), since that section only shows mine right now. Leave `custom-` assignments out of `/api/times` on the server too. Fix old comments that still say "placeholder" or "once the service exists." If I log in as someone else in another tab, the first tab notices and reloads instead of saving as the wrong person. | Fully functional |
+| 5 | **No more fakes** (done 11/15 by Claude) | Delete the made-up classmates and the timer. Share classmates' notes on the assignment page (anonymous, like the hours), since that section only shows mine right now. Leave `custom-` assignments out of `/api/times` on the server too. Fix old comments that still say "placeholder" or "once the service exists." If I log in as someone else in another tab, the first tab notices and reloads instead of saving as the wrong person. | Fully functional |
 | 6 | **Test, deploy, ship** | Two accounts in two windows on the live site: save hours in one and watch the other update. Check it on my phone. Deploy with `-k ~/.ssh/trackr -s startup`. Final README checklist and What's New, these notes, push, and turn in the URL. | All |
 
 Things to watch for:
