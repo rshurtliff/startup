@@ -107,6 +107,20 @@ function getClassTimes(netId) {
     .toArray();
 }
 
+// Everyone else's notes on one assignment, newest first. Only the hours and
+// the note come back, never whose it is, so notes stay anonymous like times.
+function getClassNotes(assignmentId, netId) {
+  if (assignmentId.startsWith('custom-')) {
+    return [];
+  }
+  return assignmentCollection
+    .find(
+      { id: assignmentId, netId: { $ne: netId }, done: true, myNote: { $nin: [null, ''] } },
+      { projection: { _id: 0, myHours: 1, myNote: 1 }, sort: { doneAt: -1 } }
+    )
+    .toArray();
+}
+
 // Everyone except me who has this assignment in their list, so the server
 // knows whose sockets to tell when I log hours on it. distinct gives each
 // Net ID once, even if somehow they had it twice.
@@ -148,6 +162,7 @@ module.exports = {
   saveAssignments,
   deleteAssignments,
   getClassTimes,
+  getClassNotes,
   getOwners,
   getSettings,
   updateSettings,

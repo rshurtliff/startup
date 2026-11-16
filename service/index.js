@@ -103,35 +103,44 @@ apiRouter.put('/assignments', verifyAuth, async (req, res) => {
   res.send(req.body);
 
   // The save is done, so the browser already has its answer. Now tell
-  // classmates about any hours that are new in this save.
+  // classmates about any hours or notes that are new in this save.
   try {
-    await sendNewHours(netId, oldList, req.body);
+    await sendLiveUpdates(netId, oldList, req.body);
   } catch (err) {
     console.log(`Couldn't send live hours: ${err.message}`);
   }
 });
 
-// Compares my list before and after a save. For every assignment where I just
-// logged hours (newly finished with hours, or the hours changed), it sends a
-// classTime message to everyone else who has that assignment. The message has
-// the hours but not my Net ID, so classmates stay anonymous. Assignments I
-// added myself (custom-) are only mine, so they're never sent.
-async function sendNewHours(netId, oldList, newList) {
+// Compares my list before and after a save and tells classmates who have the
+// same assignment what changed. Neither message has my Net ID, so classmates
+// stay anonymous. Assignments I added myself (custom-) are only mine, so
+// they're never sent.
+//   classTime: I just logged hours (newly finished with hours, or the hours
+//     changed). Dashboards show an alert and charts redraw.
+//   classNote: only my note changed. Assignment pages reload their notes.
+async function sendLiveUpdates(netId, oldList, newList) {
   for (const a of newList) {
     if (!a || typeof a.id !== 'string' || a.id.startsWith('custom-')) continue;
-    if (!a.done || typeof a.myHours !== 'number') continue;
+    if (!a.done) continue;
 
     const old = oldList.find((o) => o.id === a.id);
-    if (old && old.done && old.myHours === a.myHours) continue;
+    const wasDone = old && old.done;
+    const newHours = typeof a.myHours === 'number' && !(wasDone && old.myHours === a.myHours);
+    const newNote = (a.myNote || null) !== ((wasDone && old.myNote) || null);
+    if (!newHours && !newNote) continue;
 
     const owners = await DB.getOwners(a.id, netId);
-    sendToUsers(owners, {
-      type: 'classTime',
-      assignmentId: a.id,
-      classCode: a.classCode,
-      title: a.title,
-      hours: a.myHours,
-    });
+    if (newHours) {
+      sendToUsers(owners, {
+        type: 'classTime',
+        assignmentId: a.id,
+        classCode: a.classCode,
+        title: a.title,
+        hours: a.myHours,
+      });
+    } else {
+      sendToUsers(owners, { type: 'classNote', assignmentId: a.id });
+    }
   }
 }
 
@@ -145,6 +154,13 @@ apiRouter.get('/times', verifyAuth, async (req, res) => {
     times[a.id].push(a.myHours);
   }
   res.send(times);
+});
+
+// GetClassNotes: what other students wrote on one assignment, with their
+// hours but not their names
+apiRouter.get('/notes/:id', verifyAuth, async (req, res) => {
+  const notes = await DB.getClassNotes(req.params.id, req.user.netId);
+  res.send(notes.map((n) => ({ hours: n.myHours, text: n.myNote })));
 });
 
 // GetSettings: my Canvas link and last sync
