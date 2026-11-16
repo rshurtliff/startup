@@ -7,7 +7,7 @@ import { getDadJoke } from '../utils/jokes';
 import { formatDue, timeAgo } from '../utils/dates';
 import { loadSettings, syncInfoFrom } from '../utils/settings';
 import { classesFrom, classStyle } from '../utils/classes';
-import { allTimesFor, classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
+import { allTimesFor, classAverage, hoursLabel, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { LiveNotifier } from '../liveNotifier';
 import './assignment.css';
 
@@ -89,22 +89,25 @@ export function Assignment() {
     loadSettings().then((settings) => setSyncInfo(syncInfoFrom(settings)));
   }, [id]);
 
-  // The last classmate who logged time on this assignment, for the line under
-  // the chart. Setting it also redraws the chart, which picks up their time.
+  // The last time a classmate logged on this assignment while I've had it
+  // open, for the line under the chart
   const [lastLive, setLastLive] = useState(null);
 
   // Whether the WebSocket is connected right now, for the line under the chart
   const liveStatus = useLiveStatus();
 
-  // Listens for classmates logging time while this page is open. The function
-  // it returns is the cleanup: React runs it when I leave the page or the id
-  // changes, so the page stops listening.
+  // Listens for classmates logging time while this page is open. When it's
+  // this assignment, it reloads the class times from the server, which redraws
+  // the chart and the stats with the new time in them. The function it returns
+  // is the cleanup: React runs it when I leave the page or the id changes, so
+  // the page stops listening.
   useEffect(() => {
     setLastLive(null);
 
     function handleLiveEvent(event) {
       if (event.type === 'classTime' && event.assignmentId === id) {
         setLastLive(event);
+        loadClassTimes().then((times) => setClassTimes(times));
       }
     }
 
@@ -244,10 +247,9 @@ export function Assignment() {
           </div>
         </section>
 
-        {/* WebSocket placeholder. The chart below redraws on its own as other
-            students finish this assignment and log their times. Anyone with
-            this page open sees the update without refreshing. Assignments I
-            added don't have class times, so they get no chart. */}
+        {/* The chart redraws on its own when a classmate logs time on this
+            assignment, from the WebSocket handler above. Assignments I added
+            don't have class times, so they get no chart. */}
         {!isCustom(assignment) && (
           <section className="card chart-panel">
             <div className="card-header">
@@ -293,7 +295,7 @@ export function Assignment() {
                 {liveStatus !== 'connected'
                   ? 'Connecting to Trackr. The chart will update live once it connects.'
                   : lastLive
-                    ? `Updating live. ${lastLive.name} just logged ${lastLive.hours} hours.`
+                    ? `Updating live. A classmate just logged ${hoursLabel(lastLive.hours)}.`
                     : 'Updating live. Waiting for classmates to log time.'}
               </LiveNote>
             </div>
