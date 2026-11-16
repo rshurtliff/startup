@@ -59,3 +59,8 @@ export function classAverage(assignment, classTimes = {}) {
   }
   return times.reduce((sum, t) => sum + t, 0) / times.length;
 }
+
+// "1 hour", "2.5 hours". For the live messages about classmates' time.
+export function hoursLabel(hours) {
+  return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+}

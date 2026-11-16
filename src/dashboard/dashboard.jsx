@@ -6,7 +6,7 @@ import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote, useLiveStatus } from '../components/common/liveIndicator';
 import { daysFromToday, formatDue, isDueSoon, timeAgo } from '../utils/dates';
-import { classAverage, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
+import { classAverage, hoursLabel, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { classesFrom, classStyle, otherClass } from '../utils/classes';
 import { loadSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { getDadJoke } from '../utils/jokes';
@@ -76,19 +76,23 @@ export function Dashboard() {
   const liveStatus = useLiveStatus();
 
   // Listens for classmates logging time while the dashboard is open, and stops
-  // when I leave it. setAlerts gets a function so it always adds to the
-  // current list, not the one from when this effect first ran.
+  // when I leave it. The server only sends hours for assignments I have, and
+  // never says who, so the alert just says "A classmate." The class averages
+  // reload too, so the Avg column picks up the new time. setAlerts gets a
+  // function so it always adds to the current list, not the one from when this
+  // effect first ran.
   useEffect(() => {
     function handleLiveEvent(event) {
       if (event.type !== 'classTime') {
         return;
       }
       const alert = {
-        id: Date.now(),
+        id: `live-${Date.now()}-${Math.random()}`,
         type: 'activity',
-        text: `${event.name} just logged ${event.hours} hours on ${event.classCode} ${event.title}`,
+        text: `A classmate just logged ${hoursLabel(event.hours)} on ${event.classCode} ${event.title}`,
       };
       setAlerts((prev) => [alert, ...prev].slice(0, 3));
+      loadClassTimes().then((times) => setClassTimes(times));
     }
 
     LiveNotifier.addHandler(handleLiveEvent);
