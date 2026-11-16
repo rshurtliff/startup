@@ -7,7 +7,7 @@ import { getDadJoke } from '../utils/jokes';
 import { formatDue, timeAgo } from '../utils/dates';
 import { loadSettings, syncInfoFrom } from '../utils/settings';
 import { classesFrom, classStyle } from '../utils/classes';
-import { allTimesFor, classAverage, hoursLabel, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
+import { allTimesFor, classAverage, hoursLabel, isCustom, loadAssignments, loadClassNotes, loadClassTimes, saveAssignmentList } from '../utils/assignments';
 import { LiveNotifier } from '../liveNotifier';
 import './assignment.css';
 
@@ -59,6 +59,9 @@ export function Assignment() {
   // Everyone else's logged hours from the server, for the chart and stats
   const [classTimes, setClassTimes] = useState({});
 
+  // What other students wrote about this assignment, from the server
+  const [classNotes, setClassNotes] = useState([]);
+
   // What's in the Mark It Done form. saved shows a "Saved" line after Save
   // until something in the form changes again.
   const [finished, setFinished] = useState(false);
@@ -86,6 +89,7 @@ export function Assignment() {
       setLoaded(true);
     });
     loadClassTimes().then((times) => setClassTimes(times));
+    loadClassNotes(id).then((list) => setClassNotes(list));
     loadSettings().then((settings) => setSyncInfo(syncInfoFrom(settings)));
   }, [id]);
 
@@ -108,10 +112,16 @@ export function Assignment() {
       // Catch up on anything sent while I was disconnected
       if (event.type === 'connected') {
         loadClassTimes().then((times) => setClassTimes(times));
+        loadClassNotes(id).then((list) => setClassNotes(list));
       }
       if (event.type === 'classTime' && event.assignmentId === id) {
         setLastLive(event);
         loadClassTimes().then((times) => setClassTimes(times));
+        loadClassNotes(id).then((list) => setClassNotes(list));
+      }
+      // A classmate only changed their note, so just the notes reload
+      if (event.type === 'classNote' && event.assignmentId === id) {
+        loadClassNotes(id).then((list) => setClassNotes(list));
       }
     }
 
@@ -182,11 +192,14 @@ export function Assignment() {
     { label: 'Longest', value: noTimes ? 'None yet' : formatHours(Math.max(...times)) },
   ];
 
-  // Notes. Only mine for now, since the server only shares other students'
-  // hours, not their notes.
+  // Notes: mine first, then classmates'. The server never says whose a note
+  // is, so theirs all show as "A classmate."
   const notes = [];
   if (assignment.myNote) {
     notes.push({ name: 'You', hours: assignment.myHours, text: assignment.myNote });
+  }
+  for (const n of classNotes) {
+    notes.push({ name: 'A classmate', hours: n.hours, text: n.text });
   }
 
   return (
@@ -384,10 +397,11 @@ export function Assignment() {
 
             {notes.length === 0 && <p>No notes yet.</p>}
             <ul className="note-list">
-              {notes.map((note) => (
-                <li key={note.name}>
+              {notes.map((note, index) => (
+                <li key={index}>
                   <p className="note-meta">
-                    <strong>{note.name}</strong> spent {note.hours} hours.
+                    <strong>{note.name}</strong>
+                    {note.hours != null ? ` spent ${hoursLabel(note.hours)}.` : ''}
                   </p>
                   <p>{note.text}</p>
                 </li>

@@ -64,3 +64,13 @@ export function classAverage(assignment, classTimes = {}) {
 export function hoursLabel(hours) {
   return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
 }
+
+// Other students' notes on one assignment, newest first. Each is
+// { hours, text } with no name, so they show as "A classmate."
+export async function loadClassNotes(id) {
+  const response = await fetch(`/api/notes/${encodeURIComponent(id)}`);
+  if (!response.ok) {
+    return [];
+  }
+  return await response.json();
+}
