@@ -30,7 +30,10 @@ In progress.
 
   When I save hours on an assignment, `PUT /api/assignments` in `service/index.js` compares my old list to the new one (`sendNewHours`). For each assignment where the hours are new, `getOwners` in `service/database.js` finds everyone else who has that assignment, and `sendToUsers` in `service/peerProxy.js` sends their open connections `{ type: 'classTime', assignmentId, classCode, title, hours }`. It never sends my Net ID, so I stay anonymous, and assignments I added myself are never sent. Logging out closes that login's connections.
 
-- [ ] **20% WebSocket data displayed in the application interface**
+- [x] **20% WebSocket data displayed in the application interface**
+
+  On the dashboard (`src/dashboard/dashboard.jsx`), each message shows up in Live Alerts as "A classmate just logged 2 hours on C S 260 Startup WebSocket," and the Class Average column reloads so it includes the new time. On an assignment's page (`src/assignment/assignment.jsx`), if the message is for that assignment, the bar chart and the average, median, and longest stats redraw, and the line under the chart says what just changed. If the connection drops and comes back, both pages reload the class times so they catch up on anything they missed.
+
 - [ ] **20% The application is fully functional. There are no mocks or placeholder features.**
 
 
