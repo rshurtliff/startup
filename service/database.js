@@ -96,10 +96,12 @@ async function deleteAssignments(netId) {
 
 // Everyone else's finished assignments that have hours, for the class times.
 // $ne means "not equal": not mine, and myHours isn't null or missing.
+// Assignments people added themselves (ids starting with custom-) are left
+// out, since they're only that person's and nobody else is comparing.
 function getClassTimes(netId) {
   return assignmentCollection
     .find(
-      { netId: { $ne: netId }, done: true, myHours: { $ne: null } },
+      { netId: { $ne: netId }, done: true, myHours: { $ne: null }, id: { $not: /^custom-/ } },
       { projection: { _id: 0, id: 1, myHours: 1 } }
     )
     .toArray();
