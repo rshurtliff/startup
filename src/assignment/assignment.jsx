@@ -105,6 +105,10 @@ export function Assignment() {
     setLastLive(null);
 
     function handleLiveEvent(event) {
+      // Catch up on anything sent while I was disconnected
+      if (event.type === 'connected') {
+        loadClassTimes().then((times) => setClassTimes(times));
+      }
       if (event.type === 'classTime' && event.assignmentId === id) {
         setLastLive(event);
         loadClassTimes().then((times) => setClassTimes(times));

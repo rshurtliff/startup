@@ -83,6 +83,12 @@ export function Dashboard() {
   // effect first ran.
   useEffect(() => {
     function handleLiveEvent(event) {
+      // Anything sent while I was disconnected never reached me, so each time
+      // the connection comes back, reload the averages to catch up
+      if (event.type === 'connected') {
+        loadClassTimes().then((times) => setClassTimes(times));
+        return;
+      }
       if (event.type !== 'classTime') {
         return;
       }
