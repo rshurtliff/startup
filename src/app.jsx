@@ -24,9 +24,10 @@ export default function App() {
     setUserName(name);
   }
 
-  // The saved name can outlive the login. The service forgets everyone when it
-  // restarts, and the cookie can expire. So on load, ask the service who is
-  // logged in, and clear the name if the answer is nobody.
+  // The saved name can outlive the login: logging out in another browser
+  // clears the token in the database, and the cookie can expire. So on load,
+  // ask the service who is logged in, and clear the name if the answer is
+  // nobody.
   useEffect(() => {
     if (!userName) return;
     fetch('/api/user/me').then((response) => {

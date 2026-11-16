@@ -209,8 +209,7 @@ export function Settings({ userName, onLogout }) {
           </div>
         </section>
 
-        {/* The last sync is saved on the server with my other settings. It
-            moves to MongoDB with the database deliverable. */}
+        {/* The last sync is saved in MongoDB with my other settings */}
         <section className="card">
           <div className="card-header">
             <h2>Sync Status</h2>

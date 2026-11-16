@@ -194,7 +194,9 @@ export function Dashboard() {
     setRewarded(false);
   }
 
-  // Placeholder until the service exists. Keeps the forms from reloading the page.
+  // The filter bar is a form, but there's nothing to submit since the
+  // dropdowns filter as soon as they change. This keeps Enter from reloading
+  // the page.
   function handleSubmit(event) {
     event.preventDefault();
   }

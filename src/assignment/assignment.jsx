@@ -209,7 +209,7 @@ export function Assignment() {
       {/* One column for assignments I added, since the chart next to Mark It
           Done isn't there */}
       <div className={`detail-grid${isCustom(assignment) ? ' detail-grid-single' : ''}`}>
-        {/* Database placeholder. Only fields the Canvas iCal feed actually has:
+        {/* Only fields the Canvas iCal feed actually has:
             the title and course code (SUMMARY), the due date (DTSTART, usually
             a date with no time), the description, and a link back to Canvas.
             Your status and last synced come from Trackr, not Canvas. */}
@@ -319,9 +319,9 @@ export function Assignment() {
           </section>
         )}
 
-        {/* Saves to the same assignment the dashboard shows. Once the service
-            exists the hours go to the database too and get pushed over the
-            WebSocket to everyone viewing this page. */}
+        {/* Saves to the same assignment the dashboard shows, in the database.
+            The server then sends my hours or note over the WebSocket to
+            classmates who have this assignment, without my name. */}
         <section className="card">
           <div className="card-header">
             <h2>Mark It Done</h2>
