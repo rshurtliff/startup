@@ -1,5 +1,14 @@
 # Startup WebSocket Notes 11/14/26
 
+## Session 6: Ship It (11/16/26)
+
+Claude did this session. Session 5's deploy is the final version, so this was just the README and pushing.
+
+- What's New says the WebSocket deliverable is done and how to try it: two accounts in two different browsers, since tabs in one browser share a login.
+- All five rubric items in the README point to the code for each one.
+- I skipped the two-browser test on the live site. Everything was tested on localhost with two accounts (the browser as one, a script as the other), and the live site loads and turns away WebSocket connections that aren't logged in.
+- Turned in the URL: https://startup.cs260hwtrackr.click
+
 ## Session 5: No More Fakes (11/15/26)
 
 Claude did this session. Nothing in the app is made up or waiting on a later deliverable anymore.
@@ -89,7 +98,7 @@ Classmates stay anonymous. Messages never include a Net ID, just "A classmate."
 | 3 | **Send the data** (done 11/15 by Claude) | When `PUT /api/assignments` saves, the server compares the old list to the new one. For each assignment whose hours changed, it finds everyone else who has that assignment (`getOwners` in `database.js`) and sends their sockets `{ type: 'classTime', assignmentId, classCode, title, hours }`. Assignments I added myself (`custom-`) never get sent. | Data sent |
 | 4 | **Show it** (done 11/15 by Claude) | Dashboard: the message goes into Live Alerts, and the class averages reload. Assignment page: if it's the one I'm looking at, reload `/api/times` so the chart and stats redraw, and the line under the chart says what just changed. | Displayed |
 | 5 | **No more fakes** (done 11/15 by Claude) | Delete the made-up classmates and the timer. Share classmates' notes on the assignment page (anonymous, like the hours), since that section only shows mine right now. Leave `custom-` assignments out of `/api/times` on the server too. Fix old comments that still say "placeholder" or "once the service exists." If I log in as someone else in another tab, the first tab notices and reloads instead of saving as the wrong person. | Fully functional |
-| 6 | **Test, deploy, ship** | Two accounts in two windows on the live site: save hours in one and watch the other update. Check it on my phone. Deploy with `-k ~/.ssh/trackr -s startup`. Final README checklist and What's New, these notes, push, and turn in the URL. | All |
+| 6 | **Test, deploy, ship** (done 11/16 by Claude, live test skipped) | Two accounts in two windows on the live site: save hours in one and watch the other update. Check it on my phone. Deploy with `-k ~/.ssh/trackr -s startup`. Final README checklist and What's New, these notes, push, and turn in the URL. | All |
 
 Things to watch for:
 - The browser sends the login cookie with the WebSocket upgrade request, since it's the same site. That's how the server knows who connected, so no Net ID ever has to be sent over the socket.

@@ -1,5 +1,5 @@
 # What's New (for the TA's)
-- Working on the WebSocket deliverable. When a classmate logs hours on an assignment you have, you'll see it live.
+- Completed the WebSocket deliverable. When a classmate logs hours on an assignment you have, it shows up live in your dashboard's Live Alerts, and the class average, chart, and notes on that assignment update without a refresh. Classmates are always anonymous. To try it, log in as two accounts in two different browsers that both have the same assignment.
 - Completed Startup Service. Trackr has a real backend now for logins, assignment lists, class times, and settings, and it's deployed with `deployService.sh`. Reporting your time earns a dad joke from a third party API.
 - Trackr reads your real Canvas calendar now. Paste your Canvas Calendar Feed link in Settings and click Save and Sync. All the made-up sample assignments and classmates are gone.
 - Completed the DB deliverable. Accounts, logins, assignments, class times, and settings are all in MongoDB now, so they survive restarts and deploys.
@@ -9,8 +9,6 @@
 https://startup.cs260hwtrackr.click/
 
 Simon WebSocket is deployed at https://simon.cs260hwtrackr.click/
-
-In progress.
 
 ## Prerequisites
 - [x] Simon WebSocket is deployed to my server
