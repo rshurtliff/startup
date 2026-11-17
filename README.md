@@ -1,4 +1,5 @@
 # What's New (for the TA's)
+- Fixed the DB deliverable: checking off assignments and Mark Past Due Done now save on real Canvas lists. Details are under DB Deliverable.
 - Completed the WebSocket deliverable. When a classmate logs hours on an assignment you have, it shows up live in your dashboard's Live Alerts, and the class average, chart, and notes on that assignment update without a refresh. Classmates are always anonymous. To try it, log in as two accounts in two different browsers that both have the same assignment.
 - Completed Startup Service. Trackr has a real backend now for logins, assignment lists, class times, and settings, and it's deployed with `deployService.sh`. Reporting your time earns a dad joke from a third party API.
 - Trackr reads your real Canvas calendar now. Paste your Canvas Calendar Feed link in Settings and click Save and Sync. All the made-up sample assignments and classmates are gone.
@@ -26,7 +27,7 @@ Simon WebSocket is deployed at https://simon.cs260hwtrackr.click/
 
 - [x] **20% Data sent over WebSocket connection**
 
-  When I save hours on an assignment, `PUT /api/assignments` in `service/index.js` compares my old list to the new one (`sendNewHours`). For each assignment where the hours are new, `getOwners` in `service/database.js` finds everyone else who has that assignment, and `sendToUsers` in `service/peerProxy.js` sends their open connections `{ type: 'classTime', assignmentId, classCode, title, hours }`. If only my note changed, it sends `{ type: 'classNote', assignmentId }` instead. It never sends my Net ID, so I stay anonymous, and assignments I added myself are never sent. Logging out closes that login's connections.
+  When I save hours on an assignment, `PATCH /api/assignments` in `service/index.js` compares what I had to what changed (`sendLiveUpdates`). For each assignment where the hours are new, `getOwners` in `service/database.js` finds everyone else who has that assignment, and `sendToUsers` in `service/peerProxy.js` sends their open connections `{ type: 'classTime', assignmentId, classCode, title, hours }`. If only my note changed, it sends `{ type: 'classNote', assignmentId }` instead. It never sends my Net ID, so I stay anonymous, and assignments I added myself are never sent. Logging out closes that login's connections.
 
 - [x] **20% WebSocket data displayed in the application interface**
 
@@ -54,7 +55,8 @@ Everything Trackr saves is in MongoDB Atlas, in a `trackr` database with three c
 - [x] **50% Stores application data in MongoDB**
 
   Nothing Trackr saves is kept in memory anymore.
-  - **Assignments** live in the `assignment` collection, one document per assignment, tagged with the owner's `netId`. `getAssignments` in `service/database.js` reads mine with `find`, and `saveAssignments` replaces my list with `deleteMany` then `insertMany`. `GET`/`PUT /api/assignments` and the Canvas sync (`POST /api/sync`) use them, so checkmarks, hours, and notes survive restarts and deploys.
+  - **Assignments** live in the `assignment` collection, one document per assignment, tagged with the owner's `netId`. `getAssignments` in `service/database.js` reads mine with `find`. Checking one off, logging hours, adding one, and Mark Past Due Done all go through `PATCH /api/assignments`, which sends only the changed fields, and `updateAssignments` saves them with `bulkWrite` (`updateOne` with `$set` and `upsert` for each). Deleting one I added is `DELETE /api/assignments/:id`. The Canvas sync (`POST /api/sync`) replaces the list with `saveAssignments` on the server. Checkmarks, hours, and notes survive leaving the page, restarts, and deploys.
+  - **Fixed after grading (11/16):** checkmarks and Mark Past Due Done weren't saving on real Canvas lists. The browser sent my whole list on every save, and with Canvas descriptions that's 200 to 450 KB, over Express's 100 KB limit for JSON bodies, so the server turned every save down. The page didn't check, so it looked saved until you came back. My test accounts had small lists, so I never saw it. Now only the changes are sent, the server logs errors, and the pages say so if a save fails.
   - **Class times** (`GET /api/times`) are one MongoDB query, `getClassTimes`: every finished assignment with hours that isn't mine (`netId: { $ne: ... }`, `myHours: { $ne: null }`).
   - **Settings** (my Canvas link and last sync) live in the `settings` collection, one document per person. `getSettings` reads it with `findOne`, and `updateSettings` saves just the fields sent with `$set` and `upsert`, so the first save creates the document. `GET`/`PUT /api/settings` and the sync use them.
   - **Delete Account** removes my documents from all three collections.

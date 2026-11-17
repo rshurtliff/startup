@@ -1,3 +1,18 @@
+# Startup DB Fix 11/16/26
+
+The TA found that checking off an assignment and Mark Past Due Done didn't save: leave the dashboard and come back and it's not done. Claude found and fixed it.
+
+- The cause: every save sent my whole assignment list to `PUT /api/assignments`. A real Canvas list with descriptions is 200 to 450 KB. `express.json()` only takes 100 KB by default, so every save got `PayloadTooLargeError` and nothing was saved. Syncing worked because the server saves the list itself, with no big request.
+- Why I never saw it: my test accounts only had a few assignments. The TA's list was a real one.
+- Why it looked saved: the page updated the screen right away and never checked the response. The error handler also hid it by calling it a 500 and not logging anything.
+- The fix: `PATCH /api/assignments` takes just the changes, like `[{ id, done: true, doneAt }]`. `updateAssignments` in `database.js` saves them with `bulkWrite`, one `updateOne` with `$set` and `upsert: true` for each, all in one trip to Mongo. Mark Past Due Done on 99 assignments is about 10 KB now instead of 450.
+- Deleting one I added is `DELETE /api/assignments/:id`, and only `custom-` ids can be deleted.
+- Checking one off only sends `done` and `doneAt`, not `myHours`. Otherwise if the check and the hours from the time prompt arrived out of order, the check could wipe out the hours.
+- If a save fails, the dashboard reloads my list from the server so it shows what's really saved, and the assignment page and Mark Past Due Done say "Couldn't save that."
+- The error handler logs every error with `console.log`, so it shows in PM2's log, and keeps the real status (413 instead of 500).
+- Lesson: test with real sized data, and always check `response.ok`.
+- Tested on localhost with a test account of 160 assignments (439 KB): the old way got 413. Checked one off, logged 1 hour, went to Settings and back, and it stayed done, with the server agreeing. Mark Past Due Done checked off 99, the dashboard showed only the upcoming ones, and the server had 100 of 160 done. Deleted the account after.
+
 # Startup WebSocket Notes 11/14/26
 
 ## Session 6: Ship It (11/16/26)
