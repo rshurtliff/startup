@@ -6,7 +6,7 @@ import { DadJoke } from '../components/common/dadJoke';
 import { HoursInput } from '../components/common/hoursInput';
 import { LiveIndicator, LiveNote, useLiveStatus } from '../components/common/liveIndicator';
 import { daysFromToday, formatDue, isDueSoon, timeAgo } from '../utils/dates';
-import { classAverage, hoursLabel, isCustom, loadAssignments, loadClassTimes, saveAssignmentList } from '../utils/assignments';
+import { classAverage, deleteAssignmentById, hoursLabel, isCustom, loadAssignments, loadClassTimes, saveAssignmentChanges } from '../utils/assignments';
 import { classesFrom, classStyle, otherClass } from '../utils/classes';
 import { loadSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { getDadJoke } from '../utils/jokes';
@@ -107,11 +107,17 @@ export function Dashboard() {
     };
   }, []);
 
-  // Every change to the list goes through here so the state and the server
-  // never get out of sync. Checking off and adding assignments use this.
-  function saveAssignments(newList) {
+  // Every change goes through here so the screen and the server never get out
+  // of sync. The screen updates right away with newList, and the server only
+  // gets the changes. If the save fails, reload my list from the server so
+  // the screen doesn't show something that wasn't saved.
+  function saveAssignments(newList, save) {
     setAssignments(newList);
-    saveAssignmentList(newList);
+    save.then((ok) => {
+      if (!ok) {
+        loadAssignments().then((list) => setAssignments(list));
+      }
+    });
   }
 
   // Builds a new assignment from the Add form and saves it with the rest.
@@ -129,7 +135,7 @@ export function Dashboard() {
       due: newDue,
       done: false,
     };
-    saveAssignments([...assignments, newAssignment]);
+    saveAssignments([...assignments, newAssignment], saveAssignmentChanges([newAssignment]));
 
     // Empty the boxes for the next one. The class stays picked.
     setNewTitle('');
@@ -137,13 +143,13 @@ export function Dashboard() {
   }
 
   // Removes an assignment I added myself. Keeps every assignment except the
-  // one with this id and saves that as the new list.
+  // one with this id on screen, and deletes just that one on the server.
   function deleteAssignment(id) {
-    saveAssignments(assignments.filter((a) => a.id !== id));
+    saveAssignments(assignments.filter((a) => a.id !== id), deleteAssignmentById(id));
   }
 
-  // Checks or unchecks one assignment and saves the list. .map() builds a new
-  // list where only the clicked one is swapped for an updated copy.
+  // Checks or unchecks one assignment and saves it. .map() builds a new list
+  // where only the clicked one is swapped for an updated copy.
   // Checking one off opens the time prompt for it, unless it's one I added.
   // Nobody else has those, so there's no class average for my time to go into.
   // Unchecking clears any hours and note I logged, since it isn't done anymore.
@@ -152,12 +158,13 @@ export function Dashboard() {
     const nowDone = !assignment.done;
     // doneAt is when I checked it off, so Show completed can find what I
     // finished recently even if it was overdue
-    const newList = assignments.map((a) =>
-      a.id === id
-        ? { ...a, done: nowDone, doneAt: nowDone ? new Date().toISOString() : null, myHours: nowDone ? a.myHours : null, myNote: nowDone ? a.myNote : null }
-        : a
-    );
-    saveAssignments(newList);
+    // Unchecking also clears my hours and note. Checking only sends done and
+    // doneAt, so it can't wipe out hours the time prompt saves right after.
+    const change = nowDone
+      ? { id: id, done: true, doneAt: new Date().toISOString() }
+      : { id: id, done: false, doneAt: null, myHours: null, myNote: null };
+    const newList = assignments.map((a) => (a.id === id ? { ...a, ...change } : a));
+    saveAssignments(newList, saveAssignmentChanges([change]));
 
     if (nowDone && !isCustom(assignment)) {
       setLoggedHours('1');
@@ -174,8 +181,9 @@ export function Dashboard() {
   // shows a dad joke as a thank you.
   function saveTime(event) {
     event.preventDefault();
-    const newList = assignments.map((a) => (a.id === loggingId ? { ...a, myHours: Number(loggedHours) } : a));
-    saveAssignments(newList);
+    const change = { id: loggingId, myHours: Number(loggedHours) };
+    const newList = assignments.map((a) => (a.id === loggingId ? { ...a, ...change } : a));
+    saveAssignments(newList, saveAssignmentChanges([change]));
 
     setJoke(null);
     setRewarded(true);

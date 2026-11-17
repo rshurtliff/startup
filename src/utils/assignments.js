@@ -11,13 +11,32 @@ export async function loadAssignments() {
   return await response.json();
 }
 
-// Replaces my whole list on the server
-export async function saveAssignmentList(list) {
-  await fetch('/api/assignments', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(list),
-  });
+// Saves just what changed, as a list like [{ id, done: true, doneAt }].
+// Sending only the changed fields keeps the request small. My whole Canvas
+// list with descriptions is too big to send every time I check one off.
+// Returns true if the server saved it, so pages don't act like a failed save
+// worked.
+export async function saveAssignmentChanges(changes) {
+  try {
+    const response = await fetch('/api/assignments', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(changes),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+// Deletes one assignment I added myself. Returns true if it worked.
+export async function deleteAssignmentById(id) {
+  try {
+    const response = await fetch(`/api/assignments/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 // Everyone else's logged hours from the server, grouped by assignment id

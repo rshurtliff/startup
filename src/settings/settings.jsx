@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
-import { loadAssignments, saveAssignmentList } from '../utils/assignments';
+import { loadAssignments, saveAssignmentChanges } from '../utils/assignments';
 import { classStyle } from '../utils/classes';
 import { loadSettings, saveSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { daysFromToday, timeAgo } from '../utils/dates';
@@ -131,14 +131,21 @@ export function Settings({ userName, onLogout }) {
   // catching up after the first sync. No hours are saved, so they don't
   // change anyone's class times. doneAt is the due date, not now, so Show
   // completed doesn't fill up with all of them as "finished this week."
+  // Only the changed fields of the past due ones get sent, not my whole list.
+  // If the save fails, the list reloads from the server and says so.
   async function markPastDueDone() {
-    const newList = assignments.map((a) =>
-      !a.done && a.due < today ? { ...a, done: true, doneAt: a.due, myHours: null, myNote: null } : a
-    );
-    setAssignments(newList);
+    const changes = pastDue.map((a) => ({ id: a.id, done: true, doneAt: a.due, myHours: null, myNote: null }));
+    setAssignments(assignments.map((a) => {
+      const change = changes.find((c) => c.id === a.id);
+      return change ? { ...a, ...change } : a;
+    }));
     setConfirmingCatchUp(false);
-    await saveAssignmentList(newList);
-    setSavedMessage('catchup');
+    if (await saveAssignmentChanges(changes)) {
+      setSavedMessage('catchup');
+    } else {
+      setSavedMessage('catchup-failed');
+      setAssignments(await loadAssignments());
+    }
   }
 
   // Totals for the Account card, worked out from my saved assignments
@@ -295,6 +302,11 @@ export function Settings({ userName, onLogout }) {
               </div>
             )}
             {savedMessage === 'catchup' && <p className="save-note">Past due assignments checked off.</p>}
+            {savedMessage === 'catchup-failed' && (
+              <div className="alert alert-danger mt-3 mb-0" role="alert">
+                Couldn't save that. Nothing was checked off. Try again in a minute.
+              </div>
+            )}
           </div>
         </section>
 

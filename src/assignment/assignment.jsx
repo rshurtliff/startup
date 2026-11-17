@@ -7,7 +7,7 @@ import { getDadJoke } from '../utils/jokes';
 import { formatDue, timeAgo } from '../utils/dates';
 import { loadSettings, syncInfoFrom } from '../utils/settings';
 import { classesFrom, classStyle } from '../utils/classes';
-import { allTimesFor, classAverage, hoursLabel, isCustom, loadAssignments, loadClassNotes, loadClassTimes, saveAssignmentList } from '../utils/assignments';
+import { allTimesFor, classAverage, hoursLabel, isCustom, loadAssignments, loadClassNotes, loadClassTimes, saveAssignmentChanges } from '../utils/assignments';
 import { LiveNotifier } from '../liveNotifier';
 import './assignment.css';
 
@@ -68,6 +68,7 @@ export function Assignment() {
   const [hours, setHours] = useState('');
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   // Saving with my hours earns a dad joke. earnedJoke says whether this save
   // gets one, and joke is null until it comes back from the joke site.
@@ -146,8 +147,16 @@ export function Assignment() {
       myHours: countsForClass && hours !== '' ? Number(hours) : null,
       myNote: countsForClass && note.trim() ? note.trim() : null,
     };
-    const list = await loadAssignments();
-    await saveAssignmentList(list.map((a) => (a.id === updated.id ? updated : a)));
+    // Only these four fields changed, so only they get sent
+    const ok = await saveAssignmentChanges([
+      { id: updated.id, done: updated.done, doneAt: updated.doneAt, myHours: updated.myHours, myNote: updated.myNote },
+    ]);
+    setSaveFailed(!ok);
+    if (!ok) {
+      setSaved(false);
+      setEarnedJoke(false);
+      return;
+    }
     setAssignment(updated);
     setSaved(true);
 
@@ -385,6 +394,11 @@ export function Assignment() {
                 Save
               </button>
               {saved && <p className="save-note text-center">Saved.</p>}
+              {saveFailed && (
+                <div className="alert alert-danger mt-3 mb-0" role="alert">
+                  Couldn't save that. Try again in a minute.
+                </div>
+              )}
               {saved && earnedJoke && <DadJoke joke={joke} />}
             </form>
           </div>
