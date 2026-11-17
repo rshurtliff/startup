@@ -90,6 +90,29 @@ async function saveAssignments(netId, list) {
   }
 }
 
+// Saves just the assignments that changed. Each change has the id plus only
+// the fields to change, like { id, done: true, doneAt }. upsert means a new id
+// (one I just added) gets inserted. bulkWrite sends them all to Mongo in one
+// trip. _id and netId in a change are ignored, so nobody can write to someone
+// else's assignment.
+async function updateAssignments(netId, changes) {
+  const ops = changes.map(({ _id, netId: ignored, id, ...fields }) => ({
+    updateOne: {
+      filter: { netId: netId, id: id },
+      update: { $set: fields },
+      upsert: true,
+    },
+  }));
+  if (ops.length > 0) {
+    await assignmentCollection.bulkWrite(ops);
+  }
+}
+
+// Removes one of my assignments (only ones I added can be deleted)
+async function deleteAssignment(netId, id) {
+  await assignmentCollection.deleteOne({ netId: netId, id: id });
+}
+
 async function deleteAssignments(netId) {
   await assignmentCollection.deleteMany({ netId: netId });
 }
@@ -160,6 +183,8 @@ module.exports = {
   deleteUser,
   getAssignments,
   saveAssignments,
+  updateAssignments,
+  deleteAssignment,
   deleteAssignments,
   getClassTimes,
   getClassNotes,

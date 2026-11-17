@@ -91,27 +91,44 @@ apiRouter.get('/assignments', verifyAuth, async (req, res) => {
   res.send(await DB.getAssignments(req.user.netId));
 });
 
-// SaveAssignments: replaces the logged-in user's list with the one sent
-apiRouter.put('/assignments', verifyAuth, async (req, res) => {
-  if (!Array.isArray(req.body)) {
-    res.status(400).send({ msg: 'Send the whole assignment list' });
+// UpdateAssignments: saves just the assignments that changed, as a list of
+// { id, ...fields to change }. The browser used to send my whole list on every
+// checkbox, and a real Canvas list (hundreds of KB with the descriptions) was
+// too big for express.json(), so saves failed. A change is only a few fields.
+apiRouter.patch('/assignments', verifyAuth, async (req, res) => {
+  const changes = req.body;
+  if (!Array.isArray(changes) || !changes.every((c) => c && typeof c.id === 'string' && c.id)) {
+    res.status(400).send({ msg: 'Send a list of changes, each with an id' });
     return;
   }
   const netId = req.user.netId;
   const oldList = await DB.getAssignments(netId);
-  await DB.saveAssignments(netId, req.body);
-  res.send(req.body);
+  await DB.updateAssignments(netId, changes);
+  res.status(204).end();
 
   // The save is done, so the browser already has its answer. Now tell
-  // classmates about any hours or notes that are new in this save.
+  // classmates about any hours or notes that are new in this save. Each
+  // change is merged onto what I had so the message has the title and class.
   try {
-    await sendLiveUpdates(netId, oldList, req.body);
+    const newList = changes.map((c) => ({ ...oldList.find((o) => o.id === c.id), ...c }));
+    await sendLiveUpdates(netId, oldList, newList);
   } catch (err) {
-    console.log(`Couldn't send live hours: ${err.message}`);
+    console.log(`Couldn't send live updates: ${err.message}`);
   }
 });
 
-// Compares my list before and after a save and tells classmates who have the
+// DeleteAssignment: removes one assignment I added myself. Canvas ones come
+// back on the next sync, so only custom- ones can be deleted.
+apiRouter.delete('/assignments/:id', verifyAuth, async (req, res) => {
+  if (!req.params.id.startsWith('custom-')) {
+    res.status(400).send({ msg: 'Only assignments you added can be deleted' });
+    return;
+  }
+  await DB.deleteAssignment(req.user.netId, req.params.id);
+  res.status(204).end();
+});
+
+// Compares my assignments before and after a save and tells classmates who have the
 // same assignment what changed. Neither message has my Net ID, so classmates
 // stay anonymous. Assignments I added myself (custom-) are only mine, so
 // they're never sent.
