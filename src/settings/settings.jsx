@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClassTag } from '../components/common/classTag';
-import { loadAssignments, saveAssignmentChanges } from '../utils/assignments';
+import { hoursLabel, loadAssignments, saveAssignmentChanges } from '../utils/assignments';
 import { classStyle } from '../utils/classes';
 import { loadSettings, saveSettings, syncInfoFrom, totalFound } from '../utils/settings';
 import { daysFromToday, timeAgo } from '../utils/dates';
@@ -327,7 +327,7 @@ export function Settings({ userName, onLogout }) {
                 </strong>
               </li>
               <li><span>Assignments completed</span> <strong>{completedCount}</strong></li>
-              <li><span>Total time logged</span> <strong>{hoursLogged} hours</strong></li>
+              <li><span>Total time logged</span> <strong>{hoursLabel(hoursLogged)}</strong></li>
             </ul>
 
             {/* Change Password opens a small form. Delete Account asks first. */}
