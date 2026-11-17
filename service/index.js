@@ -252,9 +252,12 @@ apiRouter.delete('/user', verifyAuth, async (req, res) => {
   res.status(204).end();
 });
 
-// Default error handler
+// Default error handler. Logs the error so it shows up in PM2's log on the
+// server, and keeps the status Express gave it (like 413 for a body that's
+// too big) instead of calling everything a 500.
 app.use(function (err, req, res, next) {
-  res.status(500).send({ type: err.name, message: err.message });
+  console.log(`${req.method} ${req.path} failed: ${err.name}: ${err.message}`);
+  res.status(err.status || 500).send({ type: err.name, message: err.message });
 });
 
 // Any other path gets the React app, so routes like /dashboard work on refresh
